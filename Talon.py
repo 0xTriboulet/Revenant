@@ -156,7 +156,7 @@ class Talon(AgentType):
         self.builder_send_message( config[ 'ClientID' ], "Info", f"Options Config: {config['Options']}" )
         self.builder_send_message( config[ 'ClientID' ], "Info", f"Agent Config: {config['Config']}" )
 
-        # build_send_payload. this function send back your generated payload.
+        # build_send_payload. this function send back your generated payload.  
         self.builder_send_payload( config[ 'ClientID' ], self.Name + ".bin", "test bytes".encode('utf-8') )
 
     # this function handles incomming requests based on our magic value.  
@@ -194,7 +194,7 @@ class Talon(AgentType):
                 RegisterInfo[ "Process Name" ] = RegisterInfo[ "Process Path" ].split( "\\" )[-1]
 
                 # this OS info is going to be displayed on the GUI Session table. 
-                RegisterInfo[ "OS Version" ] = RegisterInfo[ "OS Version" ]
+                RegisterInfo[ "OS Version" ] = RegisterInfo[ "OS Version" ] # "Windows Some version"
 
                 if RegisterInfo[ "OS Arch" ] == 0:
                     RegisterInfo[ "OS Arch" ] = "x86"
@@ -228,8 +228,9 @@ class Talon(AgentType):
 
             else:
                 print( "[-] Is not agent register request" )
-
         else:
+            print( f"[*] Something else: {Command}" )
+
             AgentID = response[ "Agent" ][ "NameID" ]
 
             if Command == COMMAND_GET_JOB:
@@ -241,11 +242,13 @@ class Talon(AgentType):
                 if len(Tasks) == 0:
                     Tasks = COMMAND_NO_JOB.to_bytes( 4, 'little' )
                 
+                print( f"Tasks: {Tasks.hex()}" )
                 return Tasks
 
             elif Command == COMMAND_OUTPUT:
 
                 Output = response_parser.parse_str()
+                print( "[*] Output: \n" + Output )
 
                 self.console_message( AgentID, "Good", "Received Output:", Output )
 
@@ -273,11 +276,14 @@ class Talon(AgentType):
 
 def main():
     Havoc_Talon = Talon()
+
+    print( "[*] Connect to Havoc service api" )
     Havoc_Service = HavocService(
         endpoint="ws://192.168.0.148:40056/service-endpoint",
         password="service-password"
     )
-
+     
+    print( "[*] Register Talon to Havoc" )
     Havoc_Service.register_agent(Havoc_Talon)
 
     return
