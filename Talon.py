@@ -156,22 +156,39 @@ class Talon(AgentType):
         self.builder_send_message( config[ 'ClientID' ], "Info", f"Options Config: {config['Options']}" )
         self.builder_send_message( config[ 'ClientID' ], "Info", f"Agent Config: {config['Config']}" )
 
-        # build_send_payload. this function send back your generated payload.  
-        self.builder_send_payload( config[ 'ClientID' ], self.Name + ".bin", "test bytes".encode('utf-8') )
+        # build_send_payload. this function send back your generated payload 
+        self.builder_send_payload( config[ 'ClientID' ], self.Name + ".bin", "test bytes".encode('utf-8') ) # this is just an example. 
 
-    # this function handles incomming requests based on our magic value.  
+    # this function handles incomming requests based on our magic value. you can respond to the agent by returning your data from this function. 
     def response( self, response: dict ) -> bytes:
 
         agent_header    = response[ "AgentHeader" ]
-        agent_response  = b64decode( response[ "Response" ] )
+        agent_response  = b64decode( response[ "Response" ] ) # the teamserver base64 encodes the request. 
         response_parser = Parser( agent_response, len(agent_response) )
         Command         = response_parser.parse_int()
 
         if response[ "Agent" ] == None:
-            # so when the Agent field is empty this either means that the agent doesn't exists/is not registered or we fucked up
+            # so when the Agent field is empty this either means that the agent doesn't exists. 
 
             if Command == COMMAND_REGISTER:
                 print( "[*] Is agent register request" )
+
+                # Register info:
+                #   - AgentID           : int [needed]
+                #   - Hostname          : str [needed]
+                #   - Username          : str [needed]
+                #   - Domain            : str [optional]
+                #   - InternalIP        : str [needed]
+                #   - Process Path      : str [needed]
+                #   - Process Name      : str [needed]
+                #   - Process ID        : int [needed]
+                #   - Process Parent ID : int [optional]
+                #   - Process Arch      : str [needed]
+                #   - Process Elevated  : int [needed]
+                #   - OS Build          : str [needed]
+                #   - OS Version        : str [needed]
+                #   - OS Arch           : str [optional]
+                #   - Sleep             : int [optional]
 
                 RegisterInfo = {
                     "AgentID"           : response_parser.parse_int(),
@@ -184,17 +201,15 @@ class Talon(AgentType):
                     "Process Parent ID" : str(response_parser.parse_int()),
                     "Process Arch"      : response_parser.parse_int(),
                     "Process Elevated"  : response_parser.parse_int(),
-                    "OS Build"          : str(response_parser.parse_int()) + "." + str(response_parser.parse_int()) + "." + str(response_parser.parse_int()) + "." + str(response_parser.parse_int()) + "." + str(response_parser.parse_int()),
+                    "OS Build"          : str(response_parser.parse_int()) + "." + str(response_parser.parse_int()) + "." + str(response_parser.parse_int()) + "." + str(response_parser.parse_int()) + "." + str(response_parser.parse_int()), # (MajorVersion).(MinorVersion).(ProductType).(ServicePackMajor).(BuildNumber)
                     "OS Arch"           : response_parser.parse_int(),
                     "Sleep"             : response_parser.parse_int(),
                 }
 
-                print( f"[*] RegisterInfo: {RegisterInfo}" )
-
                 RegisterInfo[ "Process Name" ] = RegisterInfo[ "Process Path" ].split( "\\" )[-1]
 
                 # this OS info is going to be displayed on the GUI Session table. 
-                RegisterInfo[ "OS Version" ] = RegisterInfo[ "OS Version" ] # "Windows Some version"
+                RegisterInfo[ "OS Version" ] = RegisterInfo[ "OS Build" ] # "Windows Some version"
 
                 if RegisterInfo[ "OS Arch" ] == 0:
                     RegisterInfo[ "OS Arch" ] = "x86"
