@@ -121,7 +121,12 @@ class Talon(AgentType):
     Author = "@C5pider"
     Version = "0.1"
     Description = f"""Talon 3rd party agent for Havoc"""
-    MagicValue = 0x616c6f6e
+    MagicValue = 0x616c6f6e # 'talon'
+
+    Arch = [
+        "x64",
+        "x86",
+    ]
 
     Formats = [
         {
@@ -141,13 +146,20 @@ class Talon(AgentType):
         CommandExit(),
     ]
 
+    # generate. this function is getting executed when the Havoc client requests for a binary/executable/payload. you can generate your payloads in this function. 
     def generate( self, config: dict ) -> None:
 
+        print( f"config: {config}" )
+
+        # builder_send_message. this function send logs/messages to the payload build for verbose information or sending errors (if something went wrong). 
         self.builder_send_message( config[ 'ClientID' ], "Info", f"hello from service builder" )
         self.builder_send_message( config[ 'ClientID' ], "Info", f"Options Config: {config['Options']}" )
         self.builder_send_message( config[ 'ClientID' ], "Info", f"Agent Config: {config['Config']}" )
+
+        # build_send_payload. this function send back your generated payload.
         self.builder_send_payload( config[ 'ClientID' ], self.Name + ".bin", "test bytes".encode('utf-8') )
 
+    # this function handles incomming requests based on our magic value.  
     def response( self, response: dict ) -> bytes:
 
         agent_header    = response[ "AgentHeader" ]
@@ -181,7 +193,8 @@ class Talon(AgentType):
 
                 RegisterInfo[ "Process Name" ] = RegisterInfo[ "Process Path" ].split( "\\" )[-1]
 
-                RegisterInfo[ "OS Version" ] = "Windows Some version"
+                # this OS info is going to be displayed on the GUI Session table. 
+                RegisterInfo[ "OS Version" ] = RegisterInfo[ "OS Version" ]
 
                 if RegisterInfo[ "OS Arch" ] == 0:
                     RegisterInfo[ "OS Arch" ] = "x86"
@@ -215,9 +228,8 @@ class Talon(AgentType):
 
             else:
                 print( "[-] Is not agent register request" )
-        else:
-            print( f"[*] Something else: {Command}" )
 
+        else:
             AgentID = response[ "Agent" ][ "NameID" ]
 
             if Command == COMMAND_GET_JOB:
@@ -229,13 +241,11 @@ class Talon(AgentType):
                 if len(Tasks) == 0:
                     Tasks = COMMAND_NO_JOB.to_bytes( 4, 'little' )
                 
-                print( f"Tasks: {Tasks.hex()}" )
                 return Tasks
 
             elif Command == COMMAND_OUTPUT:
 
                 Output = response_parser.parse_str()
-                print( "[*] Output: \n" + Output )
 
                 self.console_message( AgentID, "Good", "Received Output:", Output )
 
