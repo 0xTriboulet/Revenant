@@ -224,7 +224,7 @@ CleanupDownload:
 
 }
 
-VOID CommandExit( PPARSER )
+VOID CommandExit( PPARSER Parser )
 {
     puts( "Command::Exit" );
 
