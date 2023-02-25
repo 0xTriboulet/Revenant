@@ -202,7 +202,7 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
     }
 
     // Send our data
-    if ( WinHttpSendRequest( hRequest, NULL, 0, Data, Size, Size, NULL ) )
+    if ( WinHttpSendRequest( hRequest, NULL, 0, Data, Size, Size,(unsigned long long) NULL ) )
     {
         if ( RecvData && WinHttpReceiveResponse( hRequest, NULL ) )
         {
