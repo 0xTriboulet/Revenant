@@ -116,11 +116,11 @@ class CommandExit( Command ):
 # =======================
 # ===== Agent Class =====
 # =======================
-class Revanent(AgentType):
-    Name = "Revanent"
+class Revenant(AgentType):
+    Name = "Revenant"
     Author = "@0xTriboulet"
     Version = "0.1"
-    Description = f"""Revanent 3rd party agent for Havoc"""
+    Description = f"""Revenant 3rd party agent for Havoc"""
     MagicValue = 0x7265766e # 'revn'
 
     Arch = [
@@ -290,7 +290,7 @@ class Revanent(AgentType):
 
 
 def main():
-    Havoc_Revanent = Revanent()
+    Havoc_Revenant = Revenant()
 
     print( "[*] Connect to Havoc service api" )
     Havoc_Service = HavocService(
@@ -298,8 +298,8 @@ def main():
         password="service-password"
     )
      
-    print( "[*] Register Revanent to Havoc" )
-    Havoc_Service.register_agent(Havoc_Revanent)
+    print( "[*] Register Revenant to Havoc" )
+    Havoc_Service.register_agent(Havoc_Revenant)
 
     return
 
