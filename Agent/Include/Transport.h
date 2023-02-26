@@ -1,5 +1,5 @@
-#ifndef REVANENT_TRANSPORT_H
-#define REVANENT_TRANSPORT_H
+#ifndef REVNT_TRANSPORT_H
+#define REVNT_TRANSPORT_H
 
 #include <Package.h>
 
