@@ -21,6 +21,6 @@ all:
 	printf "\033[0;36m[*]\033[0m Building Talon agent...\n"
 
 	# TODO: remove exe. lasting is going to be Dll and Reflective Dll
-	$(CCX64) $(SOURCE) $(INCLUDE) $(CFLAGS) $(LINKING) -m64 -o Bin/Talon.exe
+	$(CCX64) $(SOURCE) $(INCLUDE) $(CFLAGS) $(LINKING) -m64 -o Bin/Revanent.exe
 
-	printf "\033[0;36m[*]\033[0m Finished building Talon payload\n"
+	printf "\033[0;36m[*]\033[0m Finished building Revanent payload\n"

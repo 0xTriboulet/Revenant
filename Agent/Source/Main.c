@@ -1,9 +1,8 @@
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "EndlessLoop"
-#define SLEEP 3
 
 #include <Revnt.h>
-
+#include <Config.h>
 #include <Core.h>
 #include <Transport.h>
 #include <Command.h>
@@ -23,7 +22,7 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
         // Instance->Win32.WaitForSingleObjectEx( NtCurrentThread(), Instance->Config.Sleeping * 1000, FALSE );
 
-        Sleep( SLEEP * 1000 );
+        Sleep( CONFIG_SLEEP * 1000 );
 
     } while ( TRUE );
 }
