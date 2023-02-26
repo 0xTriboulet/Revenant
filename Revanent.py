@@ -130,7 +130,7 @@ class Revanent(AgentType):
 
     Formats = [
         {
-            "Name": "Windows Executable", #windows exe?
+            "Name": "Windows Exe", #windows exe?
             "Extension": "exe",
         },
     ]
@@ -146,29 +146,29 @@ class Revanent(AgentType):
         CommandExit(),
     ]
 
-    # generate. this function is getting executed when the Havoc client requests for a binary/executable/payload. you can generate your payloads in this function. 
+    # generate. this function is getting executed when the Havoc client requests for a binary/executable/payload. you can generate your payloads in this function.
     def generate( self, config: dict ) -> None:
 
         print( f"config: {config}" )
 
-        # builder_send_message. this function send logs/messages to the payload build for verbose information or sending errors (if something went wrong). 
+        # builder_send_message. this function send logs/messages to the payload build for verbose information or sending errors (if something went wrong).
         self.builder_send_message( config[ 'ClientID' ], "Info", f"hello from service builder" )
         self.builder_send_message( config[ 'ClientID' ], "Info", f"Options Config: {config['Options']}" )
         self.builder_send_message( config[ 'ClientID' ], "Info", f"Agent Config: {config['Config']}" )
 
-        # build_send_payload. this function send back your generated payload 
-        self.builder_send_payload( config[ 'ClientID' ], self.Name + ".bin", "test bytes".encode('utf-8') ) # this is just an example. 
+        # build_send_payload. this function send back your generated payload
+        self.builder_send_payload( config[ 'ClientID' ], self.Name + ".exe", "test bytes".encode('utf-8') ) # this is just an example.
 
-    # this function handles incomming requests based on our magic value. you can respond to the agent by returning your data from this function. 
+    # this function handles incomming requests based on our magic value. you can respond to the agent by returning your data from this function.
     def response( self, response: dict ) -> bytes:
 
         agent_header    = response[ "AgentHeader" ]
-        agent_response  = b64decode( response[ "Response" ] ) # the teamserver base64 encodes the request. 
+        agent_response  = b64decode( response[ "Response" ] ) # the teamserver base64 encodes the request.
         response_parser = Parser( agent_response, len(agent_response) )
         Command         = response_parser.parse_int()
 
         if response[ "Agent" ] == None:
-            # so when the Agent field is empty this either means that the agent doesn't exists. 
+            # so when the Agent field is empty this either means that the agent doesn't exists.
 
             if Command == COMMAND_REGISTER:
                 print( "[*] Is agent register request" )
@@ -208,7 +208,7 @@ class Revanent(AgentType):
 
                 RegisterInfo[ "Process Name" ] = RegisterInfo[ "Process Path" ].split( "\\" )[-1]
 
-                # this OS info is going to be displayed on the GUI Session table. 
+                # this OS info is going to be displayed on the GUI Session table.
                 RegisterInfo[ "OS Version" ] = RegisterInfo[ "OS Build" ] # "Windows Some version"
 
                 if RegisterInfo[ "OS Arch" ] == 0:
@@ -228,13 +228,13 @@ class Revanent(AgentType):
                 if RegisterInfo[ "Process Arch" ] == 0:
                     RegisterInfo[ "Process Arch" ] = "Unknown"
 
-                elif RegisterInfo[ "Process Arch" ] == 1: 
+                elif RegisterInfo[ "Process Arch" ] == 1:
                     RegisterInfo[ "Process Arch" ] = "x86"
 
-                elif RegisterInfo[ "Process Arch" ] == 2: 
+                elif RegisterInfo[ "Process Arch" ] == 2:
                     RegisterInfo[ "Process Arch" ] = "x64"
 
-                elif RegisterInfo[ "Process Arch" ] == 3: 
+                elif RegisterInfo[ "Process Arch" ] == 3:
                     RegisterInfo[ "Process Arch" ] = "IA64"
 
                 self.register( agent_header, RegisterInfo )
@@ -253,10 +253,10 @@ class Revanent(AgentType):
 
                 Tasks = self.get_task_queue( response[ "Agent" ] )
 
-                # if there is no job just send back a COMMAND_NO_JOB command. 
+                # if there is no job just send back a COMMAND_NO_JOB command.
                 if len(Tasks) == 0:
                     Tasks = COMMAND_NO_JOB.to_bytes( 4, 'little' )
-                
+
                 print( f"Tasks: {Tasks.hex()}" )
                 return Tasks
 
@@ -280,7 +280,7 @@ class Revanent(AgentType):
                 FileContent = response_parser.parse_str()
 
                 self.console_message( AgentID, "Good", f"File was downloaded: {FileName} ({len(FileContent)} bytes)", "" )
-                
+
                 self.download_file( AgentID, FileName, len(FileContent), FileContent )
 
             else:
@@ -294,7 +294,7 @@ def main():
 
     print( "[*] Connect to Havoc service api" )
     Havoc_Service = HavocService(
-        endpoint="ws://192.168.0.148:40056/service-endpoint",
+        endpoint="ws://127.0.0.1:40056/service-endpoint",
         password="service-password"
     )
      
