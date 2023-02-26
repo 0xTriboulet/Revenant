@@ -1,5 +1,5 @@
-#ifndef TALON_PACKAGE_H
-#define TALON_PACKAGE_H
+#ifndef REVNT_PACKAGE_H
+#define REVNT_PACKAGE_H
 
 #include <windows.h>
 

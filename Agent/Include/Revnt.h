@@ -1,5 +1,5 @@
-#ifndef AGENT_TALON_H
-#define AGENT_TALON_H
+#ifndef AGENT_REVNT_H
+#define AGENT_REVNT_H
 
 #include <windows.h>
 #include <stdio.h>
@@ -20,7 +20,7 @@
 #define PROCESS_AGENT_ARCH PROCESS_ARCH_X86
 #endif
 
-#define TALON_MAGIC_VALUE ( UINT32 ) 'talon'
+#define REVNT_MAGIC_VALUE ( UINT32 ) 'rvnt'
 
 typedef struct _INSTANCE {
     struct {

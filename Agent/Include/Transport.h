@@ -1,5 +1,5 @@
-#ifndef TALON_TRANSPORT_H
-#define TALON_TRANSPORT_H
+#ifndef REVANENT_TRANSPORT_H
+#define REVANENT_TRANSPORT_H
 
 #include <Package.h>
 

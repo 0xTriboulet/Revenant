@@ -1,6 +1,6 @@
 MAKEFLAGS += -s
 
-NAME	  = demon
+NAME	  = revnt
 
 CCX86 	  = i686-w64-mingw32-gcc
 CCX64 	  = x86_64-w64-mingw32-gcc

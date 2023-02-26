@@ -1,5 +1,5 @@
-#ifndef TALON_COMMAND_H
-#define TALON_COMMAND_H
+#ifndef REVNT_COMMAND_H
+#define REVNT_COMMAND_H
 
 #include <windows.h>
 #include <Parser.h>
@@ -19,7 +19,7 @@ typedef struct
 {
     INT ID;
     VOID ( *Function ) ( PPARSER Arguments );
-} TALON_COMMAND;
+} REVNT_COMMAND;
 
 // Functions
 VOID CommandDispatcher();

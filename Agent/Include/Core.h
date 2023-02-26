@@ -1,5 +1,5 @@
-#ifndef TALON_CORE_H
-#define TALON_CORE_H
+#ifndef REVNT_CORE_H
+#define REVNT_CORE_H
 
 #define PRINT_HEX( b, l )                               \
     printf( #b ": [%d] [ ", l );                        \
@@ -9,7 +9,7 @@
     }                                                   \
     puts( "]" );
 
-VOID  TalonInit();
+VOID  RevntInit();
 
 VOID  AnonPipeRead( HANDLE hSTD_OUT_Read );
 ULONG RandomNumber32( VOID );
