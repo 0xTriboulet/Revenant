@@ -1,3 +1,5 @@
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "EndlessLoop"
 #define SLEEP 3
 
 #include <Revnt.h>
@@ -25,3 +27,4 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
     } while ( TRUE );
 }
+#pragma clang diagnostic pop
