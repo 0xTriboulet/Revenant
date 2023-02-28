@@ -4,8 +4,8 @@ Revenant is a 3rd party agent for Havoc written in C, and based on Talon. This i
 
 TODO:
 
-[x] Develop Revnt handler to build executable  
-[ ] Write Revnt with native API only  
+[x] Develop Revenant handler to build executable  
+[ ] Write Revenant with native API only  
 [ ] Develop Double Fork -> Run method  
 [ ] Develop PSBit method
 
