@@ -1,5 +1,5 @@
+import os
 from base64 import b64decode
-
 from havoc.service import HavocService
 from havoc.agent import *
 
@@ -156,8 +156,14 @@ class Revenant(AgentType):
         self.builder_send_message( config[ 'ClientID' ], "Info", f"Options Config: {config['Options']}" )
         self.builder_send_message( config[ 'ClientID' ], "Info", f"Agent Config: {config['Config']}" )
 
+        #CMAKE ; MAKE
+        os.system("cmake ./Agent/CMakeLists.txt ; cmake --build ./Agent")
+
+        #READ
+        data = open("./Agent/Bin/Revenant.exe", "rb").read()
+
         # build_send_payload. this function send back your generated payload
-        self.builder_send_payload( config[ 'ClientID' ], self.Name + ".exe", "test bytes".encode('utf-8') ) # this is just an example.
+        self.builder_send_payload( config[ 'ClientID' ], self.Name +"."+self.Formats[0]["Extension"], data ) # this is just an example.
 
     # this function handles incomming requests based on our magic value. you can respond to the agent by returning your data from this function.
     def response( self, response: dict ) -> bytes:

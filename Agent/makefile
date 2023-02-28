@@ -18,9 +18,9 @@ SOURCE 	  =  $(wildcard Source/*)
 
 
 all:
-	printf "\033[0;36m[*]\033[0m Building Talon agent...\n"
+	printf "\033[0;36m[*]\033[0m Building Revenant agent...\n"
 
 	# TODO: remove exe. lasting is going to be Dll and Reflective Dll
-	$(CCX64) $(SOURCE) $(INCLUDE) $(CFLAGS) $(LINKING) -m64 -o Bin/Revanent.exe
+	$(CCX64) $(SOURCE) $(INCLUDE) $(CFLAGS) $(LINKING) -m64 -o Bin/Revenant.exe
 
 	printf "\033[0;36m[*]\033[0m Finished building Revanent payload\n"
