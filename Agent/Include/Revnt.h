@@ -2,7 +2,7 @@
 #define AGENT_REVNT_H
 
 #include <windows.h>
-#include <stdio.h>
+#include <tchar.h>
 
 #define DEREF( name )       *( UINT_PTR* ) ( name )
 #define DEREF_32( name )    *( DWORD* )    ( name )

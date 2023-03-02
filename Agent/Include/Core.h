@@ -2,12 +2,12 @@
 #define REVNT_CORE_H
 
 #define PRINT_HEX( b, l )                               \
-    printf( #b ": [%d] [ ", l );                        \
+    _tprintf( #b ": [%d] [ ", l );                        \
     for ( int i = 0 ; i < l; i++ )                      \
     {                                                   \
-        printf( "%02x ", ( ( PUCHAR ) b ) [ i ] );      \
+        _tprintf( "%02x ", ( ( PUCHAR ) b ) [ i ] );      \
     }                                                   \
-    puts( "]" );
+    _tprintf( "]" );
 
 VOID  RevntInit();
 
