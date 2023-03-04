@@ -14,7 +14,8 @@ This project aims to be a self-contained Havoc C2 implant. The goal end-user fun
 
 TODO:
 
-[x] Develop Revenant handler to build executable
+[x] Develop Revenant handler to build executable  
+[x] Develop Revenant.py to handle options  
 [ ] Write Revenant with maximum native API  
 [ ] Develop Double Fork -> Run method  
 [ ] Develop PSBit method
