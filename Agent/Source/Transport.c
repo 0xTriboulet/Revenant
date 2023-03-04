@@ -128,7 +128,7 @@ BOOL TransportInit( )
 
         if ( Data )
         {
-            printf( "Agent => %x : %x\n", ( UINT32 ) DEREF( Data ), ( UINT32 ) Instance.Session.AgentID );
+            _tprintf( "Agent => %x : %x\n", ( UINT32 ) DEREF( Data ), ( UINT32 ) Instance.Session.AgentID );
             if ( ( UINT32 ) Instance.Session.AgentID == ( UINT32 ) DEREF( Data ) )
             {
                 Instance.Session.Connected = TRUE;
