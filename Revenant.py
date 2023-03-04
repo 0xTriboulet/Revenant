@@ -146,7 +146,7 @@ class Revenant(AgentType):
 
         print(f"[*] Revenant Payload Arch:   {compile_arch}")
         print(f"[*] Revenant Payload Format: {compile_format}")
-        compile_command: str = "cd ./Agent ; make"
+        compile_command: str = "cd ./Agent && make"
 
         try:
             process = subprocess.run(compile_command,
