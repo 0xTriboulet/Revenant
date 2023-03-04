@@ -3,4 +3,3 @@
 #define CONFIG_PORT       443
 #define CONFIG_SECURE     FALSE
 #define CONFIG_SLEEP      3
-#define CONFIG_TEST
