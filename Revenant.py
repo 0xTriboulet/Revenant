@@ -138,7 +138,8 @@ class Revenant(AgentType):
         ]
         self.BuildingConfig: dict = {
             "Sleep": "10",
-            "Unmap": True
+            "Unmap": True,
+            "Native API": True,
         }
         self.Commands: list = [
             CommandShell(),

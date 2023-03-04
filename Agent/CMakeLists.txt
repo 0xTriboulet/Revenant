@@ -13,7 +13,7 @@ add_executable( Agent
         Source/Package.c
         Source/Transport.c
         Source/Parser.c
-        Source/Main.c)
+        Source/Main.c Include/Native.h)
 
 set_source_files_properties(Main.c PROPERTIES COMPILE_FLAGS "-Wincompatible-pointer-types -Wmultichar")
 target_link_libraries( Agent ws2_32 kernel32 user32 gdi32 winspool shell32 ole32 oleaut32 uuid comdlg32 iphlpapi winhttp)
