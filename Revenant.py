@@ -23,14 +23,13 @@ def process_config_h(config: dict):
     config_sleep:       str = config['Config']['Sleep']
     config_poly:        str = str(config['Config']['Poly Obf'])
 
-    header_file = f"""
-#define CONFIG_USER_AGENT L"{config_user_agent}"
+    header_file = f'''#define CONFIG_USER_AGENT L"{config_user_agent}"
 #define CONFIG_HOST L"{config_host_bind}"
 #define CONFIG_PORT {config_host_port}
 #define CONFIG_SECURE {str(config_host_secure).upper()}
 #define CONFIG_SLEEP {config_sleep}  
 #define CONFIG_POLY {config_poly}  
-    """
+    '''
     for filepath in glob.iglob('**/Config.h', recursive=True):
         with open(filepath, 'w') as f:
             f.write(header_file)
