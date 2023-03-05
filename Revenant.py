@@ -16,18 +16,22 @@ COMMAND_OUTPUT: int = 0x200
 
 
 def process_config_h(config: dict):
+    config_user_agent:  str = config['Options']['Listener']['UserAgent']
+    config_host_bind:   str = config['Options']['Listener']['HostBind']
+    config_host_port:   str = config['Options']['Listener']['Port']
+    config_host_secure: str = str(config['Options']['Listener']['Secure']).upper()
+    config_sleep:       str = config['Config']['Sleep']
+
     header_file = f"""
-#define CONFIG_USER_AGENT L"{config['Options']['Listener']['UserAgent']}"
-#define CONFIG_HOST       L"{config['Options']['Listener']['HostBind']}"
-#define CONFIG_PORT       {config['Options']['Listener']['Port']}
-#define CONFIG_SECURE     {config['Options']['Listener']['Secure']}
-#define CONFIG_SLEEP      {config['Config']['Sleep']}  
-#define CONFIG_UNMAP      {config['Config']['Unmap']}    
+#define CONFIG_USER_AGENT L"{config_user_agent}"
+#define CONFIG_HOST L"{config_host_bind}"
+#define CONFIG_PORT {config_host_port}
+#define CONFIG_SECURE {str(config_host_secure).upper()}
+#define CONFIG_SLEEP {config_sleep}  
     """
     for filepath in glob.iglob('**/Config.h', recursive=True):
         with open(filepath, 'w') as f:
             f.write(header_file)
-
 
 class CommandShell(Command):
     def __init__(self):
