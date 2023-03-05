@@ -16,14 +16,23 @@ COMMAND_OUTPUT: int = 0x200
 
 
 def process_config_h(config: dict):
-    header_file = f"""
-#define CONFIG_USER_AGENT L"{config['Options']['Listener']['UserAgent']}"
-#define CONFIG_HOST       L"{config['Options']['Listener']['HostBind']}"
-#define CONFIG_PORT       {config['Options']['Listener']['Port']}
-#define CONFIG_SECURE     {config['Options']['Listener']['Secure']}
-#define CONFIG_SLEEP      {config['Config']['Sleep']}  
-#define CONFIG_UNMAP      {config['Config']['Unmap']}    
-    """
+    config_user_agent:  str = config['Options']['Listener']['UserAgent']
+    config_host_bind:   str = config['Options']['Listener']['HostBind']
+    config_host_port:   str = config['Options']['Listener']['Port']
+    config_host_secure: str = str(config['Options']['Listener']['Secure']).upper()
+    config_sleep:       str = config['Config']['Sleep']
+    config_unmap:       str = str(config['Config']['Unmap'])
+    config_poly:        str = str(config['Config']['Poly Obf'])
+
+    header_file = f'''\
+#define CONFIG_USER_AGENT L"{config_user_agent}"
+#define CONFIG_HOST L"{config_host_bind}"
+#define CONFIG_PORT {config_host_port}
+#define CONFIG_SECURE {str(config_host_secure).upper()}
+#define CONFIG_SLEEP {config_sleep} 
+#define CONFIG_UNMAP {str(config_unmap).upper()} 
+#define CONFIG_POLY {str(config_poly).upper()}  
+    '''
     for filepath in glob.iglob('**/Config.h', recursive=True):
         with open(filepath, 'w') as f:
             f.write(header_file)
@@ -139,7 +148,7 @@ class Revenant(AgentType):
         self.BuildingConfig: dict = {
             "Sleep": "10",
             "Unmap": True,
-            "Native API": True,
+            "Poly Obf": True
         }
         self.Commands: list = [
             CommandShell(),

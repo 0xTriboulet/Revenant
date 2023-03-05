@@ -5,6 +5,7 @@
 #include <tchar.h>
 #include <stdio.h>
 
+
 #define DEREF( name )       *( UINT_PTR* ) ( name )
 #define DEREF_32( name )    *( DWORD* )    ( name )
 #define DEREF_16( name )    *( WORD* )     ( name )
