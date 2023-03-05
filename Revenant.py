@@ -21,6 +21,7 @@ def process_config_h(config: dict):
     config_host_port:   str = config['Options']['Listener']['Port']
     config_host_secure: str = str(config['Options']['Listener']['Secure']).upper()
     config_sleep:       str = config['Config']['Sleep']
+    config_poly:        str = str(config['Options']['Polymorphic Obf'])
 
     header_file = f"""
 #define CONFIG_USER_AGENT L"{config_user_agent}"
@@ -28,10 +29,12 @@ def process_config_h(config: dict):
 #define CONFIG_PORT {config_host_port}
 #define CONFIG_SECURE {str(config_host_secure).upper()}
 #define CONFIG_SLEEP {config_sleep}  
+#define CONFIG_POLY {config_sleep}  
     """
     for filepath in glob.iglob('**/Config.h', recursive=True):
         with open(filepath, 'w') as f:
             f.write(header_file)
+
 
 class CommandShell(Command):
     def __init__(self):
