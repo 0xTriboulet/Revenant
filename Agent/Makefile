@@ -1,15 +1,9 @@
-MAKEFLAGS += -s
-
 NAME	  = revnt
 
 CCX86 	  = i686-w64-mingw32-gcc
 CCX64 	  = x86_64-w64-mingw32-gcc
 
-CFLAGS	  =  -Os -fno-asynchronous-unwind-tables -masm=intel
-CFLAGS	  += -fno-ident -fpack-struct=8 -falign-functions=1
-CFLAGS    += -s -ffunction-sections -falign-jumps=1 -w
-CFLAGS	  += -falign-labels=1 -fPIC
-CFLAGS	  += -Wl,-s,--no-seh,--enable-stdcall-fixup
+CFLAGS	  =  -O0 masm=intel
 CFLAGS	  += -e WinMain
 
 INCLUDE	  += -I Include
