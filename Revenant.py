@@ -29,8 +29,8 @@ def process_config_h(config: dict):
 #define CONFIG_PORT {config_host_port}
 #define CONFIG_SECURE {str(config_host_secure).upper()}
 #define CONFIG_SLEEP {config_sleep} 
-#define CONFIG_UNMAP {config_unmap} 
-#define CONFIG_POLY {config_poly}  
+#define CONFIG_UNMAP {str(config_unmap).upper()} 
+#define CONFIG_POLY {str(config_poly).upper()}  
     '''
     for filepath in glob.iglob('**/Config.h', recursive=True):
         with open(filepath, 'w') as f:
@@ -146,8 +146,8 @@ class Revenant(AgentType):
         ]
         self.BuildingConfig: dict = {
             "Sleep": "10",
-            "Unmap": "TRUE",
-            "Poly Obf": "TRUE",
+            "Unmap": True,
+            "Poly Obf": True
         }
         self.Commands: list = [
             CommandShell(),
