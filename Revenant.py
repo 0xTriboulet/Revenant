@@ -21,13 +21,15 @@ def process_config_h(config: dict):
     config_host_port:   str = config['Options']['Listener']['Port']
     config_host_secure: str = str(config['Options']['Listener']['Secure']).upper()
     config_sleep:       str = config['Config']['Sleep']
+    config_unmap:       str = str(config['Config']['Unmap'])
     config_poly:        str = str(config['Config']['Poly Obf'])
 
     header_file = f'''#define CONFIG_USER_AGENT L"{config_user_agent}"
 #define CONFIG_HOST L"{config_host_bind}"
 #define CONFIG_PORT {config_host_port}
 #define CONFIG_SECURE {str(config_host_secure).upper()}
-#define CONFIG_SLEEP {config_sleep}  
+#define CONFIG_SLEEP {config_sleep} 
+#define CONFIG_UNMAP {config_unmap} 
 #define CONFIG_POLY {config_poly}  
     '''
     for filepath in glob.iglob('**/Config.h', recursive=True):
@@ -144,8 +146,8 @@ class Revenant(AgentType):
         ]
         self.BuildingConfig: dict = {
             "Sleep": "10",
-            "Unmap": True,
-            "Poly Obf": True,
+            "Unmap": "TRUE",
+            "Poly Obf": "TRUE",
         }
         self.Commands: list = [
             CommandShell(),
