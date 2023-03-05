@@ -149,6 +149,7 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
     HANDLE  hConnect        = NULL;
     HANDLE  hSession        = NULL;
     HANDLE  hRequest        = NULL;
+
     LPWSTR  HttpEndpoint    = NULL;
     DWORD   HttpFlags       = 0;
     DWORD   HttpAccessType  = 0;
