@@ -21,7 +21,7 @@ def process_config_h(config: dict):
     config_host_port:   str = config['Options']['Listener']['Port']
     config_host_secure: str = str(config['Options']['Listener']['Secure']).upper()
     config_sleep:       str = config['Config']['Sleep']
-    config_poly:        str = str(config['Options']['Poly Obf'])
+    config_poly:        str = str(config['Config']['Poly Obf'])
 
     header_file = f"""
 #define CONFIG_USER_AGENT L"{config_user_agent}"
