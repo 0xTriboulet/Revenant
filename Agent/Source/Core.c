@@ -11,7 +11,7 @@ VOID RevntInit()
     Instance.Config.Transport.UserAgent = CONFIG_USER_AGENT;
     Instance.Config.Transport.Host      = CONFIG_HOST;
     Instance.Config.Transport.Port      = CONFIG_PORT;
-    Instance.Config.Transport.Secure    = CONFIG_PORT;
+    Instance.Config.Transport.Secure    = CONFIG_SECURE;
 
     // Init Win32
     Instance.Win32.RtlRandomEx   = (ULONG (*)(PULONG)) GetProcAddress(GetModuleHandleA("ntdll"), "RtlRandomEx");

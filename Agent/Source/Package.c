@@ -108,11 +108,11 @@ PPACKAGE PackageCreate( UINT32 CommandID )
     Package->Buffer    = LocalAlloc( LPTR, sizeof( BYTE ) );
     Package->Length    = 0;
     Package->CommandID = CommandID;
-    Package->Encrypt   = TRUE;
+    Package->Encrypt   = FALSE;
 
-    PackageAddInt32( Package, 0 );
-    PackageAddInt32( Package, REVNT_MAGIC_VALUE );
-    PackageAddInt32( Package, Instance.Session.AgentID );
+    PackageAddInt32( Package, 0 ); // Package Size
+    PackageAddInt32( Package, REVNT_MAGIC_VALUE ); // Magic Value
+    PackageAddInt32( Package, Instance.Session.AgentID ); // Agent ID
     PackageAddInt32( Package, CommandID );
 
     return Package;

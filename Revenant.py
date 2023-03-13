@@ -138,7 +138,7 @@ class Revenant(AgentType):
         self.Author: str = "TBA"
         self.Version: str = "0.1"
         self.Description: str = "Revenant Agent Testing"
-        self.MagicValue = 0xdeaddead
+        self.MagicValue = 0x72766e74
 
         self.Arch: list = ["x64", "x86"]
         self.Formats: list = [
