@@ -1,6 +1,4 @@
 # Revenant  
-[3/12/2023]  
-!!! There's an issue that prevents Revenant from connection to the Havoc Teamserver. Working with C5pider to diagnose and fix the issue !!!
 
 Revenant is a 3rd party agent for Havoc written in C, and based on Talon. This implant is meant to expand on the Talon implant by implementing covert methods of execution, robust capabilities, and more customization.
 
