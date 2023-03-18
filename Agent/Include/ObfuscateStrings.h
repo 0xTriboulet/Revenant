@@ -9,6 +9,10 @@
 #include <stdio.h>
 #include <string.h>
 
+// !!!
+// CURRENTLY ONLY WORKS TO OBFUSCATE THE "Command Dispatcher..." STRING
+// !!!
+
 // Macro to compute the XOR of two characters
 #define XOR_CHAR(c, k) ((c) ^ (k))
 
@@ -39,10 +43,8 @@
     XOR_CHAR(str[19], key[19 % (sizeof(key)-1)]), \
     XOR_CHAR(str[20], key[20 % (sizeof(key)-1)]), \
     XOR_CHAR(str[21], key[21 % (sizeof(key)-1)]), \
-    XOR_CHAR(str[22], key[22 % (sizeof(key)-1)]), \
-    XOR_CHAR(str[23], key[23 % (sizeof(key)-1)]), \
     /* Add more lines depending on the maximum string length you expect. */ \
     0 \
 }
-
+void xor_decrypt(char *dst, const char *src, const char *key, size_t len);
 #endif //REVENANT_OBFUSCATESTRINGS_H

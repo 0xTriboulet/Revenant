@@ -27,6 +27,8 @@ VOID CommandDispatcher()
     DWORD    TaskCommand = 0;
 
 #if CONFIG_OBF_STRINGS
+
+    uintptr_t unique_key = UNIQUE_KEY();
     // encrypted string generated at compile time
     const char encrypted_str[] = XOR_STRING("Command Dispatcher...", UNIQUE_KEY());
 
