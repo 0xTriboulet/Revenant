@@ -150,8 +150,9 @@ class Revenant(AgentType):
         ]
         self.BuildingConfig: dict = {
             "Sleep": "10",
-            "Unmap": True,
-            "Poly Obf": True
+            #"Unmap": True,
+            "Poly Obf": True,
+            "Obf Strings":True
         }
         self.Commands: list = [
             CommandShell(),
