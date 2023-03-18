@@ -11,6 +11,7 @@
 
 // !!!
 // CURRENTLY ONLY WORKS TO OBFUSCATE THE "Command Dispatcher..." STRING
+// REQUIRES STRINGS TO BE EXACT LENGTH MATCH TO MACRO
 // !!!
 
 // Macro to compute the XOR of two characters
