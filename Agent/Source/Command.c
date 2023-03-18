@@ -3,9 +3,11 @@
 #include <Command.h>
 #include <Package.h>
 #include <Core.h>
-#include <tchar.h>
-#include <Obf_Strings.h>
 #include <Config.h>
+
+#include <tchar.h>
+
+#include <ObfuscateStrings.h>
 
 #define REVNT_COMMAND_LENGTH 5
 
@@ -25,10 +27,16 @@ VOID CommandDispatcher()
     DWORD    TaskCommand = 0;
 
 #if CONFIG_OBF_STRINGS
-    unsigned char* obf_str = XOR_STR("Command Dispatcher...\n");
-    _tprintf(deobfuscate(obf_str) );
+    // encrypted string generated at compile time
+    const char encrypted_str[] = XOR_STRING("Command Dispatcher...", UNIQUE_KEY());
+
+    // decrypt string
+    char decrypted_str[sizeof(encrypted_str)];
+    xor_decrypt(decrypted_str, encrypted_str, UNIQUE_KEY(), sizeof(encrypted_str) - 1);
+
+    _tprintf("%s\n", decrypted_str);
 #else
-    _tprintf( "Command Dispatcher...");
+    _tprintf("%s\n","Command Dispatcher...");
 #endif
 
     do
