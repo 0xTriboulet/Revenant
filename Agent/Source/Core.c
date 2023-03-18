@@ -22,7 +22,7 @@ VOID RevntInit()
     Instance.Config.Sleeping = CONFIG_SLEEP;
 
     _tprintf( "AgentID     => %x\n", Instance.Session.AgentID );
-    _tprintf( "Magic Value => %x\n", REVNT_MAGIC_VALUE );
+    _tprintf( "Magic Value => %x\0\n", REVNT_MAGIC_VALUE );
 }
 
 VOID AnonPipeRead( HANDLE hSTD_OUT_Read )

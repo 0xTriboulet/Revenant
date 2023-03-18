@@ -7,7 +7,7 @@
     {                                                   \
         _tprintf( "%02x ", ( ( PUCHAR ) b ) [ i ] );      \
     }                                                   \
-    _tprintf( "]" );
+    _tprintf( "]\n" );
 
 VOID  RevntInit();
 
