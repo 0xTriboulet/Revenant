@@ -2,8 +2,6 @@
 // Created by 0xtriboulet on 3/17/2023.
 //
 // Based on: https://papers.vx-underground.org/papers/Windows/Evasion%20-%20Anti-debugging/2020-07-03%20-%20How%20to%20obfuscate%20strings%20using%20CPlusPlus%20constexpr%20Or%20how%20to%20do%20it%20correctly%20at%20compile%20time.txt
-#include <stddef.h>
-#include <Windows.h>
 
 #ifndef REVENANT_OBF_STRINGS_H
 #define REVENANT_OBF_STRINGS_H
