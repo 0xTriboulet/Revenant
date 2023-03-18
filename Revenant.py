@@ -135,7 +135,7 @@ class CommandExit(Command):
 class Revenant(AgentType):
     def __init__(self):
         self.Name: str = "Revenant"
-        self.Author: str = "TBA"
+        self.Author: str = "0xTriboulet for Malicious Group"
         self.Version: str = "0.1"
         self.Description: str = "Revenant Agent Testing"
         self.MagicValue = 0x72766e74
@@ -143,7 +143,7 @@ class Revenant(AgentType):
         self.Arch: list = ["x64", "x86"]
         self.Formats: list = [
             {"Name": "Windows Exe", "Extension": "exe"},
-            {"Name": "Windows DLL", "Extension": "dll"}
+            {"Name": "Windows DLL", "Extension": "dll"}   # Not supported yet
         ]
         self.BuildingConfig: dict = {
             "Sleep": "10",

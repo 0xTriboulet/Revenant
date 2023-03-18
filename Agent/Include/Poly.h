@@ -15,12 +15,6 @@
 
 // Some Functionality based on C++ code from GuidedHacking
 
-
-// Defining the seed based on compile time in seconds since 00:00:00
-#define SEED (((__TIME__[7] - '0') * 1 + (__TIME__[6] - '0') * 10 \
-                        + (__TIME__[4] - '0') * 60 + (__TIME__[3] - '0') * 600 \
-                        + (__TIME__[1] - '0') * 3600 + (__TIME__[0] - '0') * 36000) % 420 * 69)
-
 /// $$$ is the polymorphism macro
 // $$$:
 // push the flag register onto the stack
