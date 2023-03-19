@@ -5,6 +5,7 @@
 #ifndef REVENANT_COMMANDSTRINGS_H
 #define REVENANT_COMMANDSTRINGS_H
 #include <stdlib.h>
+#include <Config.h>
 #include <ObfuscateStrings.h>
 
 extern void * MemCopy(void* dest, const void* src, size_t n);
@@ -19,6 +20,7 @@ extern void * MemCopy(void* dest, const void* src, size_t n);
 
 #define sRtlRandomEx(str)   MemCopy(str, XXX("RtlRandomEx\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"), 12)
 #define sRtlGetVersion(str) MemCopy(str, XXX("RtlGetVersion\0\0\0\0\0\0\0\0\0\0\0\0\0\0"), 14)
+
 
 #define COMMAND_DISPATCHER()     _tprintf( XXX( "Command Dispatcher...\n\0\0\0\0\0" ));
 #define INSTANCE_NOT_CONNECTED() _tprintf( XXX( "Instance not connected...\n" ));

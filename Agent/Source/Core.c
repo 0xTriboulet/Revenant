@@ -7,6 +7,7 @@
 #include <RevntStrings.h>
 #include <ObfuscateStrings.h>
 
+
 VOID RevntInit()
 {
     // DeObf Arrays
@@ -18,6 +19,7 @@ VOID RevntInit()
     Instance.Config.Transport.Host      = CONFIG_HOST;
     Instance.Config.Transport.Port      = CONFIG_PORT;
     Instance.Config.Transport.Secure    = CONFIG_SECURE;
+
 
     // Init Win32
 
