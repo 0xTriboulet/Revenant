@@ -5,7 +5,7 @@
 #include <Core.h>
 #include <Config.h>
 
-#include <CommandStrings.h>
+#include <RevntStrings.h>
 #include <ObfuscateStrings.h>
 
 #include <tchar.h>

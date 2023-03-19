@@ -13,7 +13,7 @@ add_executable(Agent
         Source/Transport.c
         Source/Parser.c
         Source/Main.c
-        Source/ObfuscateStrings.c Include/CommandStrings.h)
+        Source/ObfuscateStrings.c Include/RevntStrings.h)
 
 
 target_compile_options(Agent PRIVATE -masm=intel -Wno-implicit-function-declaration -Wno-multichar -Wno-incompatible-pointer-types -Wno-int-conversion)
