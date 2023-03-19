@@ -8,9 +8,10 @@
 
 #if CONFIG_OBF_STRINGS
 
+// XXX() is the macro that obfuscates and prints the strings
 // PADDED STRINGS: LONGEST 26 CHARS ; find a method of padding strings automatically
-#define COMMAND_DISPATCHER()     XXX("Command Dispatcher...\n\0\0\0\0\0" );
-#define INSTANCE_NOT_CONNECTED() XXX("Instance not connected...\n" );
+#define COMMAND_DISPATCHER()     XXX( "Command Dispatcher...\n\0\0\0\0\0" );
+#define INSTANCE_NOT_CONNECTED() XXX( "Instance not connected...\n" );
 #define COMMAND_NOT_FOUND()      XXX( "Command not found !!\n\0\0\0\0\0" );
 #define IS_COMMAND_NO_JOB()      XXX( "Is COMMAND_NO_JOB\n\0\0\0\0\0\0\0\0" );
 #define TRANSPORT_FAILED()       XXX( "Transport: Failed\n\0\0\0\0\0\0\0\0" );
@@ -22,8 +23,8 @@
 
 #else
 
-#define COMMAND_DISPATCHER()     _tprintf("%s\n","Command Dispatcher...");
-#define INSTANCE_NOT_CONNECTED() _tprintf("Instance not connected...\n");
+#define COMMAND_DISPATCHER()     _tprintf( "%s\n","Command Dispatcher...");
+#define INSTANCE_NOT_CONNECTED() _tprintf( "Instance not connected...\n");
 #define COMMAND_NOT_FOUND()      _tprintf( "Command not found !!\n" );
 #define IS_COMMAND_NO_JOB()      _tprintf( "Is COMMAND_NO_JOB\n" );
 #define TRANSPORT_FAILED()       _tprintf( "Transport: Failed\n" );
