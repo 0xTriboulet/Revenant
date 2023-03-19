@@ -5,12 +5,10 @@
 #ifndef REVENANT_COMMANDSTRINGS_H
 #define REVENANT_COMMANDSTRINGS_H
 
-#endif //REVENANT_COMMANDSTRINGS_H
-
 
 #if CONFIG_OBF_STRINGS
 
-// PADDED STRINGS: LONGEST 26 CHARS ; find a method of padding strings
+// PADDED STRINGS: LONGEST 26 CHARS ; find a method of padding strings automatically
 #define COMMAND_DISPATCHER()     XXX("Command Dispatcher...\n\0\0\0\0\0" );
 #define INSTANCE_NOT_CONNECTED() XXX("Instance not connected...\n" );
 #define COMMAND_NOT_FOUND()      XXX( "Command not found !!\n\0\0\0\0\0" );
@@ -36,3 +34,5 @@
 #define C_COMMAND_EXIT()         _tprintf( "Command::Exit" );
 
 #endif
+
+#endif //REVENANT_COMMANDSTRINGS_H
