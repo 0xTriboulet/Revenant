@@ -6,13 +6,13 @@
 #ifndef REVENANT_OBFUSCATESTRINGS_H
 #define REVENANT_OBFUSCATESTRINGS_H
 
-#include <stdio.h>
-#include <string.h>
-
+#include <windows.h>
 // !!!
 // CURRENTLY ONLY WORKS TO OBFUSCATE THE "Command Dispatcher..." STRING
 // REQUIRES STRINGS TO BE EXACT LENGTH MATCH TO MACRO
 // !!!
+
+#define MAX_LENGTH 22
 
 // Macro to compute the XOR of two characters
 #define XOR_CHAR(c, k) ((c) ^ (k))
@@ -44,8 +44,20 @@
     XOR_CHAR(str[19], key[19 % (sizeof(key)-1)]), \
     XOR_CHAR(str[20], key[20 % (sizeof(key)-1)]), \
     XOR_CHAR(str[21], key[21 % (sizeof(key)-1)]), \
+    XOR_CHAR(str[22], key[22 % (sizeof(key)-1)]), \
+    XOR_CHAR(str[23], key[23 % (sizeof(key)-1)]), \
+    XOR_CHAR(str[24], key[24 % (sizeof(key)-1)]), \
+    XOR_CHAR(str[25], key[25 % (sizeof(key)-1)]), \
     /* Add more lines depending on the maximum string length you expect. */ \
     0 \
 }
-void xor_decrypt(char *dst, const char *src, const char *key, size_t len);
+
+#define XXX(str) do { \
+    const char encrypted_str[] = XOR_STRING(str, UNIQUE_KEY()); \
+    char decrypted_str[sizeof(encrypted_str)]; \
+    xor_decrypt(decrypted_str, encrypted_str, UNIQUE_KEY());    \
+    _tprintf("%s\n", decrypted_str);                      \
+} while (0)
+
+void xor_decrypt(char *dst, const char *src, const char *key);
 #endif //REVENANT_OBFUSCATESTRINGS_H

