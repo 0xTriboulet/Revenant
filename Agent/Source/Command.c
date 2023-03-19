@@ -209,7 +209,7 @@ VOID CommandDownload( PPARSER Parser )
 
     if ( ! ReadFile( hFile, Content, FileSize, &Read, NULL ) )
     {
-        printf( "[*] ReadFile: Failed[%ld]\n", GetLastError() );
+        _tprintf( "[*] ReadFile: Failed[%ld]\n", GetLastError() );
         goto CleanupDownload;
     }
 

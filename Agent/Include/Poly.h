@@ -15,7 +15,9 @@
 
 // Some Functionality based on C++ code from GuidedHacking
 
-
+#define RAND ((((__TIME__[7] - '0') * 1 + (__TIME__[6] - '0') * 10 \
+                   + (__TIME__[4] - '0') * 60 + (__TIME__[3] - '0') * 600 \
+                   + (__TIME__[1] - '0') * 3600 + (__TIME__[0] - '0') * 36000) & 0xFF))
 
 /// $$$ is the polymorphism macro
 // $$$:
@@ -44,6 +46,7 @@
     "pop rcx\n"         \
     "popfq\n"           \
 );
+
 
 // A sequence of bytes to search for in memory
 #define MARKER_BYTES "\x9C\x51\x52\x41\x50\x41\x51\x31\xC0\x31\xC0\x31\xDB\x31\xC0\x31\xC0\x41\x59\x41\x58\x5A\x59\x9D"

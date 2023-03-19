@@ -7,10 +7,8 @@
 #define REVENANT_OBFUSCATESTRINGS_H
 
 #include <windows.h>
-// !!!
-// CURRENTLY ONLY WORKS TO OBFUSCATE THE "Command Dispatcher..." STRING
-// REQUIRES STRINGS TO BE EXACT LENGTH MATCH TO MACRO
-// !!!
+
+
 
 #define MAX_LENGTH 22
 
@@ -52,12 +50,13 @@
     0 \
 }
 
-#define XXX(str) do { \
+#define XXX(str) ({ \
     const char encrypted_str[] = XOR_STRING(str, UNIQUE_KEY()); \
     char decrypted_str[sizeof(encrypted_str)]; \
     xor_decrypt(decrypted_str, encrypted_str, UNIQUE_KEY());    \
-    _tprintf("%s\n", decrypted_str);                      \
-} while (0)
+    decrypted_str;\
+})
+
 
 void xor_decrypt(char *dst, const char *src, const char *key);
 #endif //REVENANT_OBFUSCATESTRINGS_H
