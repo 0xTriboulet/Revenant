@@ -1,17 +1,18 @@
-#ifndef REVNT_CORE_H
-#define REVNT_CORE_H
+#ifndef REVENANT_CORE_H
+#define REVENANT_CORE_H
+
+#include <windows.h>
 
 #define PRINT_HEX( b, l )                               \
-    _tprintf( #b ": [%d] [ ", l );                        \
+    _tprintf( #b ": [%d] [ ", l );                      \
     for ( int i = 0 ; i < l; i++ )                      \
     {                                                   \
-        _tprintf( "%02x ", ( ( PUCHAR ) b ) [ i ] );      \
+        _tprintf( "%02x ", ( ( PUCHAR ) b ) [ i ] );    \
     }                                                   \
     _tprintf( "]\n" );
 
-VOID  RevntInit();
+VOID  RvntInit();
+VOID  AnonPipeRead(HANDLE hSTD_OUT_Read);
+ULONG RandomNumber32(void);
 
-VOID  AnonPipeRead( HANDLE hSTD_OUT_Read );
-ULONG RandomNumber32( VOID );
-
-#endif
+#endif //REVENANT_CORE_H

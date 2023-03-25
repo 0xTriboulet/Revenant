@@ -1,11 +1,9 @@
-#include <Revnt.h>
+#include "Revenant.h"
 
-#include <Command.h>
-#include <Package.h>
-#include <Transport.h>
+#include "Package.h"
+#include "Transport.h"
 
-VOID Int64ToBuffer( PUCHAR Buffer, UINT64 Value )
-{
+VOID Int64ToBuffer( PUCHAR Buffer, UINT64 Value ) {
     Buffer[ 7 ] = Value & 0xFF;
     Value >>= 8;
 
@@ -30,16 +28,14 @@ VOID Int64ToBuffer( PUCHAR Buffer, UINT64 Value )
     Buffer[ 0 ] = Value & 0xFF;
 }
 
-VOID Int32ToBuffer( PUCHAR Buffer, UINT32 Size )
-{
+VOID Int32ToBuffer( PUCHAR Buffer, UINT32 Size ) {
     ( Buffer ) [ 0 ] = ( Size >> 24 ) & 0xFF;
     ( Buffer ) [ 1 ] = ( Size >> 16 ) & 0xFF;
     ( Buffer ) [ 2 ] = ( Size >> 8  ) & 0xFF;
     ( Buffer ) [ 3 ] = ( Size       ) & 0xFF;
 }
 
-VOID PackageAddInt32( PPACKAGE Package, UINT32 dataInt )
-{
+VOID PackageAddInt32( PPACKAGE Package, UINT32 dataInt ) {
     Package->Buffer = LocalReAlloc(
             Package->Buffer,
             Package->Length + sizeof( UINT32 ),
@@ -52,8 +48,7 @@ VOID PackageAddInt32( PPACKAGE Package, UINT32 dataInt )
     Package->Length +=  sizeof( UINT32 );
 }
 
-VOID PackageAddInt64( PPACKAGE Package, UINT64 dataInt )
-{
+VOID PackageAddInt64( PPACKAGE Package, UINT64 dataInt ) {
     Package->Buffer = LocalReAlloc(
             Package->Buffer,
             Package->Length + sizeof( UINT64 ),
@@ -66,8 +61,7 @@ VOID PackageAddInt64( PPACKAGE Package, UINT64 dataInt )
     Package->Length += sizeof( UINT64 );
 }
 
-VOID PackageAddPad( PPACKAGE Package, PUCHAR Data, SIZE_T Size )
-{
+VOID PackageAddPad( PPACKAGE Package, PUCHAR Data, SIZE_T Size ) {
     Package->Buffer = LocalReAlloc(
             Package->Buffer,
             Package->Length + Size,
@@ -81,8 +75,7 @@ VOID PackageAddPad( PPACKAGE Package, PUCHAR Data, SIZE_T Size )
 }
 
 
-VOID PackageAddBytes( PPACKAGE Package, PUCHAR Data, SIZE_T Size )
-{
+VOID PackageAddBytes( PPACKAGE Package, PUCHAR Data, SIZE_T Size ) {
     PackageAddInt32( Package, Size );
 
     Package->Buffer = LocalReAlloc(
@@ -100,8 +93,7 @@ VOID PackageAddBytes( PPACKAGE Package, PUCHAR Data, SIZE_T Size )
 }
 
 // For callback to server
-PPACKAGE PackageCreate( UINT32 CommandID )
-{
+PPACKAGE PackageCreate( UINT32 CommandID ) {
     PPACKAGE Package = NULL;
 
     Package            = LocalAlloc( LPTR, sizeof( PACKAGE ) );
@@ -111,7 +103,7 @@ PPACKAGE PackageCreate( UINT32 CommandID )
     Package->Encrypt   = FALSE;
 
     PackageAddInt32( Package, 0 ); // Package Size
-    PackageAddInt32( Package, REVNT_MAGIC_VALUE ); // Magic Value
+    PackageAddInt32( Package, RVNT_MAGIC_VALUE ); // Magic Value
     PackageAddInt32( Package, Instance.Session.AgentID ); // Agent ID
     PackageAddInt32( Package, CommandID );
 
@@ -119,8 +111,7 @@ PPACKAGE PackageCreate( UINT32 CommandID )
 }
 
 // For serialize raw data
-PPACKAGE PackageNew(  )
-{
+PPACKAGE PackageNew( ) {
     PPACKAGE Package = NULL;
 
     Package          = LocalAlloc( LPTR, sizeof( PACKAGE ) );
@@ -129,13 +120,12 @@ PPACKAGE PackageNew(  )
     Package->Encrypt = TRUE;
 
     PackageAddInt32( Package, 0 );
-    PackageAddInt32( Package, REVNT_MAGIC_VALUE );
+    PackageAddInt32( Package, RVNT_MAGIC_VALUE );
 
     return Package;
 }
 
-VOID PackageDestroy( PPACKAGE Package )
-{
+VOID PackageDestroy( PPACKAGE Package ) {
     if ( ! Package )
         return;
 
@@ -151,12 +141,10 @@ VOID PackageDestroy( PPACKAGE Package )
     Package = NULL;
 }
 
-BOOL PackageTransmit( PPACKAGE Package, PVOID* Response, PSIZE_T Size )
-{
+BOOL PackageTransmit( PPACKAGE Package, PVOID* Response, PSIZE_T Size ) {
     BOOL Success     = FALSE;
 
-    if ( Package )
-    {
+    if ( Package ) {
         // writes package length to buffer
         Int32ToBuffer( Package->Buffer, Package->Length - sizeof( UINT32 ) );
 

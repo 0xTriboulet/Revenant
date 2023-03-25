@@ -1,10 +1,8 @@
-#ifndef AGENT_REVNT_H
-#define AGENT_REVNT_H
+#ifndef REVENANT_REVENANT_H
+#define REVENANT_REVENANT_H
 
 #include <windows.h>
 #include <tchar.h>
-
-
 
 #define DEREF( name )       *( UINT_PTR* ) ( name )
 #define DEREF_32( name )    *( DWORD* )    ( name )
@@ -15,19 +13,17 @@
 #define PROCESS_ARCH_X64		2
 #define PROCESS_ARCH_IA64       3
 
-
 #ifdef _WIN64
 #define PROCESS_AGENT_ARCH PROCESS_ARCH_X64
 #else
 #define PROCESS_AGENT_ARCH PROCESS_ARCH_X86
 #endif
 
-#define REVNT_MAGIC_VALUE ( UINT32 ) 'rvnt'
+#define RVNT_MAGIC_VALUE (UINT32) 'rvnt'
 
 typedef struct _INSTANCE {
     struct {
         UINT32  AgentID;
-
         DWORD   OSArch;
         BOOL    Connected;
     } Session;
@@ -49,8 +45,7 @@ typedef struct _INSTANCE {
         } Transport ;
 
         // Encryption / Decryption
-        struct
-        {
+        struct {
             PBYTE Key;
             PBYTE IV;
         } AES;
@@ -60,4 +55,4 @@ typedef struct _INSTANCE {
 
 extern INSTANCE Instance;
 
-#endif
+#endif //REVENANT_REVENANT_H

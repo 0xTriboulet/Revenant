@@ -1,21 +1,17 @@
-#include <Parser.h>
+#include "Parser.h"
 
-VOID ParserNew( PPARSER parser, PVOID Buffer, UINT32 size )
-{
+void ParserNew( PPARSER parser, PVOID Buffer, UINT32 size ) {
     if ( parser == NULL )
         return;
 
     parser->Original = LocalAlloc( LPTR, size );
-
     memcpy( parser->Original, Buffer, size );
-
     parser->Buffer   = parser->Original;
     parser->Length   = size;
     parser->Size     = size;
 }
 
-INT ParserGetInt32( PPARSER parser )
-{
+int ParserGetInt32( PPARSER parser ) {
     INT32 intBytes = 0;
 
     if ( parser->Length < 4 )
@@ -32,8 +28,7 @@ INT ParserGetInt32( PPARSER parser )
         return ( INT ) __builtin_bswap32( intBytes );
 }
 
-PCHAR ParserGetBytes( PPARSER parser, PUINT32 size )
-{
+PCHAR ParserGetBytes( PPARSER parser, PUINT32 size ) {
     UINT32  Length  = 0;
     PCHAR   outdata = NULL;
 
@@ -60,10 +55,8 @@ PCHAR ParserGetBytes( PPARSER parser, PUINT32 size )
     return outdata;
 }
 
-VOID ParserDestroy( PPARSER Parser )
-{
-    if ( Parser->Original )
-    {
+void ParserDestroy( PPARSER Parser ) {
+    if ( Parser->Original ) {
         memset( Parser->Original, 0, Parser->Size );
         LocalFree( Parser->Original );
         Parser->Original = NULL;

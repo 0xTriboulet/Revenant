@@ -1,8 +1,8 @@
-#ifndef REVNT_COMMAND_H
-#define REVNT_COMMAND_H
+#ifndef REVENANT_COMMAND_H
+#define REVENANT_COMMAND_H
 
 #include <windows.h>
-#include <Parser.h>
+#include "Parser.h"
 
 #define COMMAND_REGISTER         0x100
 #define COMMAND_GET_JOB          0x101
@@ -15,18 +15,16 @@
 
 #define COMMAND_OUTPUT           0x200
 
-typedef struct
-{
+typedef struct {
     INT ID;
-    VOID ( *Function ) ( PPARSER Arguments );
-} REVNT_COMMAND;
+    VOID (*Function)(PPARSER Arguments);
+} RVNT_COMMAND;
 
-// Functions
 VOID CommandDispatcher();
 
-VOID CommandShell( PPARSER Parser );
-VOID CommandUpload( PPARSER Parser );
-VOID CommandDownload( PPARSER Parser );
-VOID CommandExit( PPARSER Parser );
+VOID CommandShell(PPARSER Parser);
+VOID CommandUpload(PPARSER Parser);
+VOID CommandDownload(PPARSER Parser);
+VOID CommandExit(PPARSER Parser);
 
-#endif
+#endif //REVENANT_COMMAND_H
