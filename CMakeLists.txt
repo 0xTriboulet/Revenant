@@ -58,5 +58,6 @@ else()
 
     add_executable(Revenant ${NASM_OBJECTS} Agent/Source/Main.c Agent/Source/Command.c Agent/Source/Core.c Agent/Source/Package.c Agent/Source/Parser.c Agent/Source/Transport.c Agent/Source/Obfuscation.c)
     target_compile_options(Revenant PRIVATE -masm=intel -mwindows -fdata-sections -Wno-implicit-function-declaration -Wno-multichar -Wno-incompatible-pointer-types -Wno-int-conversion)
+    target_link_options(Revenant PRIVATE -mwindows)
     target_link_libraries(Revenant ws2_32 kernel32 user32 gdi32 winspool shell32 ole32 oleaut32 uuid comdlg32 iphlpapi winhttp)
 endif()
