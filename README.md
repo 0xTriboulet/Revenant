@@ -16,9 +16,9 @@ TODO:
 
 [x] Develop Revenant handler to build executable  
 [x] Develop Revenant.py to handle options  
-[-] Implement string obfuscation  
-[ ] Turn off print statements in release build  
-[ ] Write Revenant with maximum native API  
+[x] Implement string obfuscation  
+[x] Turn off print statements in release build  
+[-] Write Revenant with maximum native API  
 [ ] Develop Double Fork -> Run method  
 [ ] Develop PSBit method
 

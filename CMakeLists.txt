@@ -1,5 +1,5 @@
 if(WIN32)
-
+    # LAZY DEV ENVIRONMENT CMAKE
     cmake_minimum_required(VERSION 3.24)
     project(Revenant C)
 
