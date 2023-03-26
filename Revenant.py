@@ -37,7 +37,6 @@ plain_strings = [
 ]
 
 
-
 GENERATED_PASSWORD: str = ''.join(random.choices(string.ascii_letters, k=16))
 password_bytes = GENERATED_PASSWORD.encode('utf-8')
 password_hex = ", ".join(f"0x{b:02x}" for b in password_bytes)
