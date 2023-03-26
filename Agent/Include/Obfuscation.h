@@ -13,7 +13,6 @@ void *get_proc_address_by_hash(void *dll_address, uint32_t function_hash);
 
 #endif //REVENANT_OBFUSCATION_H
 
-
 /* BACKUP FOR TESTING ONLY
 #define RtlRandomEx_CRC32B             0xa8c81c7d
 #define RtlGetVersion_CRC32B           0xb0c9e3ff
