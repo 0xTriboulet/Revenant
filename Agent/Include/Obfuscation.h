@@ -5,12 +5,16 @@
 #include "Strings.h"
 
 uint32_t crc32b(const uint8_t *str);
-
 #define HASH(API)(crc32b((uint8_t *)API))
 
 wchar_t *str_to_wide(const char* ascii);
 char *xor_dec(char *_t, size_t _t_len, const char *_p, size_t _p_len);
-/*
+void *get_proc_address_by_hash(void *dll_address, uint32_t function_hash);
+
+#endif //REVENANT_OBFUSCATION_H
+
+
+/* BACKUP FOR TESTING ONLY
 #define RtlRandomEx_CRC32B             0xa8c81c7d
 #define RtlGetVersion_CRC32B           0xb0c9e3ff
 #define RtlInitUnicodeString_CRC32B    0xe17f353f
@@ -27,7 +31,3 @@ char *xor_dec(char *_t, size_t _t_len, const char *_p, size_t _p_len);
 #define S_COMMAND_DOWNLOAD       {0x13, 0x3a, 0x23, 0x24, 0x22, 0x21, 0x20, 0x7f, 0x65, 0x17, 0x3b, 0x25, 0x27, 0x22, 0x28, 0x61, 0x34, 0x55}
 #define S_COMMAND_EXIT           {0x13, 0x3a, 0x23, 0x24, 0x22, 0x21, 0x20, 0x7f, 0x65, 0x16, 0x2c, 0x3b, 0x3d, 0x4e}
 */
-
-void *get_proc_address_by_hash(void *dll_address, uint32_t function_hash);
-
-#endif //REVENANT_OBFUSCATION_H
