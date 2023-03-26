@@ -54,7 +54,7 @@ else()
                 COMMAND nasm -f win64 -o ${NASM_OBJ} ${NASM_SRC}
                 DEPENDS ${NASM_SRC}
                 COMMENT "Assembling ${NASM_SRC}")
-        SET(NASM_OBJECTS ${NASM_OBJECTS} ${NASM_OBJ})
+        SET(NASM_OBJECTS ${NASM_OBJECTS} ${NASM_OBJ} Agent/Include/Strings.h)
     ENDFOREACH(src)
 
     add_executable(Revenant ${NASM_OBJECTS} Agent/Source/Main.c Agent/Source/Command.c Agent/Source/Core.c Agent/Source/Package.c Agent/Source/Parser.c Agent/Source/Transport.c Agent/Source/Obfuscation.c)
