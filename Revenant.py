@@ -35,7 +35,7 @@ plain_function_strings = [
     "#define RtlInitUnicodeString_CRC32B    \"RtlInitUnicodeString\"",
     "#define NtCreateFile_CRC32b            \"NtCreateFile\"",
     "#define NtQueryInformationFile_CRC32B  \"NtQueryInformationFile\"",
-    "#define NtAllocateVirtualMemory_CRC32B \"NtAllocateVirtualMemory\""
+    "#define NtAllocateVirtualMemory_CRC32B \"NtAllocateVirtualMemory\"",
     "#define NtWriteFile_CRC32B             \"NtWriteFile\""]
 
 plain_strings = [
