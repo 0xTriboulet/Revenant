@@ -256,7 +256,7 @@ VOID CommandUpload( PPARSER Parser ) {
 
     void *p_nt_write_file = get_proc_address_by_hash(p_ntdll, NtWriteFile_CRC32B);
     NtWriteFile_t g_nt_write_file = (NtWriteFile_t) p_nt_write_file;
-    if ((status = g_nt_write_file(hFile, NULL, NULL, NULL, &io_status_block, Content, sizeof(Content), 0, 0)) != 0x0) {
+    if ((status = g_nt_write_file(hFile, NULL, NULL, NULL, &io_status_block, Content, FileSize, 0, 0)) != 0x0) {
         _tprintf("[*] NtWriteFile: Failed[0x%lx]\n", status);
         goto Cleanup;
     }
