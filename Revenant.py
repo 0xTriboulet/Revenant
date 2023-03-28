@@ -36,7 +36,8 @@ plain_function_strings = [
     "#define NtCreateFile_CRC32b            \"NtCreateFile\"",
     "#define NtQueryInformationFile_CRC32B  \"NtQueryInformationFile\"",
     "#define NtAllocateVirtualMemory_CRC32B \"NtAllocateVirtualMemory\"",
-    "#define NtWriteFile_CRC32B             \"NtWriteFile\""]
+    "#define NtWriteFile_CRC32B             \"NtWriteFile\"",
+    "#define NtWriteFile_CRC32B             \"NtReadFile\""]
 
 plain_strings = [
     "#define S_INSTANCE_NOT_CONNECTED \"instance not connected!\"",
