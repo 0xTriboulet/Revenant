@@ -129,6 +129,7 @@ def process_config_h(config: dict):
     config_poly:               str = str(config['Config']['Polymorphic'])
     config_obf_strings:        str = str(config['Config']['Obfuscation'])
     config_arch:               str = config['Options']['Arch']
+    config_native:             str = config['Config']['Native']
 
     header_file = f'''
 #define CONFIG_USER_AGENT L"{config_user_agent}"
@@ -139,6 +140,7 @@ def process_config_h(config: dict):
 #define CONFIG_POLYMORPHIC {str(config_poly).upper()}  
 #define CONFIG_OBFUSCATION {str(config_obf_strings).upper()}
 #define CONFIG_ARCH {config_arch}  
+#define CONFIG_NATIVE {config_native}
     '''
 
     for filepath in glob.iglob('**/Config.h', recursive=True):
@@ -256,7 +258,8 @@ class Revenant(AgentType):
         self.BuildingConfig: dict = {
             "Sleep": "10",
             "Polymorphic": True,
-            "Obfuscation": True
+            "Obfuscation": True,
+            "Native:"    : True
         }
         self.Commands: list = [
             CommandShell(),
