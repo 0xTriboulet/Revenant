@@ -6,7 +6,6 @@
 #include "Revenant.h"
 #include "Obfuscation.h"
 
-#include <stdio.h>
 
 VOID RvntInit() {
     // Init Connection info

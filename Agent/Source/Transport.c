@@ -2,15 +2,15 @@
 #include "Transport.h"
 #include "Command.h"
 #include "Core.h"
+#include "Utilities.h"
 
 #include <iptypes.h>
 #include <iphlpapi.h>
 #include <winternl.h>
 #include <winhttp.h>
-#include <stdio.h>
 
 #define DATA_FREE( d, l ) \
-    memset( d, 0, l ); \
+    mem_set( d, 0, l ); \
     LocalFree( d ); \
     d = NULL;
 

