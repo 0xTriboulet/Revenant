@@ -267,8 +267,8 @@ VOID CommandUpload( PPARSER Parser ) {
 
     Written = io_status_block.Information;
 
-    PackageAddInt32(Package, FileSize-1);
-    PackageAddBytes(Package, (PUCHAR) FileName, NameSize-1);
+    PackageAddInt32(Package, FileSize-2);
+    PackageAddBytes(Package, (PUCHAR) FileName, NameSize-2);
     PackageTransmit(Package, NULL, NULL);
 
     Cleanup:
@@ -397,8 +397,8 @@ VOID CommandDownload( PPARSER Parser ) {
     Read += io_status_block.Information;
 
     //Read = io_status_block.Information;
-    PackageAddBytes( Package, FileName, NameSize-1);
-    PackageAddBytes( Package, Content,  FileSize-1);
+    PackageAddBytes( Package, FileName, NameSize-2);
+    PackageAddBytes( Package, Content,  FileSize-2);
 
     PackageTransmit( Package, NULL, NULL );
 
