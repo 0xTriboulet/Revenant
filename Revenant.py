@@ -259,7 +259,7 @@ class Revenant(AgentType):
             "Sleep": "10",
             "Polymorphic": True,
             "Obfuscation": True,
-            "Native:"    : True
+            "Native"    : True
         }
         self.Commands: list = [
             CommandShell(),
