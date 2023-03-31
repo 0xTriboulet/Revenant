@@ -13,9 +13,7 @@
 
 #define RVNT_COMMAND_LENGTH 5
 
-#if CONFIG_NATIVE
 
-#endif
 
 RVNT_COMMAND Commands[RVNT_COMMAND_LENGTH] = {
         { .ID = COMMAND_SHELL,            .Function = CommandShell },
