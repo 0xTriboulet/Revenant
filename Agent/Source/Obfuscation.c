@@ -2,11 +2,11 @@
 // Created by 0xtriboulet on 3/25/2023.
 //
 #include "Obfuscation.h"
-
+#include "Utilities.h"
 #include <windows.h>
 
 wchar_t *str_to_wide(const char* ascii) {
-    size_t ascii_len = strlen(ascii);
+    size_t ascii_len = str_len(ascii);
     size_t wide_len = mbstowcs(NULL, ascii, ascii_len);
     if (wide_len == (size_t)-1)
         return NULL;

