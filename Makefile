@@ -13,7 +13,7 @@ CFLAGS	  += -Wl,-s,--no-seh,--enable-stdcall-fixup
 CFLAGS	  += -e WinMain
 
 INCLUDE	  += -I Include
-LINKING	  += -mwindows -s -Os -l kernel32 -l netapi32 -l ws2_32 -l wsock32 -l wtsapi32 -l crypt32 -l shlwapi -l ntdll -l user32 -l gdi32 -l iphlpapi -l winhttp
+LINKING	  += -mwindows -s -Os -l ws2_32 -l kernel32 -l user32 -l gdi32 -l winspool -l shell32 -l ole32 -l oleaut32 -l uuid -l comdlg32 -l iphlpapi -l winhttp
 SOURCE 	  =  $(wildcard Source/*)
 
 
