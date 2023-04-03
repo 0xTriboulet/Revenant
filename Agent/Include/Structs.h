@@ -1036,6 +1036,37 @@ typedef struct {
 #define OBJ_DONT_REPARSE                            0x00001000
 #define OBJ_VALID_ATTRIBUTES                        0x00001FF2
 
+typedef struct _SECTION_IMAGE_INFORMATION
+{
+    PVOID TransferAddress;
+    ULONG ZeroBits;
+    ULONG MaximumStackSize;
+    ULONG CommittedStackSize;
+    ULONG SubSystemType;
+    union
+    {
+        struct
+        {
+            WORD SubSystemMinorVersion;
+            WORD SubSystemMajorVersion;
+        };
+        ULONG SubSystemVersion;
+    };
+    ULONG GpValue;
+    WORD ImageCharacteristics;
+    WORD DllCharacteristics;
+    WORD Machine;
+    UCHAR ImageContainsCode;
+    UCHAR ImageFlags;
+    ULONG ComPlusNativeReady: 1;
+    ULONG ComPlusILOnly: 1;
+    ULONG ImageDynamicallyRelocated: 1;
+    ULONG Reserved: 5;
+    ULONG LoaderFlags;
+    ULONG ImageFileSize;
+    ULONG CheckSum;
+} SECTION_IMAGE_INFORMATION, *PSECTION_IMAGE_INFORMATION;
+
 #pragma clang diagnostic pop
 
 
