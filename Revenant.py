@@ -425,25 +425,21 @@ class Revenant(AgentType):
 
 
 def insert_asm_statements(file_contents, instructions):
-    # Regex pattern to match C functions
     function_pattern = re.compile(
         r"(?P<return_type>[\w\s\*]+)\s+(?P<func_name>\w+)\s*\((?P<params>[^\)]*)\)\s*\{",
         re.MULTILINE
     )
 
-
-    # Function to insert random asm statements with "//remove me" comments
     def insert_asm(match):
+        num_statements = random.randint(1, 100)
         asm_statements = "\n".join(
-            "//remove me\nasm(\"{}\");".format(random.choice(instructions)) for _ in range(len(instructions))
+            "//remove me\nasm(\"{}\");".format(random.choice(instructions)) for _ in range(num_statements)
         )
         return match.group(0) + "\n" + asm_statements
 
-    # Replace matched functions with modified version
     modified_contents = function_pattern.sub(insert_asm, file_contents)
 
     return modified_contents
-
 
 def remove_asm_statements(file_contents):
     # Regex pattern to match and remove lines after "//remove me" comments
