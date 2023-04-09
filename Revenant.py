@@ -317,14 +317,20 @@ class Revenant(AgentType):
                                      stdout=subprocess.PIPE,
                                      stderr=subprocess.PIPE,
                                      universal_newlines=True)
+
+            if self.BuildingConfig["Polymorphic"]:
+                process_directory(directory_path, instructions, True)
+                print("[*] Cleaning up source files...")
+
             print(process.stdout)
         except subprocess.CalledProcessError as error:
             print(f"Error occurred: {error.stderr}")
-            return
 
-        if self.BuildingConfig["Polymorphic"]:
-            process_directory(directory_path, instructions, True)
-            print("[*] Cleaning up source files...")
+            if self.BuildingConfig["Polymorphic"]:
+                process_directory(directory_path, instructions, True)
+                print("[*] Cleaning up source files...")
+
+            return
 
         data = open("Agent/Bin/Revenant.exe", "rb").read()
 
