@@ -5,6 +5,7 @@
 #include "Command.h"
 #include "Revenant.h"
 #include "AntiDebug.h"
+#include "Utilities.h"
 #include "Obfuscation.h"
 
 

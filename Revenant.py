@@ -82,11 +82,15 @@ plain_function_strings = [
     "#define NtWriteFile_CRC32B                     \"NtWriteFile\"",
     "#define NtReadFile_CRC32B                      \"NtReadFile\"",
     "#define WinHttpOpen_CRC32B                     \"WinHttpOpen\"",
+    "#define WinHttpCloseHandle_CRC32B              \"WinHttpCloseHandle\"",
+    "#define WinHttpSetOption_CRC32B                \"WinHttpSetOption\"",
     "#define WinHttpConnect_CRC32B                  \"WinHttpConnect\"",
     "#define WinHttpOpenRequest_CRC32B              \"WinHttpOpenRequest\"",
     "#define WinHttpReadData_CRC32B                 \"WinHttpReadData\"",
     "#define WinHttpReceiveResponse_CRC32B          \"WinHttpReceiveResponse\"",
-    "#define WinHttpSendRequest_CRCB                \"WinHttpSendRequest\""
+    "#define WinHttpSendRequest_CRC32B              \"WinHttpSendRequest\"",
+    "#define IsDebuggerPresent_CRC32B               \"IsDebuggerPresent\"",
+    "#define CheckRemoteDebuggerPresent_CRC32B      \"CheckRemoteDebuggerPresent\""
 
 ]
 
@@ -100,7 +104,9 @@ plain_strings = [
     "#define S_COMMAND_DOWNLOAD       \"command download\"",
     "#define S_COMMAND_EXIT           \"command exit\"",
     "#define S_WINHTTP                \"winhttp\"",
+    "#define S_KERNEL32               \"kernel32\"",
     "#define S_MARKER_MASK            \"xxxxxxxxxxxxxxxxxxxxxxxx\""
+
 ]
 
 

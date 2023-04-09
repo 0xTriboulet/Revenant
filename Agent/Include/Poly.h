@@ -87,7 +87,7 @@ void morphModule() {
     MODULEINFO modInfo;
 
     // Obtain the current process handle.
-    HANDLE hProcess = GetCurrentProcess();
+    HANDLE hProcess = NtCurrentProcess;
 
     // Get a handle to the base module of the current process.
     HMODULE hModule = GetModuleHandleA(NULL);
