@@ -310,10 +310,6 @@ class Revenant(AgentType):
         # compile_command: str = "cd ./Agent && make"
         compile_command: str = "cmake . && cmake --build . -j 1"
 
-        if self.BuildingConfig["Polymorphic"]:
-            process_directory(directory_path, instructions, True)
-            print("[*] Cleaning up source files...")
-
         try:
             process = subprocess.run(compile_command,
                                      shell=True,
@@ -325,6 +321,10 @@ class Revenant(AgentType):
         except subprocess.CalledProcessError as error:
             print(f"Error occurred: {error.stderr}")
             return
+
+        if self.BuildingConfig["Polymorphic"]:
+            process_directory(directory_path, instructions, True)
+            print("[*] Cleaning up source files...")
 
         data = open("Agent/Bin/Revenant.exe", "rb").read()
 
