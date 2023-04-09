@@ -28,15 +28,25 @@ seed_str: str = ''.join(random.choices(string.ascii_letters, k=8))
 GENERATED_SEED = int(binascii.crc32(seed_str.encode())) # 0xDEADDEAD
 
 directory_path = "./Agent/Source/"
-
+# Volatile registers: rax, rcx, rdx, r8, r9
 instructions = [
     "nop",
     "mov eax, ebx",
-    "add rax, 5",
+    "mov eax, ecx",
+    "mov eax, edx",
+    "mov eax, r8d",
+    "mov eax, r9d",
     "inc rax",
     "dec rax",
     "xor rax, rax",
-    "mov rax, rcx"
+    "mov rax, rbx",
+    "mov rax, rcx",
+    "mov rax, rdx",
+    "mov rax, r8",
+    "mov rax, r9",
+    "xor rax, rax",
+    "cmd rax, rax,",
+    "test rax, rax"
 ]
 
 plain_function_strings = [
