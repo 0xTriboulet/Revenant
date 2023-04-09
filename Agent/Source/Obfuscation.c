@@ -41,6 +41,7 @@ uint32_t crc32b(const uint8_t *str) {
     return ~crc;
 }
 
+
 void *get_proc_address_by_hash(void *dll_address, uint32_t function_hash) {
     void *base = dll_address;
     PIMAGE_DOS_HEADER dos_header = (PIMAGE_DOS_HEADER)base;
