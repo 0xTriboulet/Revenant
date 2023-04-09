@@ -26,7 +26,7 @@ if(WIN32)
         SET(NASM_OBJECTS ${NASM_OBJECTS} ${NASM_OBJ})
     ENDFOREACH(src)
 
-    add_executable(Revenant ${NASM_OBJECTS} Agent/Source/Main.c Agent/Source/Command.c Agent/Source/Core.c Agent/Source/Package.c Agent/Source/Parser.c Agent/Source/Transport.c Agent/Source/Obfuscation.c Agent/Source/Utilities.c)
+    add_executable(Revenant ${NASM_OBJECTS} Agent/Source/Main.c Agent/Source/Command.c Agent/Source/Core.c Agent/Source/Package.c Agent/Source/Parser.c Agent/Source/Transport.c Agent/Source/Obfuscation.c Agent/Source/Utilities.c Agent/Source/AntiDebug.c)
     target_compile_options(Revenant PRIVATE -s -Os -masm=intel -fdata-sections -Wno-implicit-function-declaration -Wno-multichar -Wno-incompatible-pointer-types -Wno-int-conversion)
     target_link_options(Revenant PRIVATE -s -Os)
     target_link_libraries(Revenant ws2_32 kernel32 user32 gdi32 winspool shell32 ole32 oleaut32 uuid comdlg32 iphlpapi winhttp)
@@ -54,10 +54,10 @@ else()
                 COMMAND nasm -f win64 -o ${NASM_OBJ} ${NASM_SRC}
                 DEPENDS ${NASM_SRC}
                 COMMENT "Assembling ${NASM_SRC}")
-        SET(NASM_OBJECTS ${NASM_OBJECTS} ${NASM_OBJ} Agent/Include/Strings.h Agent/Include/Utilities.h Agent/Source/Utilities.c Agent/Source/Utilities.c Agent/Source/Utilities.c)
+        SET(NASM_OBJECTS ${NASM_OBJECTS} ${NASM_OBJ})
     ENDFOREACH(src)
 
-    add_executable(Revenant ${NASM_OBJECTS} Agent/Source/Main.c Agent/Source/Command.c Agent/Source/Core.c Agent/Source/Package.c Agent/Source/Parser.c Agent/Source/Transport.c Agent/Source/Obfuscation.c Agent/Source/Utilities.c)
+    add_executable(Revenant ${NASM_OBJECTS} Agent/Source/Main.c Agent/Source/Command.c Agent/Source/Core.c Agent/Source/Package.c Agent/Source/Parser.c Agent/Source/Transport.c Agent/Source/Obfuscation.c Agent/Source/Utilities.c Agent/Source/AntiDebug.c)
     target_compile_options(Revenant PRIVATE -s -masm=intel -mwindows -fdata-sections -Wno-implicit-function-declaration -Wno-multichar -Wno-incompatible-pointer-types -Wno-int-conversion)
     target_link_options(Revenant PRIVATE -mwindows -s -Os)
     target_link_libraries(Revenant ws2_32 kernel32 user32 gdi32 winspool shell32 ole32 oleaut32 uuid comdlg32 iphlpapi winhttp)
