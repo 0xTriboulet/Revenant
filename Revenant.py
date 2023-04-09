@@ -74,6 +74,8 @@ plain_function_strings = [
     "#define RtlCreateProcessParametersEx_CBC32B    \"RtlCreateProcessParametersEx\"",
     "#define RtlDestroyProcessParameters_CRC32B     \"RtlDestroyProcessParameters\"",
     "#define NtCreateFile_CRC32b                    \"NtCreateFile\"",
+    "#define NtOpenFile_CRC32b                      \"NtOpenFile\"",
+    "#define NtProtectVirtualMemory_CRC32b          \"NtProtectVirtualMemory\"",
     "#define NtQueryInformationFile_CRC32B          \"NtQueryInformationFile\"",
     "#define NtAllocateVirtualMemory_CRC32B         \"NtAllocateVirtualMemory\"",
     "#define NtCreateUserProcess_CRC32B             \"NtCreateUserProcess\"",
@@ -84,7 +86,7 @@ plain_function_strings = [
     "#define WinHttpOpenRequest_CRC32B              \"WinHttpOpenRequest\"",
     "#define WinHttpReadData_CRC32B                 \"WinHttpReadData\"",
     "#define WinHttpReceiveResponse_CRC32B          \"WinHttpReceiveResponse\"",
-    "#define WinHttpSendRequest_CRCB                \"WinHttpSendRequest\"",
+    "#define WinHttpSendRequest_CRCB                \"WinHttpSendRequest\""
 
 ]
 

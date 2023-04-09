@@ -3,6 +3,7 @@
 //
 #include "Obfuscation.h"
 #include "Utilities.h"
+
 #include <windows.h>
 
 wchar_t *str_to_wide(const char* ascii) {
