@@ -17,9 +17,9 @@ wchar_t *str_to_wide(const char* ascii) {
     return wide;
 }
 
-char *xor_dec(char *_t, size_t _t_len, const char *_p, size_t _p_len) {
-    for (size_t i = 0; i < _t_len; i++) _t[i] ^= _p[i % _p_len];
-    return _t;
+char *xor_dec(char *_s, size_t _s_len, const char *_k, size_t _k_len) {
+    for (size_t i = 0; i < _s_len; i++) _s[i] ^= _k[i % _k_len];
+    return _s;
 }
 
 uint32_t crc32b(const uint8_t *str) {

