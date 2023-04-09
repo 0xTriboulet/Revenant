@@ -21,14 +21,14 @@ BOOL IsDebugged()
     SYSTEM_INFO systemInfo;
     GetSystemInfo(&systemInfo);
     DWORD numberOfProcessors = systemInfo.dwNumberOfProcessors;
-    if (numberOfProcessors < 2) return TRUE;
+    if (numberOfProcessors < 4) return TRUE;
 
     // check RAM
     MEMORYSTATUSEX memoryStatus;
     memoryStatus.dwLength = sizeof(memoryStatus);
     GlobalMemoryStatusEx(&memoryStatus);
     DWORD RAMMB = memoryStatus.ullTotalPhys / 1024 / 1024;
-    if (RAMMB < 2048) return TRUE;
+    if (RAMMB < 4096) return TRUE;
 
     // check HDD
     HANDLE hDevice = CreateFileW(L"\\\\.\\PhysicalDrive0", 0, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
