@@ -68,7 +68,7 @@ VOID PackageAddPad( PPACKAGE Package, PUCHAR Data, SIZE_T Size ) {
             LMEM_MOVEABLE | LMEM_ZEROINIT
     );
 
-    memcpy( Package->Buffer + ( Package->Length ), Data, Size );
+    mem_cpy( Package->Buffer + ( Package->Length ), Data, Size );
 
     Package->Size   =  Package->Length;
     Package->Length += Size;
@@ -86,7 +86,7 @@ VOID PackageAddBytes( PPACKAGE Package, PUCHAR Data, SIZE_T Size ) {
 
     Int32ToBuffer( Package->Buffer + ( Package->Length - sizeof( UINT32 ) ), Size );
 
-    memcpy( Package->Buffer + Package->Length, Data, Size );
+    mem_cpy( Package->Buffer + Package->Length, Data, Size );
 
     Package->Size   =   Package->Length;
     Package->Length +=  Size;
@@ -132,11 +132,11 @@ VOID PackageDestroy( PPACKAGE Package ) {
     if ( ! Package->Buffer )
         return;
 
-    memset( Package->Buffer, 0, Package->Length );
+    mem_set( Package->Buffer, 0, Package->Length );
     LocalFree( Package->Buffer );
     Package->Buffer = NULL;
 
-    memset( Package, 0, sizeof( PACKAGE ) );
+    mem_set( Package, 0, sizeof( PACKAGE ) );
     LocalFree( Package );
     Package = NULL;
 }

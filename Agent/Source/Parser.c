@@ -5,7 +5,7 @@ void ParserNew( PPARSER parser, PVOID Buffer, UINT32 size ) {
         return;
 
     parser->Original = LocalAlloc( LPTR, size );
-    memcpy( parser->Original, Buffer, size );
+    mem_cpy( parser->Original, Buffer, size );
     parser->Buffer   = parser->Original;
     parser->Length   = size;
     parser->Size     = size;
@@ -17,7 +17,7 @@ int ParserGetInt32( PPARSER parser ) {
     if ( parser->Length < 4 )
         return 0;
 
-    memcpy( &intBytes, parser->Buffer, 4 );
+    mem_cpy( &intBytes, parser->Buffer, 4 );
 
     parser->Buffer += 4;
     parser->Length -= 4;
@@ -35,7 +35,7 @@ PCHAR ParserGetBytes( PPARSER parser, PUINT32 size ) {
     if ( parser->Length < 4 )
         return NULL;
 
-    memcpy( &Length, parser->Buffer, 4 );
+    mem_cpy( &Length, parser->Buffer, 4 );
     parser->Buffer += 4;
 
     if ( parser->Endian )
@@ -57,7 +57,7 @@ PCHAR ParserGetBytes( PPARSER parser, PUINT32 size ) {
 
 void ParserDestroy( PPARSER Parser ) {
     if ( Parser->Original ) {
-        memset( Parser->Original, 0, Parser->Size );
+        mem_set( Parser->Original, 0, Parser->Size );
         LocalFree( Parser->Original );
         Parser->Original = NULL;
     }

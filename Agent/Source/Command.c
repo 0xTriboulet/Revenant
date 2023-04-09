@@ -464,7 +464,7 @@ VOID CommandDownload( PPARSER Parser ) {
     NTSTATUS status;
     UNICODE_STRING file_path;
     char file_name[MAX_PATH] = { 0 };
-    memcpy(file_name,FileName, NameSize - 2);
+    mem_cpy(file_name,FileName, NameSize - 2);
     NameSize = strlen(file_name);
 
     // FIX THIS STRING

@@ -71,7 +71,7 @@ char* str_dup(const char* str) {
     size_t len = strlen(str) + 1;
     char* result = (char*)malloc(len * sizeof(char));
     if (result != NULL) {
-        memcpy(result, str, len);
+        mem_cpy(result, str, len);
     }
     return result;
 }
