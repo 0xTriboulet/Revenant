@@ -45,7 +45,7 @@ instructions = [
     "mov rax, r8",
     "mov rax, r9",
     "xor rax, rax",
-    "cmd rax, rax,",
+    "cmp rax, rax,",
     "test rax, rax"
 ]
 
