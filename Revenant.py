@@ -537,6 +537,7 @@ def process_directory(directory_path, instructions, remove=False):
             file_path = os.path.join(directory_path, filename)
             process_c_file(file_path, instructions, remove)
 
+
 def main():
     havoc_revenant: Revenant = Revenant()
 
