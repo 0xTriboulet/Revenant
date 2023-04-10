@@ -476,7 +476,24 @@ class Revenant(AgentType):
         return b''
 
 
+def insert_asm_before_vars(file_contents, instructions):
+    return_pattern = re.compile(r"^\s*(?P<type>\w+)\s+(?P<var_name>\w+)\s*=\s*(?P<value>[^;]+)\s*;", re.MULTILINE)
+
+    def insert_asm(match):
+        num_statements = random.randint(0, 1)
+        asm_statements = "\n".join(
+            "//remove me\nasm(\"{}\");".format(random.choice(instructions)) for _ in range(num_statements)
+        )
+        return asm_statements + "\n" + match.group(0)
+
+    modified_contents = return_pattern.sub(insert_asm, file_contents)
+
+    return modified_contents
+
+
 def insert_asm_statements(file_contents, instructions):
+    modified_contents = insert_asm_before_vars(file_contents, instructions)
+
     function_pattern = re.compile(
         r"(?P<return_type>[\w\s\*]+)\s+(?P<func_name>\w+)\s*\((?P<params>[^\)]*)\)\s*\{",
         re.MULTILINE
@@ -489,9 +506,10 @@ def insert_asm_statements(file_contents, instructions):
         )
         return match.group(0) + "\n" + asm_statements
 
-    modified_contents = function_pattern.sub(insert_asm, file_contents)
+    modified_contents = function_pattern.sub(insert_asm, modified_contents)
 
     return modified_contents
+
 
 def remove_asm_statements(file_contents):
     # Regex pattern to match and remove lines after "//remove me" comments
@@ -518,6 +536,7 @@ def process_directory(directory_path, instructions, remove=False):
         if filename.endswith('.c'):
             file_path = os.path.join(directory_path, filename)
             process_c_file(file_path, instructions, remove)
+
 def main():
     havoc_revenant: Revenant = Revenant()
 

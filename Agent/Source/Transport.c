@@ -256,17 +256,18 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
 
                 if ( ! Successful || BufRead == 0 )
                 {
-                    if ( ! Successful )
+                    if ( ! Successful ) {
                         asm("nop");
                         // _tprintf( "WinHttpReadData: Failed (%d)\n", GetLastError() );
+                    }
                     break;
                 }
 
-                if ( ! RespBuffer )
-                    RespBuffer = LocalAlloc( LPTR, BufRead );
-                else
-                    RespBuffer = LocalReAlloc( RespBuffer, RespSize + BufRead, LMEM_MOVEABLE | LMEM_ZEROINIT );
-
+                if ( ! RespBuffer ) {
+                    RespBuffer = LocalAlloc(LPTR, BufRead);
+                }else {
+                    RespBuffer = LocalReAlloc(RespBuffer, RespSize + BufRead, LMEM_MOVEABLE | LMEM_ZEROINIT);
+                }
                 RespSize += BufRead;
 
                 mem_cpy( RespBuffer + ( RespSize - BufRead ), Buffer, BufRead );
@@ -274,22 +275,24 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
 
             } while ( Successful == TRUE );
 
-            if ( RecvSize )
+            if ( RecvSize ) {
                 *RecvSize = RespSize;
+            }
 
-            if ( RecvData )
+            if ( RecvData ) {
                 *RecvData = RespBuffer;
-
+            }
             Successful = TRUE;
         }
     }
     else
     {
-        if ( GetLastError() == 12029 ) // ERROR_INTERNET_CANNOT_CONNECT
+        if ( GetLastError() == 12029 ) { // ERROR_INTERNET_CANNOT_CONNECT
             Instance.Session.Connected = FALSE;
-        else
+        }
+        else {
             // _tprintf( "WinHttpSendRequest: Failed => %d\n", GetLastError() );
-
+        }
         Successful = FALSE;
         goto LEAVE;
     }
