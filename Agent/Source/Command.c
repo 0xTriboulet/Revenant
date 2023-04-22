@@ -221,12 +221,10 @@ VOID CommandShell( PPARSER Parser ){
     // Setup handle array
     HANDLE handle_array[3] = { hStdInPipeRead, hStdOutPipeWrite, hStdOutPipeWrite };
 
-
     // set std error/out/in:
     proc_params->StandardError   = handle_array[2];
     proc_params->StandardOutput  = handle_array[1];
     proc_params->StandardInput   = handle_array[0];
-
 
     // allocate process heap
     void *p_rtl_allocate_heap = get_proc_address_by_hash(p_ntdll, RtlAllocateHeap_CRC32B);

@@ -153,9 +153,10 @@ def crc32b(s: str):
 
 
 def xor_encode(s: str) -> str:
+    s_with_null_byte = s + "\x00"
     password_bytes: bytes = GENERATED_PASSWORD.encode()
-    password_cycle: bytes = (password_bytes * (len(s) // len(password_bytes) + 1))[:len(s)]
-    xor_bytes: bytes = bytes(b1 ^ b2 for b1, b2 in zip(s.encode(), password_cycle))
+    password_cycle: bytes = (password_bytes * (len(s_with_null_byte) // len(password_bytes) + 1))[:len(s_with_null_byte)]
+    xor_bytes: bytes = bytes(b1 ^ b2 for b1, b2 in zip(s_with_null_byte.encode(), password_cycle))
     return ", ".join(f"0x{b:02x}" for b in xor_bytes)
 
 
@@ -210,28 +211,28 @@ def process_strings_h():
             f.write(strings_file)
 
 def process_config_h(config: dict):
-    config_user_agent:         str = config['Options']['Listener']['UserAgent']
-    config_host_bind:          str = config['Options']['Listener']['HostBind']
+    config_user_agent:         str = xor_encode(config['Options']['Listener']['UserAgent'])
+    config_host_bind:          str = xor_encode(config['Options']['Listener']['HostBind'])
     config_host_port:          str = config['Options']['Listener']['Port']
     config_host_secure:        str = str(config['Options']['Listener']['Secure']).upper()
     config_sleep:              str = config['Config']['Sleep']
     config_poly:               str = str(config['Config']['Polymorphic'])
     config_obf_strings:        str = str(config['Config']['Obfuscation'])
     config_arch:               str = config['Options']['Arch']
-    config_native:             str = str(config['Config']['Native'])
-    config_anti_debug:         str = str(config['Config']['AntiDebug'])
+    config_native:             str = str(config['Config']['Native']).upper()
+    config_anti_debug:         str = str(config['Config']['AntiDebug']).upper()
 
     header_file = f'''
-#define CONFIG_USER_AGENT L"{config_user_agent}"
-#define CONFIG_HOST L"{config_host_bind}"
+#define CONFIG_USER_AGENT {{{config_user_agent}}}
+#define CONFIG_HOST {{{config_host_bind}}}
 #define CONFIG_PORT {config_host_port}
 #define CONFIG_SECURE {str(config_host_secure).upper()}
 #define CONFIG_SLEEP {config_sleep} 
 #define CONFIG_POLYMORPHIC {str(config_poly).upper()}  
 #define CONFIG_OBFUSCATION {str(config_obf_strings).upper()}
 #define CONFIG_ARCH {config_arch}  
-#define CONFIG_NATIVE {config_native}
-#define CONFIG_ANTI_DEBUG {config_anti_debug}
+#define CONFIG_NATIVE {str(config_native).upper()}
+#define CONFIG_ANTI_DEBUG {str(config_anti_debug).upper()}
     '''
 
     for filepath in glob.iglob('**/Config.h', recursive=True):
