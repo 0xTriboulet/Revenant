@@ -28,6 +28,7 @@ seed_str: str = ''.join(random.choices(string.ascii_letters, k=8))
 GENERATED_SEED = int(binascii.crc32(seed_str.encode())) # 0xDEADDEAD
 
 directory_path = "./Agent/Source/"
+
 #x86
 instructions_x86 = [
     "nop",
@@ -379,7 +380,7 @@ class Revenant(AgentType):
                 process_directory(directory_path, instructions_x64, False)
                 print("[*] Configuring source files...")
 
-            compile_command: str = "cmake . && cmake -DARCH=x64 --build . -j 1"
+            compile_command: str = "cmake -DARCH=x64 . && cmake --build . -j 1"
 
             try:
                 process = subprocess.run(compile_command,
@@ -405,7 +406,7 @@ class Revenant(AgentType):
 
             data = open("Agent/Bin/x64/Revenant.exe", "rb").read()
         elif config['Options']['Arch'] == "86":
-            compile_command: str = "cmake . && cmake -DARCH=x86 --build . -j 1"
+            compile_command: str = "cmake -DARCH=x86 . && cmake --build . -j 1"
 
             if self.BuildingConfig["Polymorphic"]:
                 process_directory(directory_path, instructions_x86, False)
