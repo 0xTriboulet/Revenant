@@ -31,23 +31,23 @@ directory_path = "./Agent/Source/"
 
 #x86
 instructions_x86 = [
-    "nop",
-    "mov eax, eax",
-    "mov ecx, ecx",
-    "mov edx, edx",
-    "inc eax",
-    "dec eax",
-    "xor eax, eax",
-    "xor ecx, ecx",
-    "cmp eax, eax",
-    "test eax, eax",
-    ''"xor eax,eax" \
-    "xor ecx,ecx" \
-    "xor eax,eax" \
-    "xor ecx,ecx" \
-    "xor eax,eax" \
-    "xor ecx,ecx" \
-    "xor eax,eax"''
+    "nop;",
+    "mov eax, eax;",
+    "mov ecx, ecx;",
+    "mov edx, edx;",
+    "inc eax;",
+    "dec eax;",
+    "xor eax, eax;",
+    "xor ecx, ecx;",
+    "cmp eax, eax;",
+    "test eax, eax;",
+    ''"xor eax,eax;" \
+    "xor ecx,ecx;" \
+    "xor eax,eax;" \
+    "xor ecx,ecx;" \
+    "xor eax,eax;" \
+    "xor ecx,ecx;" \
+    "xor eax,eax;"''
 ]
 
 
