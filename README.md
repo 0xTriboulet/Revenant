@@ -18,7 +18,7 @@ This project aims to be a self-contained Havoc C2 implant. The goal end-user fun
 > - Add additional commands
 > - Obfuscate WinAPI calls when "Obfuscation" enabled
 > - Encrypt/Obf Config.h
-> - Decrease entropy
+> - Decrease entropy  
 
 
 
