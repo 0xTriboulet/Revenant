@@ -90,6 +90,10 @@ instructions_x64 = [
 ]
 
 plain_function_strings = [
+    "#define DeviceIoControl_CRC32B                 \"DeviceIoControl\"",
+    "#define CreateFileW_CRC32B                     \"CreateFileW\"",
+    "#define GetSystemInfo_CRC32B                   \"GetSystemInfo\"",
+    "#define GlobalMemoryStatusEx_CRC32B            \"GlobalMemoryStatusEx\"",
     "#define RtlRandomEx_CRC32B                     \"RtlRandomEx\"",
     "#define RtlGetVersion_CRC32B                   \"RtlGetVersion\"",
     "#define RtlInitUnicodeString_CRC32B            \"RtlInitUnicodeString\"",
@@ -129,7 +133,7 @@ plain_strings = [
     "#define S_COMMAND_DOWNLOAD       \"command download\"",
     "#define S_COMMAND_EXIT           \"command exit\"",
     "#define S_WINHTTP                \"winhttp\"",
-    "#define S_KERNEL32               \"kernel32\"",
+    "#define S_KERNEL32               \"kernel32.dll\"",
     "#define S_MARKER_MASK            \"xxxxxxxxxxxxxxxxxxxxxxxx\""
 
 ]
