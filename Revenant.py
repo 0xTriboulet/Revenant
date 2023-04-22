@@ -379,7 +379,7 @@ class Revenant(AgentType):
                 process_directory(directory_path, instructions_x64, False)
                 print("[*] Configuring source files...")
 
-            compile_command: str = "cmake . && cmake --build . -DARCH=x64 -j 1"
+            compile_command: str = "cmake . && cmake -DARCH=x64 --build . -j 1"
 
             try:
                 process = subprocess.run(compile_command,
@@ -405,7 +405,7 @@ class Revenant(AgentType):
 
             data = open("Agent/Bin/x64/Revenant.exe", "rb").read()
         elif config['Options']['Arch'] == "86":
-            compile_command: str = "cmake . && cmake --build . -DARCH=x86 -j 1"
+            compile_command: str = "cmake . && cmake -DARCH=x86 --build . -j 1"
 
             if self.BuildingConfig["Polymorphic"]:
                 process_directory(directory_path, instructions_x86, False)
