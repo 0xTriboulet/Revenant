@@ -50,7 +50,7 @@ else()
         cmake_minimum_required(VERSION 3.24)
         project(Revenant C)
 
-        # set(CMAKE_VERBOSE_MAKEFILE ON)
+        set(CMAKE_VERBOSE_MAKEFILE ON)
 
         set(CMAKE_C_STANDARD 17)
         set(CMAKE_C_COMPILER /usr/bin/x86_64-w64-mingw32-gcc)
@@ -70,7 +70,7 @@ else()
         cmake_minimum_required(VERSION 3.24)
         project(Revenant C)
 
-        # set(CMAKE_VERBOSE_MAKEFILE ON)
+        set(CMAKE_VERBOSE_MAKEFILE ON)
 
         set(CMAKE_C_STANDARD 17)
         set(CMAKE_C_COMPILER /usr/bin/i686-w64-mingw32-gcc)
