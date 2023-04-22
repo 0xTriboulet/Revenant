@@ -56,7 +56,7 @@ else()
         set(CMAKE_C_COMPILER /usr/bin/x86_64-w64-mingw32-gcc)
         set(CMAKE_CXX_COMPILER /usr/bin/x86_64-w64-mingw32-g++)
 
-        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/Agent/Bin)
+        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/Agent/Bin/x64)
 
         include_directories(${CMAKE_SOURCE_DIR}/Agent/Include)
 
@@ -76,7 +76,7 @@ else()
         set(CMAKE_C_COMPILER /usr/bin/i686-w64-mingw32-gcc)
         set(CMAKE_CXX_COMPILER /usr/bin/i686-w64-mingw32-g++)
 
-        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/Agent/Bin)
+        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/Agent/Bin/x86)
 
         include_directories(${CMAKE_SOURCE_DIR}/Agent/Include)
 

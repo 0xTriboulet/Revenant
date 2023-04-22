@@ -403,8 +403,8 @@ class Revenant(AgentType):
                     print("[*] Cleaning up source files...")
 
                 return
-
             data = open("Agent/Bin/x64/Revenant.exe", "rb").read()
+
         elif config['Options']['Arch'] == "86":
             compile_command: str = "cmake -DARCH=x86 . && cmake --build . -j 1"
 
