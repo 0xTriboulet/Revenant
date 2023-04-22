@@ -11,20 +11,16 @@ This project aims to be a self-contained Havoc C2 implant. The goal end-user fun
 5) ???
 6) PROFIT
 
-
-TODO:
-
-[x] Develop Revenant handler to build executable  
-[x] Develop Revenant.py to handle options  
-[x] Implement string obfuscation  
-[x] Turn off print statements in release build  
-[-] Write Revenant with maximum native API
   > Win7/8 Compatability:  
   > - Disable NativeAPI  
-  > - Build x86
 
-[ ] Develop Double Fork -> Run method  
-[ ] Develop PSBit method
+> TODO:
+> - Add additional commands
+> - Obfuscate WinAPI calls when "Obfuscation" enabled
+> - Encrypt/Obf Config.h
+> - Decrease entropy
+
+
 
 ![Revnt](https://user-images.githubusercontent.com/22229087/221742449-acd2862d-db89-4272-b07c-e9431734a7fc.png)
 
