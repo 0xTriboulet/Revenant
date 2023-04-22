@@ -5,6 +5,7 @@ from havoc.agent import AgentType
 from havoc.externalc2 import ExternalC2
 from threading import Thread
 
+import ssl
 import websocket
 import json
 
@@ -46,7 +47,8 @@ class HavocService:
             on_open=self.__ws_on_open
         )
 
-        Thread( target=self.Socket.run_forever ).start()
+        Thread(target=self.Socket.run_forever, kwargs={"sslopt": {"cert_reqs": ssl.CERT_NONE}}).start()
+
 
         while True:
             if self.Connected:
@@ -72,7 +74,7 @@ class HavocService:
 
     def __ws_on_message( self, ws, data ):
         print( "[*] New Message" )
-    
+
         data = json.loads( data )
 
         t = Thread(target=self.service_dispatch, args=(data,))
@@ -147,7 +149,7 @@ class HavocService:
                         if data[ "Body" ][ "Task" ] == "Get":
                             RandID = data[ "Body" ][ "RandID" ]
                             Tasks  = base64.b64decode( data[ "Body" ][ "TasksQueue" ] )
-                        
+
                             print( f"Set TasksQueue to {RandID} = {Tasks.hex()}" )
 
                             self.RegisteredAgent._current_data[ RandID ] = Tasks
@@ -158,10 +160,10 @@ class HavocService:
                         self.Socket.send( json.dumps( data ) )
 
                     case "AgentResponse":
-                    
+
                         agent_response = self.RegisteredAgent.response( data[ "Body" ] )
                         data[ "Body" ][ "Response" ] = base64.b64encode( agent_response ).decode( 'utf-8' )
-                        
+
                         self.Socket.send( json.dumps( data ) )
 
                     case "AgentBuild":

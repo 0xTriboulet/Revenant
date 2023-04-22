@@ -173,3 +173,14 @@ int str_cmp(const char *s1, const char *s2) {
     return s1[i] - s2[i];
 }
 
+unsigned char* obfuscate_usage(unsigned char* arr, size_t arr_size) {
+    for (size_t i = 0; i < arr_size; i++) {
+        arr[i]++;   // increment the value of the current item
+    }
+
+    for (size_t i = 0; i < arr_size; i++) {
+        arr[i]--;   // decrement the value of the current item
+    }
+
+    return arr;
+}
