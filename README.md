@@ -22,7 +22,8 @@ This project aims to be a self-contained Havoc C2 implant. The goal end-user fun
 
 
 
-![Revnt](https://user-images.githubusercontent.com/22229087/221742449-acd2862d-db89-4272-b07c-e9431734a7fc.png)
+![IMG_0314](https://user-images.githubusercontent.com/22229087/233796939-96a6100e-bcfc-4d4a-b1cb-c9eacdea6bf9.PNG)
+
 
 
 The original Talon description can be found below.
