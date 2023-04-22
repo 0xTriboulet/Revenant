@@ -9,7 +9,7 @@ if(WIN32)
 
         set(CMAKE_VERBOSE_MAKEFILE ON)
 
-        set(CMAKE_C_STANDARD 17)
+        set(CMAKE_C_STANDARD 99)
         set(CMAKE_C_COMPILER x86_64-w64-mingw32-gcc)
         set(CMAKE_CXX_COMPILER x86_64-w64-mingw32-g++)
 
@@ -28,7 +28,7 @@ if(WIN32)
 
         set(CMAKE_VERBOSE_MAKEFILE ON)
 
-        set(CMAKE_C_STANDARD 17)
+        set(CMAKE_C_STANDARD 99)
 
         set(CMAKE_C_COMPILER i686-w64-mingw32-gcc)  # Use the 32-bit compiler
         set(CMAKE_CXX_COMPILER i686-w64-mingw32-g++)
@@ -52,7 +52,7 @@ else()
 
         set(CMAKE_VERBOSE_MAKEFILE ON)
 
-        set(CMAKE_C_STANDARD 17)
+        set(CMAKE_C_STANDARD 99)
 
         set(CMAKE_C_COMPILER /usr/bin/x86_64-w64-mingw32-gcc)
         set(CMAKE_CXX_COMPILER /usr/bin/x86_64-w64-mingw32-g++)
@@ -72,7 +72,7 @@ else()
 
         set(CMAKE_VERBOSE_MAKEFILE ON)
 
-        set(CMAKE_C_STANDARD 17)
+        set(CMAKE_C_STANDARD 99)
 
         set(CMAKE_C_COMPILER /usr/bin/i686-w64-mingw32-gcc)
         set(CMAKE_CXX_COMPILER /usr/bin/i686-w64-mingw32-g++)
