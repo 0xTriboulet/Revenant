@@ -38,7 +38,7 @@ instructions_x86 = [
     "inc eax",
     "dec eax",
     "xor eax, eax",
-    "xor rax, rax",
+    "xor ecx, ecxx",
     "cmp eax, eax",
     "test eax, eax",
     ''"xor eax,eax" \
