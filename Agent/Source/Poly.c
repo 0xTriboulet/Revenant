@@ -1,8 +1,9 @@
 //
 // Created by 0xtriboulet on 4/15/2023.
 //
-#include "Poly.h"
+
 #include "Config.h"
+#include "Poly.h"
 
 #if CONFIG_OBFUSCATION
 
@@ -196,10 +197,6 @@ PVOID rev_memcpy (PBYTE dest, const PBYTE src, size_t n)
 }
 
 #else //CONFIG_POLYMORPHIC
-
-#define $$$ __asm__ (   \
-    "nop"          \
-);
 
 void morphModule()
 {

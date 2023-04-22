@@ -16,8 +16,8 @@ PPACKAGE PackageNew(void);
 
 VOID PackageAddInt32(PPACKAGE package, UINT32 iData);
 VOID PackageAddInt64(PPACKAGE Package, UINT64 dataInt);
-VOID PackageAddBytes(PPACKAGE package, PUCHAR data, size_t dataSize);
-VOID PackageAddPad(PPACKAGE package, PUCHAR data, size_t dataSize);
+VOID PackageAddBytes(PPACKAGE package, PUCHAR data, SIZE_T dataSize);
+VOID PackageAddPad(PPACKAGE package, PUCHAR data, SIZE_T dataSize);
 VOID PackageDestroy(PPACKAGE package);
 
 BOOL PackageTransmit(PPACKAGE Package, PVOID *Response,PSIZE_T Size);

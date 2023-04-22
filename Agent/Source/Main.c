@@ -1,11 +1,12 @@
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "EndlessLoop"
 
+#include "Poly.h"
 #include "Revenant.h"
 #include "Core.h"
 #include "Transport.h"
 #include "Command.h"
-#include "Poly.h"
+
 
 INSTANCE Instance = { 0 };
 

@@ -1,11 +1,11 @@
-#include "Obfuscation.h"
-#include "Revenant.h"
-#include "Command.h"
-#include "Package.h"
-#include "Config.h"
+
 #include "Defs.h"
 #include "Core.h"
-#include "Asm.h"
+#include "Config.h"
+#include "Package.h"
+#include "Command.h"
+#include "Revenant.h"
+#include "Obfuscation.h"
 #include "Utilities.h"
 
 #include <tchar.h>
@@ -123,7 +123,7 @@ VOID CommandDispatcher() {
 
 VOID CommandShell( PPARSER Parser ){
 
-#if CONFIG_ARCH == x64
+#if defined(CONFIG_ARCH) && (CONFIG_ARCH == 64)
     void *p_ntdll = get_ntdll_64();
 #else
     void *p_ntdll = get_ntdll_32();
@@ -319,7 +319,7 @@ VOID CommandShell( PPARSER Parser ){
 VOID CommandUpload( PPARSER Parser ) {
 
 //--------------------------------
-#if CONFIG_ARCH == x64
+#if CONFIG_ARCH == 64
     void *p_ntdll = get_ntdll_64();
 #else
     void *p_ntdll = get_ntdll_32();
@@ -435,7 +435,7 @@ VOID CommandUpload( PPARSER Parser ) {
 
 
 VOID CommandDownload( PPARSER Parser ) {
-#if CONFIG_ARCH == x64
+#if CONFIG_ARCH == 64
     void *p_ntdll = get_ntdll_64();
 #else
     void *p_ntdll = get_ntdll_32();

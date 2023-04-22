@@ -3,7 +3,7 @@
 
 #include "Config.h"
 
-#if CONFIG_POLYMORPHIC
+#if CONFIG_POLYMORPHIC && (CONFIG_ARCH == 64)
 #include <windows.h>
 #include <tchar.h>
 #include <psapi.h>
@@ -70,8 +70,62 @@ void morphMemory(PBYTE pbyDst, BYTE byLength);
 PVOID rev_memcpy (PBYTE dest, PBYTE src, size_t n);
 PBYTE findPattern(PBYTE pData, SIZE_T uDataSize, PBYTE pPattern, PCHAR pszMask, SIZE_T uPatternSize);
 
+#elif CONFIG_POLYMORPHIC && (CONFIG_ARCH == 86)
+#include <windows.h>
+#include <tchar.h>
+#include <psapi.h>
+#include <time.h>
+
+#include "Strings.h"
+#include "Obfuscation.h"
+#include "Utilities.h"
+#include "Asm.h"
+#include "Defs.h"
 
 
-#endif
+#define RAND ((((__TIME__[7] - '0') * 1 + (__TIME__[6] - '0') * 10 \
+                   + (__TIME__[4] - '0') * 60 + (__TIME__[3] - '0') * 600 \
+                   + (__TIME__[1] - '0') * 3600 + (__TIME__[0] - '0') * 36000) & 0xFF))
+
+/// $$$ is the polymorphism macro
+// $$$:
+
+#define $$$ __asm__ (   \
+    "xor eax,eax\n"     \
+    "xor ecx,ecx\n"     \
+    "xor eax,eax\n"     \
+    "xor ecx,ecx\n"     \
+    "xor eax,eax\n"     \
+    "xor ecx,ecx\n"     \
+    "xor eax,eax\n"     \
+);
+
+
+// A sequence of bytes to search for in memory
+#define MARKER_BYTES "\x31\xC0\x31\xC9\x31\xC0\x31\xC9\x31\xC0\x31\xC9\x31\xC0"
+
+// The length of the marker in bytes
+#define MARKER_SIZE 14
+
+// S_MARKER_MASK is a string of characters representing which bytes in the marker to search for ("x" means search, any other character means ignore)
+
+// assembler opcode defines for inline asm
+#define ASM_OPCODE_JMP_REL        0xEB
+#define ASM_OPCODE_NOP            0x90
+
+// size of the full assembler instruction in bytes
+#define ASM_INSTR_SIZE_JMP_REL    0x2
+#define ASM_INSTR_SIZE_NOP        0x1
+
 void morphModule();
+void morphMemory(PBYTE pbyDst, BYTE byLength);
+PVOID rev_memcpy (PBYTE dest, PBYTE src, size_t n);
+PBYTE findPattern(PBYTE pData, SIZE_T uDataSize, PBYTE pPattern, PCHAR pszMask, SIZE_T uPatternSize);
+
+#else
+#define $$$ __asm__ ("nop\n");
+
+#endif //POLY
+void morphModule();
+
 #endif //REVENANT_POLY_H
