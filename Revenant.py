@@ -373,7 +373,7 @@ class Revenant(AgentType):
             process_strings_h()
             print("[*] Configuring String.h header...")
 
-        if self.Arch["64"]:
+        if config['Options']['Arch'] == "64":
 
             if self.BuildingConfig["Polymorphic"]:
                 process_directory(directory_path, instructions_x64, False)
@@ -404,7 +404,7 @@ class Revenant(AgentType):
                 return
 
             data = open("Agent/Bin/x64/Revenant.exe", "rb").read()
-        elif self.Arch["86"]:
+        elif config['Options']['Arch'] == "86":
             compile_command: str = "cmake . && cmake --build . -DARCH=x86 -j 1"
 
             if self.BuildingConfig["Polymorphic"]:
