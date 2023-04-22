@@ -376,7 +376,7 @@ class Revenant(AgentType):
 
         if config['Options']['Arch'] == "64":
 
-            if self.BuildingConfig["Polymorphic"]:
+            if self.BuildingConfig["Polymorphic"] is True:
                 process_directory(directory_path, instructions_x64, False)
                 print("[*] Configuring source files...")
 
@@ -390,7 +390,7 @@ class Revenant(AgentType):
                                          stderr=subprocess.PIPE,
                                          universal_newlines=True)
 
-                if self.BuildingConfig["Polymorphic"]:
+                if self.BuildingConfig["Polymorphic"] is True:
                     process_directory(directory_path, instructions_x64, True)
                     print("[*] Cleaning up source files...")
 
@@ -408,7 +408,7 @@ class Revenant(AgentType):
         elif config['Options']['Arch'] == "86":
             compile_command: str = "cmake -DARCH=x86 . && cmake --build . -j 1"
 
-            if self.BuildingConfig["Polymorphic"]:
+            if self.BuildingConfig["Polymorphic"] is True:
                 process_directory(directory_path, instructions_x86, False)
                 print("[*] Configuring source files...")
 
@@ -420,7 +420,7 @@ class Revenant(AgentType):
                                          stderr=subprocess.PIPE,
                                          universal_newlines=True)
 
-                if self.BuildingConfig["Polymorphic"]:
+                if self.BuildingConfig["Polymorphic"] is True:
                     process_directory(directory_path, instructions_x86, True)
                     print("[*] Cleaning up source files...")
 
