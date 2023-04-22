@@ -18,10 +18,10 @@ TODO:
 [x] Develop Revenant.py to handle options  
 [x] Implement string obfuscation  
 [x] Turn off print statements in release build  
-[-] Write Revenant with maximum native API  
-  >Notes:
->> Currently uses Win10 NativeAPI. Untested on Win7/8  
-  For increased compatability, try disabling NativeAPI
+[-] Write Revenant with maximum native API
+  > Win7/8 Compatability:  
+  > - Disable NativeAPI  
+  > - Build x86
 
 [ ] Develop Double Fork -> Run method  
 [ ] Develop PSBit method
