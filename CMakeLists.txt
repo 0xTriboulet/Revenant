@@ -46,7 +46,7 @@ if(WIN32)
 
 else()
     # IF x64
-    if(FALSE)
+    if(ARCH_VARIABLE STREQUAL "x64")
         cmake_minimum_required(VERSION 3.24)
         project(Revenant C)
 
@@ -60,20 +60,8 @@ else()
 
         include_directories(${CMAKE_SOURCE_DIR}/Agent/Include)
 
-        set(NASM_NAMES Agent/Source/Asm/ntdll_x64)
 
-        FOREACH(src ${NASM_NAMES})
-            SET(NASM_SRC ${CMAKE_CURRENT_SOURCE_DIR}/${src}.asm)
-            SET(NASM_OBJ ${CMAKE_CURRENT_BINARY_DIR}/${src}.o)
-            ADD_CUSTOM_COMMAND(
-                    OUTPUT ${NASM_OBJ}
-                    COMMAND nasm -f win64 -o ${NASM_OBJ} ${NASM_SRC}
-                    DEPENDS ${NASM_SRC}
-                    COMMENT "Assembling ${NASM_SRC}")
-            SET(NASM_OBJECTS ${NASM_OBJECTS} ${NASM_OBJ} Agent/Source/Poly.c)
-        ENDFOREACH(src)
-
-        add_executable(Revenant ${NASM_OBJECTS} Agent/Source/Main.c Agent/Source/Command.c Agent/Source/Core.c Agent/Source/Package.c Agent/Source/Parser.c Agent/Source/Transport.c Agent/Source/Obfuscation.c Agent/Source/Utilities.c Agent/Source/AntiDebug.c Agent/Source/Poly.c)
+        add_executable(Revenant Agent/Source/Main.c Agent/Source/Command.c Agent/Source/Core.c Agent/Source/Package.c Agent/Source/Parser.c Agent/Source/Transport.c Agent/Source/Obfuscation.c Agent/Source/Utilities.c Agent/Source/AntiDebug.c Agent/Source/Poly.c)
         target_compile_options(Revenant PRIVATE -s -O0 -masm=intel -mwindows -fdata-sections -Wno-implicit-function-declaration -Wno-multichar -Wno-incompatible-pointer-types -Wno-int-conversion)
         target_link_options(Revenant PRIVATE -mwindows -s -O3)
         target_link_libraries(Revenant ws2_32 kernel32 user32 gdi32 winspool shell32 ole32 oleaut32 uuid comdlg32 iphlpapi winhttp)
@@ -92,20 +80,7 @@ else()
 
         include_directories(${CMAKE_SOURCE_DIR}/Agent/Include)
 
-        set(NASM_NAMES Agent/Source/Asm/ntdll_x86)
-
-        FOREACH(src ${NASM_NAMES})
-            SET(NASM_SRC ${CMAKE_CURRENT_SOURCE_DIR}/${src}.asm)
-            SET(NASM_OBJ ${CMAKE_CURRENT_BINARY_DIR}/${src}.o)
-            ADD_CUSTOM_COMMAND(
-                    OUTPUT ${NASM_OBJ}
-                    COMMAND nasm -f win32 -o ${NASM_OBJ} ${NASM_SRC}
-                    DEPENDS ${NASM_SRC}
-                    COMMENT "Assembling ${NASM_SRC}")
-            SET(NASM_OBJECTS ${NASM_OBJECTS} ${NASM_OBJ} Agent/Source/Poly.c)
-        ENDFOREACH(src)
-
-        add_executable(Revenant ${NASM_OBJECTS} Agent/Source/Main.c Agent/Source/Command.c Agent/Source/Core.c Agent/Source/Package.c Agent/Source/Parser.c Agent/Source/Transport.c Agent/Source/Obfuscation.c Agent/Source/Utilities.c Agent/Source/AntiDebug.c Agent/Source/Poly.c)
+        add_executable(Revenant Agent/Source/Main.c Agent/Source/Command.c Agent/Source/Core.c Agent/Source/Package.c Agent/Source/Parser.c Agent/Source/Transport.c Agent/Source/Obfuscation.c Agent/Source/Utilities.c Agent/Source/AntiDebug.c Agent/Source/Poly.c)
         target_compile_options(Revenant PRIVATE -s -O0 -masm=intel -mwindows -fdata-sections -Wno-implicit-function-declaration -Wno-multichar -Wno-incompatible-pointer-types -Wno-int-conversion)
         target_link_options(Revenant PRIVATE -mwindows -s -O3)
         target_link_libraries(Revenant ws2_32 kernel32 user32 gdi32 winspool shell32 ole32 oleaut32 uuid comdlg32 iphlpapi winhttp)
