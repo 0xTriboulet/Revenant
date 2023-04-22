@@ -19,6 +19,10 @@ TODO:
 [x] Implement string obfuscation  
 [x] Turn off print statements in release build  
 [-] Write Revenant with maximum native API  
+  >NOTES:
+>> Currently uses Win10 NativeAPI. Untested on Win7/8  
+  For increased compatability, try disabling NativeAPI
+
 [ ] Develop Double Fork -> Run method  
 [ ] Develop PSBit method
 
