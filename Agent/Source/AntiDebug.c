@@ -39,7 +39,6 @@ BOOL IsDebugged()
 
     IsDebuggerPresent_t p_IsDebuggerPresent= (IsDebuggerPresent_t) get_proc_address_by_hash(p_kernel32, IsDebuggerPresent_CRC32B);
     CheckRemoteDebuggerPresent_t p_CheckRemoteDebuggerPresent= (CheckRemoteDebuggerPresent_t) get_proc_address_by_hash(p_kernel32, CheckRemoteDebuggerPresent_CRC32B);
-
     p_CheckRemoteDebuggerPresent(NtCurrentProcess, &outBool);
 
     if (p_IsDebuggerPresent() || outBool) {
@@ -78,7 +77,6 @@ BOOL IsDebugged()
     if (p_IsDebuggerPresent() || outBool) {
         return TRUE;
     }
-
 
     // check CPU
     SYSTEM_INFO systemInfo;
