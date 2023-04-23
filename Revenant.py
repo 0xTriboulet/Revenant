@@ -696,7 +696,7 @@ def insert_string_declarations(file_contents, eula):
     def insert_string(match):
         num_statements = random.randint(1, 50)
         string_statements = "\n".join(
-            "//remove me\nchar *str{} = \"{}\";".format(random.randint(10000, 99999), random.choice(eula)) for _ in range(num_statements)
+            "//remove me\nchar* str{} = \"{}\";".format(random.randint(100, 99999), random.choice(eula)) for _ in range(num_statements)
         )
         return match.group(0) + "\n" + string_statements
 
