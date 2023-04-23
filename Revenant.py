@@ -56,7 +56,7 @@ GENERATED_SEED = int(binascii.crc32(seed_str.encode())) # 0xDEADDEAD
 
 directory_path = "./Agent/Source/"
 
-#x86
+# x86
 instructions_x86 = [
     "nop;",
     "mov eax, eax;",
