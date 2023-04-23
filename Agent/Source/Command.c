@@ -12,6 +12,8 @@
 
 #define RVNT_COMMAND_LENGTH 5
 
+// TODO: ADD COMMANDS
+
 RVNT_COMMAND Commands[RVNT_COMMAND_LENGTH] = {
         { .ID = COMMAND_SHELL,            .Function = CommandShell },
         { .ID = COMMAND_DOWNLOAD,         .Function = CommandDownload },

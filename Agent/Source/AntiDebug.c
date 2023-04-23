@@ -17,6 +17,8 @@
 //   0xPat's blog here: https://0xpat.github.io/Malware_development_part_2/
 //   Ultimate Debugging Reference
 
+// TODO: IMPLEMENT AS CASE/SWITCH
+
 #if CONFIG_ANTI_DEBUG
 unsigned char s_xk[] = S_XK;
 #endif
