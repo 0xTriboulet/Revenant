@@ -534,6 +534,7 @@ class Revenant(AgentType):
                         print("[*] Cleaning up source files...")
 
                     print(process.stdout)
+                    break
                 except subprocess.CalledProcessError as error:
                     print(f"Error occurred: {error.stderr}")
 
