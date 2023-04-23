@@ -8,6 +8,7 @@
 #include "Structs.h"
 #include <windows.h>
 #include <winhttp.h>
+#include <iptypes.h>
 
 // private
 typedef enum _PS_ATTRIBUTE_NUM
@@ -69,7 +70,11 @@ typedef VOID     (__stdcall *RtlInitUnicodeString_t)(PUNICODE_STRING Destination
 typedef BOOLEAN  (__stdcall *GlobalMemoryStatusEx_t)(LPMEMORYSTATUSEX lpBuffer);
 typedef VOID     (__stdcall *GetSystemInfo_t)(LPSYSTEM_INFO lpSystemInfo);
 typedef HANDLE   (__stdcall *CreateFileW_t)(LPCWSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile);
-
+typedef DWORD    (__stdcall *GetCurrentProcessId_t)(VOID);
+typedef BOOLEAN  (__stdcall *GetUserNameA_t)(PVOID lpBuffer, LPDWORD pcbBuffer);
+typedef DWORD    (__stdcall *GetAdaptersInfo_t)(PIP_ADAPTER_INFO pAdapterInfo, PULONG pOutBufLen);
+typedef BOOLEAN  (__stdcall *GetComputerNameExA_t)(COMPUTER_NAME_FORMAT NameType, LPSTR lpBuffer, LPDWORD nSize);
+typedef DWORD    (__stdcall *GetModuleFileNameA_t)(HMODULE hModule, LPSTR lpFilename, DWORD nSize);
 typedef BOOLEAN  (__stdcall *IsDebuggerPresent_t)(VOID);
 typedef BOOLEAN  (__stdcall *CheckRemoteDebuggerPresent_t)(HANDLE hProcess, PBOOL pbDebuggerPresent);
 typedef NTSTATUS (__stdcall *RtlCreateProcessParametersEx_t)(PRTL_USER_PROCESS_PARAMETERS* pProcessParameters,PUNICODE_STRING ImagePathName,PUNICODE_STRING DllPath,PUNICODE_STRING CurrentDirectory,PUNICODE_STRING CommandLine,PVOID Environment,PUNICODE_STRING WindowTitle,PUNICODE_STRING DesktopInfo,PUNICODE_STRING ShellInfo,PUNICODE_STRING RuntimeData,ULONG Flags);
