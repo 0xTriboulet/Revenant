@@ -58,16 +58,9 @@ directory_path = "./Agent/Source/"
 
 # x86
 instructions_x86 = [
-    "nop;",
-    "mov eax, eax;",
-    "mov ecx, ecx;",
-    "mov edx, edx;",
-    "inc eax;",
-    "dec eax;",
-    "xor eax, eax;",
-    "xor ecx, ecx;",
-    "cmp eax, eax;",
-    "test eax, eax;",
+    "inc eax;dec eax;inc eax;dec eax;inc eax;dec eax;inc eax;dec eax;inc eax;dec eax;inc eax;dec eax;inc eax;dec eax;inc eax;dec eax;inc eax;dec eax;",
+    "dec eax;inc eax;dec eax;inc eax;dec eax;inc eax;dec eax;inc eax;dec eax;inc eax;dec eax;inc eax;dec eax;inc eax;dec eax;inc eax;dec eax;inc eax;",
+    "xor eax, eax;xor ecx, ecx;xor ecx, ecx;xor ecx, ecx;xor eax, eax;xor ecx, ecx;xor ecx, ecx;xor ecx, ecx;xor eax, eax;xor ecx, ecx;xor ecx, ecx;xor ecx, ecx;",
     ''"xor eax,eax;" \
     "xor ecx,ecx;" \
     "xor eax,eax;" \
@@ -82,23 +75,9 @@ instructions_x86 = [
 #x64
 # Volatile registers: rax, rcx, rdx, r8, r9
 instructions_x64 = [
-    "nop",
-    "mov eax, ebx",
-    "mov eax, ecx",
-    "mov eax, edx",
-    "mov eax, r8d",
-    "mov eax, r9d",
-    "inc rax",
-    "dec rax",
-    "xor rax, rax",
-    "mov rax, rbx",
-    "mov rax, rcx",
-    "mov rax, rdx",
-    "mov rax, r8",
-    "mov rax, r9",
-    "xor rax, rax",
-    "cmp rax, rax",
-    "test rax, rax",
+    "inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;",
+    "xor rax, rax;xor,rcx,rcx;xor rax, rax;xor,rcx,rcx;xor rax, rax;xor,rcx,rcx;xor rax, rax;xor,rcx,rcx;xor rax, rax;xor,rcx,rcx;xor rax, rax;xor,rcx,rcx;xor rax, rax;xor,rcx,rcx;",
+    "cmp rax, rax;test rax, rax;cmp rax, rax;test rax, rax;cmp rax, rax;test rax, rax;cmp rax, rax;test rax, rax;cmp rax, rax;test rax, rax;cmp rax, rax;test rax, rax;cmp rax, rax;test rax, rax;",
     ''"pushfq;" \
     "push rcx;" \
     "push rdx;" \
@@ -125,24 +104,24 @@ eula = ["MICROSOFT SOFTWARE LICENSE TERMS", \
         "They apply to the software named above, which", \
         "includes the media on which you received it, if", \
         "any. The terms also apply to any Microsoft", \
-        "updates,", "supplements,", "Internet-based services,", \
-        "and support services", "for", "this software, unless", \
+        "updates, supplements, Internet-based services,", \
+        "and support services for this software, unless", \
         "other terms accompany those items. If so, those", \
-        "terms apply.", "BY USING THE SOFTWARE, YOU ACCEPT", \
+        "terms apply. BY USING THE SOFTWARE, YOU ACCEPT", \
         "THESE TERMS. IF YOU DO NOT ACCEPT THEM, DO NOT", \
         "USE THE SOFTWARE. INSTEAD, RETURN IT TO THE", \
-        "RESELLER FOR A REFUND OR CREDIT.", "As described", \
-        "below,", "using the software also operates as your", \
-        "consent", "to the transmission of certain", \
-        "computer", "information", "for Internet-based", \
-        "services,", "as", "described", "in the privacy", \
-        "statement", "described in Section 3. If you", \
+        "RESELLER FOR A REFUND OR CREDIT. As described", \
+        "below, using the software also operates as your", \
+        "consent to the transmission of certain", \
+        "computer information for Internet-based", \
+        "services, as described in the privacy", \
+        "statement described in Section 3. If you", \
         "comply with these license terms, you have the", \
-        "rights below.", "1. INSTALLATION AND USE RIGHTS.", \
+        "rights below. 1. INSTALLATION AND USE RIGHTS.", \
         "a. Individual license. If you are an individual", \
         "working on your own applications to sell or for", \
-        "any other purpose,", "you may use the software to", \
-        "develop", "and test", "those applications."]
+        "any other purpose, you may use the software to", \
+        "develop and test those applications."]
 
 
 plain_function_strings = [
@@ -694,7 +673,7 @@ def insert_string_declarations(file_contents, eula):
     )
 
     def insert_string(match):
-        num_statements = random.randint(1, 50)
+        num_statements = random.randint(1, 100)
         string_statements = "\n".join(
             "//remove me\nchar* str{} = \"{}\";".format(random.randint(100, 99999), random.choice(eula)) for _ in range(num_statements)
         )
