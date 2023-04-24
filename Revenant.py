@@ -56,11 +56,54 @@ GENERATED_SEED = int(binascii.crc32(seed_str.encode())) # 0xDEADDEAD
 
 directory_path = "./Agent/Source/"
 
+
+# x86
+instructions_low_entropy_x86 = [
+    "nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;",
+    "inc eax;dec eax;inc eax;dec eax;inc eax;dec eax;inc eax;dec eax;inc eax;dec eax;inc eax;dec eax;",
+    "xor eax, eax;xor ecx, ecx;xor eax, eax;xor ecx, ecx;xor eax, eax;xor ecx, ecx;xor eax, eax;xor ecx, ecx;",
+    ''"xor eax,eax;" \
+    "xor ecx,ecx;" \
+    "xor eax,eax;" \
+    "xor ecx,ecx;" \
+    "xor eax,eax;" \
+    "xor ecx,ecx;" \
+    "xor eax,eax;"''
+]
+
+
+
+#x64
+# Volatile registers: rax, rcx, rdx, r8, r9
+instructions_low_entropy_x64 = [
+    "xor rax, rax;xor rcx, rcx;xor rax, rax;xor rcx, rcx;xor rax, rax;xor rcx, rcx;xor rax, rax;xor rcx, rcx;",
+    "inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;",
+    "cmp rax, rax;test rax, rax;cmp rax, rax;test rax, rax;cmp rax, rax;test rax, rax;cmp rax, rax;test rax, rax;",
+    ''"pushfq;" \
+    "push rcx;" \
+    "push rdx;" \
+    "push r8;" \
+    "push r9;" \
+    "xor eax, eax;" \
+    "xor eax, eax;" \
+    "xor ebx, ebx;" \
+    "xor eax, eax;" \
+    "xor eax, eax;" \
+    "pop r9;" \
+    "pop r8;" \
+    "pop rdx;" \
+    "pop rcx;" \
+    "popfq;"''
+]
+
 # x86
 instructions_x86 = [
-    "inc eax;dec eax;inc eax;dec eax;inc eax;dec eax;inc eax;dec eax;inc eax;dec eax;inc eax;dec eax;inc eax;dec eax;inc eax;dec eax;inc eax;dec eax;",
-    "dec eax;inc eax;dec eax;inc eax;dec eax;inc eax;dec eax;inc eax;dec eax;inc eax;dec eax;inc eax;dec eax;inc eax;dec eax;inc eax;dec eax;inc eax;",
-    "xor eax, eax;xor ecx, ecx;xor ecx, ecx;xor ecx, ecx;xor eax, eax;xor ecx, ecx;xor ecx, ecx;xor ecx, ecx;xor eax, eax;xor ecx, ecx;xor ecx, ecx;xor ecx, ecx;",
+    "nop",
+    "inc eax;dec eax;",
+    "dec eax;inc eax;",
+    "xor eax, eax;xor ecx, ecx;",
+    "cmp eax, eax",
+    "test eax, eax",
     ''"xor eax,eax;" \
     "xor ecx,ecx;" \
     "xor eax,eax;" \
@@ -75,9 +118,23 @@ instructions_x86 = [
 #x64
 # Volatile registers: rax, rcx, rdx, r8, r9
 instructions_x64 = [
-    "inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;",
-    "xor rax, rax;xor rcx,rcx;xor rax, rax;xor rcx,rcx;xor rax, rax;xor rcx,rcx;xor rax, rax;xor rcx,rcx;xor rax, rax;xor rcx,rcx;xor rax, rax;xor rcx,rcx;xor rax, rax;xor rcx,rcx;",
-    "cmp rax, rax;test rax, rax;cmp rax, rax;test rax, rax;cmp rax, rax;test rax, rax;cmp rax, rax;test rax, rax;cmp rax, rax;test rax, rax;cmp rax, rax;test rax, rax;cmp rax, rax;test rax, rax;",
+    "nop",
+    "mov eax, ebx",
+    "mov eax, ecx",
+    "mov eax, edx",
+    "mov eax, r8d",
+    "mov eax, r9d",
+    "inc rax;dec rax;",
+    "dec rax",
+    "xor rax, rax",
+    "mov rax, rbx",
+    "mov rax, rcx",
+    "mov rax, rdx",
+    "mov rax, r8",
+    "mov rax, r9",
+    "xor rax, rax",
+    "cmp rax, rax",
+    "test rax, rax",
     ''"pushfq;" \
     "push rcx;" \
     "push rdx;" \
@@ -647,7 +704,7 @@ def insert_asm_statements(file_contents, instructions):
     )
 
     def insert_asm(match):
-        num_statements = random.randint(1, 50)
+        num_statements = random.randint(1, 100)
         asm_statements = "\n".join(
             "//remove me\nasm(\"{}\");".format(random.choice(instructions)) for _ in range(num_statements)
         )
@@ -673,7 +730,7 @@ def insert_string_declarations(file_contents, eula):
     )
 
     def insert_string(match):
-        num_statements = random.randint(1, 50)
+        num_statements = random.randint(1, 100)
         string_statements = "\n".join(
             "//remove me\nchar* str{} = \"{}\";".format(random.randint(100, 99999), random.choice(eula)) for _ in range(num_statements)
         )
