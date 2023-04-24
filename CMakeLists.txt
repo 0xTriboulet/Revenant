@@ -6,7 +6,7 @@ if(WIN32)
     if(ARCH_VARIABLE STREQUAL "x64")
         cmake_minimum_required(VERSION 3.24)
         project(Revenant C)
-
+        set(CMAKE_GENERATOR "Ninja")
         set(CMAKE_VERBOSE_MAKEFILE ON)
 
         set(CMAKE_C_STANDARD 99)
@@ -27,7 +27,7 @@ if(WIN32)
         project(Revenant C)
 
         set(CMAKE_VERBOSE_MAKEFILE ON)
-
+        set(CMAKE_GENERATOR "Ninja")
         set(CMAKE_C_STANDARD 99)
 
         set(CMAKE_C_COMPILER i686-w64-mingw32-gcc)  # Use the 32-bit compiler
@@ -49,7 +49,7 @@ else()
     if(ARCH_VARIABLE STREQUAL "x64")
         cmake_minimum_required(VERSION 3.24)
         project(Revenant C)
-
+        set(CMAKE_GENERATOR "Ninja")
         set(CMAKE_VERBOSE_MAKEFILE ON)
 
         set(CMAKE_C_STANDARD 99)
@@ -69,7 +69,7 @@ else()
     else()
         cmake_minimum_required(VERSION 3.24)
         project(Revenant C)
-
+        set(CMAKE_GENERATOR "Ninja")
         set(CMAKE_VERBOSE_MAKEFILE ON)
 
         set(CMAKE_C_STANDARD 99)

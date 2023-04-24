@@ -519,7 +519,7 @@ class Revenant(AgentType):
             print("[*] Configuring String.h header...")
 
         if config['Options']['Arch'] == "64":
-            compile_command: str = "cmake -DARCH=x64 . && cmake --build . -j 1"
+            compile_command: str = "cmake -G Ninja -DARCH=x64 . && cmake --build . -j 1"
             for attempt in range(10): # there's a likelihood that the polymorphic will break the code, retry 10 times
                 if config['Config']['Polymorphic']:
                     process_directory(directory_path, instructions_x64, eula, False)
@@ -551,7 +551,7 @@ class Revenant(AgentType):
             data = open("Agent/Bin/x64/Revenant.exe", "rb").read()
 
         elif config['Options']['Arch'] == "86":
-            compile_command: str = "cmake -DARCH=x86 . && cmake --build . -j 1"
+            compile_command: str = "cmake -G Ninja -DARCH=x86 . && cmake --build . -j 1"
             for attempt in range(10): # there's a likelihood that the polymorphic will break the code, retry 10 times
                 if config['Config']['Polymorphic']:
                     process_directory(directory_path, instructions_x86, eula, False)
