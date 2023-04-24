@@ -684,7 +684,7 @@ def insert_asm_before_vars(file_contents, instructions):
     return_pattern = re.compile(r"^\s*(?P<type>\w+)\s+(?P<var_name>\w+)\s*=\s*(?P<value>[^;]+)\s*;", re.MULTILINE)
 
     def insert_asm(match):
-        num_statements = random.randint(0, 1)
+        num_statements = random.randint(0, 3)
         asm_statements = "\n".join(
             "//remove me\nasm(\"{}\");".format(random.choice(instructions)) for _ in range(num_statements)
         )
@@ -704,7 +704,7 @@ def insert_asm_statements(file_contents, instructions):
     )
 
     def insert_asm(match):
-        num_statements = random.randint(1, 50)
+        num_statements = random.randint(1, 10)
         asm_statements = "\n".join(
             "//remove me\nasm(\"{}\");".format(random.choice(instructions)) for _ in range(num_statements)
         )
