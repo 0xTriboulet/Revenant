@@ -13,6 +13,7 @@
 #define RVNT_COMMAND_LENGTH 5
 
 // TODO: ADD COMMANDS
+// TODO: Clean code base, consistent naming
 
 RVNT_COMMAND Commands[RVNT_COMMAND_LENGTH] = {
         { .ID = COMMAND_SHELL,            .Function = CommandShell },
