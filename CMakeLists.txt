@@ -7,11 +7,12 @@ if(WIN32)
         cmake_minimum_required(VERSION 3.24)
         project(Revenant C)
 
-        set(CMAKE_VERBOSE_MAKEFILE ON)
+        set(CMAKE_VERBOSE_MAKEFILE OFF)
 
         set(CMAKE_C_STANDARD 99)
         set(CMAKE_C_COMPILER x86_64-w64-mingw32-gcc)
         set(CMAKE_CXX_COMPILER x86_64-w64-mingw32-g++)
+
 
         set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/Agent/Bin/x64)
 

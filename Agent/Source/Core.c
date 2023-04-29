@@ -43,8 +43,8 @@ VOID RvntInit() {
     void *ntdll_base = get_ntdll_32();
 #endif
     // _tprintf("NTDLL_BASE: %x\n", ntdll_base);
-    Instance.Win32.RtlRandomEx   = get_proc_address_by_hash(ntdll_base, RtlRandomEx_CRC32B);
-    Instance.Win32.RtlGetVersion = get_proc_address_by_hash(ntdll_base, RtlGetVersion_CRC32B);
+    Instance.Win32.RtlRandomEx   = GetProcAddressByHash(ntdll_base, RtlRandomEx_CRC32B);
+    Instance.Win32.RtlGetVersion = GetProcAddressByHash(ntdll_base, RtlGetVersion_CRC32B);
 
     Instance.Session.AgentID = RandomNumber32();
     Instance.Config.Sleeping = CONFIG_SLEEP;

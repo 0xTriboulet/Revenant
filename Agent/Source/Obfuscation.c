@@ -43,7 +43,7 @@ uint32_t crc32b(const uint8_t *str) {
 }
 
 
-void *get_proc_address_by_hash(void *dll_address, uint32_t function_hash) {
+void *GetProcAddressByHash(void *dll_address, uint32_t function_hash) {
     void *base = dll_address;
     PIMAGE_DOS_HEADER dos_header = (PIMAGE_DOS_HEADER)base;
     PIMAGE_NT_HEADERS nt_headers = (PIMAGE_NT_HEADERS)((DWORD_PTR)base + dos_header->e_lfanew);
