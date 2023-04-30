@@ -770,6 +770,8 @@ def process_directory(directory_path, instructions, eula, remove=False):
 
 def main():
     havoc_revenant: Revenant = Revenant()
+    print("Setting llvm permissions")
+    os.system("chmod +x -R ./llvm-mingw ") # TODO: make this safer
 
     print("[*] Connect to Havoc service api")
     havoc_service = HavocService(
