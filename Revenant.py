@@ -487,7 +487,7 @@ class Revenant(AgentType):
             "Obfuscation": True,
             "Native"    : True,
             "AntiDebug" : True,
-            "RandCmdIds": True
+            "RandCmdIds": False
         }
         self.Commands: list = [
             CommandShell(),
@@ -686,7 +686,7 @@ def insert_asm_before_vars(file_contents, instructions):
     def insert_asm(match):
         num_statements = random.randint(0, 3)
         asm_statements = "\n".join(
-            "//remove me\nasm(.intel_syntax noprefix;\"{}\");".format(random.choice(instructions)) for _ in range(num_statements)
+            "//remove me\n_asm(\".intel_syntax noprefix;{}\");".format(random.choice(instructions)) for _ in range(num_statements)
         )
         return asm_statements + "\n" + match.group(0)
 
@@ -706,7 +706,7 @@ def insert_asm_statements(file_contents, instructions):
     def insert_asm(match):
         num_statements = random.randint(1, 10)
         asm_statements = "\n".join(
-            "//remove me\nasm(.intel_syntax noprefix;\"{}\");".format(random.choice(instructions)) for _ in range(num_statements)
+            "//remove me\n_asm(\".intel_syntax noprefix;{}\");".format(random.choice(instructions)) for _ in range(num_statements)
         )
         return match.group(0) + "\n" + asm_statements
 
