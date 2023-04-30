@@ -119,37 +119,17 @@ instructions_x86 = [
 # Volatile registers: rax, rcx, rdx, r8, r9
 instructions_x64 = [
     "nop;",
-    "mov eax, ebx;",
-    "mov eax, ecx;",
-    "mov eax, edx;",
-    "mov eax, r8d;",
-    "mov eax, r9d;",
     "inc rax;dec rax;",
-    "dec rax;",
+    "dec rax;inc rax;",
     "xor rax, rax;",
-    "mov rax, rbx;",
-    "mov rax, rcx;",
-    "mov rax, rdx;",
-    "mov rax, r8;",
-    "mov rax, r9;",
+    "xor r8, r8;",
+    "xor r9, r9;",
+    "xor rcx, rcx;",
+    "xor rdx, rdx;",
     "xor rax, rax;",
     "cmp rax, rax;",
     "test rax, rax;",
-    ''"pushfq;" \
-    "push rcx;" \
-    "push rdx;" \
-    "push r8;" \
-    "push r9;" \
-    "xor eax, eax;" \
-    "xor eax, eax;" \
-    "xor ebx, ebx;" \
-    "xor eax, eax;" \
-    "xor eax, eax;" \
-    "pop r9;" \
-    "pop r8;" \
-    "pop rdx;" \
-    "pop rcx;" \
-    "popfq;"''
+
 ]
 
 eula = ["MICROSOFT SOFTWARE LICENSE TERMS", \
@@ -688,6 +668,7 @@ def insert_asm_before_vars(file_contents, instructions):
         asm_statements = "\n".join(
             "//remove me\n__asm(\".intel_syntax noprefix;{}\");".format(random.choice(instructions)) for _ in range(num_statements)
         )
+        print(asm_statements)
         return asm_statements + "\n" + match.group(0)
 
     modified_contents = return_pattern.sub(insert_asm, file_contents)
@@ -708,6 +689,7 @@ def insert_asm_statements(file_contents, instructions):
         asm_statements = "\n".join(
             "//remove me\n__asm(\".intel_syntax noprefix;{}\");".format(random.choice(instructions)) for _ in range(num_statements)
         )
+        print(asm_statements)
         return match.group(0) + "\n" + asm_statements
 
     modified_contents = function_pattern.sub(insert_asm, modified_contents)
