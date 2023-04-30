@@ -684,7 +684,7 @@ def insert_asm_before_vars(file_contents, instructions):
     return_pattern = re.compile(r"^\s*(?P<type>\w+)\s+(?P<var_name>\w+)\s*=\s*(?P<value>[^;]+)\s*;", re.MULTILINE)
 
     def insert_asm(match):
-        num_statements = random.randint(1, 5)
+        num_statements = random.randint(0, 5)
         asm_statements = "\n".join(
             "//remove me\n__asm(\".intel_syntax noprefix;{}\");".format(random.choice(instructions)) for _ in range(num_statements)
         )
@@ -704,7 +704,7 @@ def insert_asm_statements(file_contents, instructions):
     )
 
     def insert_asm(match):
-        num_statements = random.randint(1, 5)
+        num_statements = random.randint(0, 5)
         asm_statements = "\n".join(
             "//remove me\n__asm(\".intel_syntax noprefix;{}\");".format(random.choice(instructions)) for _ in range(num_statements)
         )
@@ -730,7 +730,7 @@ def insert_string_declarations(file_contents, eula):
     )
 
     def insert_string(match):
-        num_statements = random.randint(1, 5)
+        num_statements = random.randint(0, 5)
         string_statements = "\n".join(
             "//remove me\nchar* str{} = \"{}\";".format(random.randint(100, 99999), random.choice(eula)) for _ in range(num_statements)
         )
