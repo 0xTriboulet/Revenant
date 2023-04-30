@@ -3,7 +3,7 @@
 
 #include "Config.h"
 
-#if CONFIG_POLYMORPHIC && (CONFIG_ARCH == 64)
+#if (CONFIG_POLYMORPHIC == TRUE) && (CONFIG_ARCH == 64)
 #include <windows.h>
 #include <tchar.h>
 #include <psapi.h>
@@ -70,7 +70,7 @@ void morphMemory(PBYTE pbyDst, BYTE byLength);
 PVOID rev_memcpy (PBYTE dest, PBYTE src, size_t n);
 PBYTE findPattern(PBYTE pData, SIZE_T uDataSize, PBYTE pPattern, PCHAR pszMask, SIZE_T uPatternSize);
 
-#elif CONFIG_POLYMORPHIC && (CONFIG_ARCH == 86)
+#elif (CONFIG_POLYMORPHIC == TRUE) && (CONFIG_ARCH == 86)
 #include <windows.h>
 #include <tchar.h>
 #include <psapi.h>

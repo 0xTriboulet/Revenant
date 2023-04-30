@@ -17,7 +17,7 @@ size_t sizeof_w(const wchar_t* str);
 wchar_t* wide_concat(const wchar_t* str1, const wchar_t* str2);
 unsigned char* obfuscate_usage(unsigned char* arr, size_t arr_size);
 
-#if CONFIG_NATIVE
+#if CONFIG_NATIVE == TRUE
 void normalize_path(char* path);
 #endif
 
