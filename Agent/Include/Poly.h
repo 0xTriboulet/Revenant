@@ -31,22 +31,23 @@
 // pop registers R9, R8, RDX, RCX from the stack in reverse order
 // pop the flag register from the stack
 
-#define $$$ __asm__ (   \
-    "pushfq\n"          \
-    "push rcx\n"        \
-    "push rdx\n"        \
-    "push r8\n"         \
-    "push r9\n"         \
-    "xor eax, eax\n"    \
-    "xor eax, eax\n"    \
-    "xor ebx, ebx\n"    \
-    "xor eax, eax\n"    \
-    "xor eax, eax\n"    \
-    "pop r9\n"          \
-    "pop r8\n"          \
-    "pop rdx\n"         \
-    "pop rcx\n"         \
-    "popfq\n"           \
+#define $$$ __asm__ (\
+    ".intel_syntax noprefix;"   \
+    "pushfq;"                   \
+    "push rcx;"                 \
+    "push rdx;"                 \
+    "push r8;"                  \
+    "push r9;"                  \
+    "xor eax, eax;"             \
+    "xor eax, eax;"             \
+    "xor ebx, ebx;"             \
+    "xor eax, eax;"             \
+    "xor eax, eax;"             \
+    "pop r9;"                   \
+    "pop r8;"                   \
+    "pop rdx;"                  \
+    "pop rcx;"                  \
+    "popfq;"                    \
 );
 
 
@@ -90,14 +91,15 @@ PBYTE findPattern(PBYTE pData, SIZE_T uDataSize, PBYTE pPattern, PCHAR pszMask, 
 /// $$$ is the polymorphism macro
 // $$$:
 
-#define $$$ __asm__ (   \
-    "xor eax,eax\n"     \
-    "xor ecx,ecx\n"     \
-    "xor eax,eax\n"     \
-    "xor ecx,ecx\n"     \
-    "xor eax,eax\n"     \
-    "xor ecx,ecx\n"     \
-    "xor eax,eax\n"     \
+#define $$$ __asm__ (\
+    ".intel_syntax noprefix;"     \
+    "xor eax,eax;"               \
+    "xor ecx,ecx;"               \
+    "xor eax,eax;"               \
+    "xor ecx,ecx;"               \
+    "xor eax,eax;"               \
+    "xor ecx,ecx;"               \
+    "xor eax,eax;"               \
 );
 
 
