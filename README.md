@@ -34,8 +34,7 @@ This project aims to be a self-contained Havoc C2 implant. The goal end-user fun
 
 ### TODO:
 > - Add exec-assembly
-> - Decrease entropy  
-> - Test current tool chain
+> - Decrease entropy
 > - Package llvm-clang for Linux
 > - Create ThreadStart Callback to break debugging before entry
 > - SecureSelfDelete
