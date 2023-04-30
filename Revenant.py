@@ -128,8 +128,7 @@ instructions_x64 = [
     "xor rdx, rdx;",
     "xor rax, rax;",
     "cmp rax, rax;",
-    "test rax, rax;",
-
+    "test rax, rax;"
 ]
 
 eula = ["MICROSOFT SOFTWARE LICENSE TERMS", \
