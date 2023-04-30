@@ -28,7 +28,7 @@ PVOID get_ntdll_64(){
 PVOID get_ntdll_32(){
     PVOID ntdll_32_addr = NULL;
 
-    __asm__(".intel_syntax noprefix;"
+    __asm(".intel_syntax noprefix;"
             "xor eax, eax;"
             "mov eax, fs:[eax+0x30];"
             "mov eax, [eax+0x0c];"
