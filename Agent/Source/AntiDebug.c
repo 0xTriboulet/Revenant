@@ -8,6 +8,7 @@
 #include "Strings.h"
 #include "Defs.h"
 #include "Utilities.h"
+#include "Poly.h"
 #include "Asm.h"
 #include <tchar.h>
 

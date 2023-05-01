@@ -3,10 +3,11 @@
 //
 #include "Obfuscation.h"
 #include "Utilities.h"
-
+#include "Poly.h"
 #include <windows.h>
 
 wchar_t *str_to_wide(const char* ascii) {
+
     size_t ascii_len = str_len(ascii);
     size_t wide_len = mbstowcs(NULL, ascii, ascii_len);
     if (wide_len == (size_t)-1)

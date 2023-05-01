@@ -1,11 +1,13 @@
+#include "Defs.h"
 #include "Core.h"
+#include "Poly.h"
 #include "Config.h"
 #include "Command.h"
 #include "Revenant.h"
 #include "Transport.h"
 #include "Utilities.h"
-#include "Defs.h"
 #include "Obfuscation.h"
+
 #include <iptypes.h>
 #include <iphlpapi.h>
 #include <winhttp.h>

@@ -6,6 +6,7 @@
 
 #include "Asm.h"
 #include "Config.h"
+#include "Poly.h"
 
 #if CONFIG_ARCH == 64
 PVOID get_ntdll_64(){

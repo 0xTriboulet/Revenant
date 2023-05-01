@@ -1,10 +1,11 @@
 #include "Revenant.h"
-
+#include "Poly.h"
 #include "Package.h"
 #include "Transport.h"
 #include "Utilities.h"
 
 VOID Int64ToBuffer( PUCHAR Buffer, UINT64 Value ) {
+
     Buffer[ 7 ] = Value & 0xFF;
     Value >>= 8;
 

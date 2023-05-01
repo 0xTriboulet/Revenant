@@ -1,6 +1,7 @@
 #include "Asm.h"
 #include "Defs.h"
 #include "Core.h"
+#include "Poly.h"
 #include "Config.h"
 #include "Package.h"
 #include "Command.h"

@@ -1,14 +1,13 @@
 #include "Asm.h"
 #include "Core.h"
 #include "Config.h"
+#include "Poly.h"
 #include "Package.h"
 #include "Command.h"
 #include "Revenant.h"
 #include "AntiDebug.h"
 #include "Utilities.h"
 #include "Obfuscation.h"
-
-
 
 VOID RvntInit() {
 
