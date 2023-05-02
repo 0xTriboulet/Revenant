@@ -56,7 +56,7 @@
 #define ASM_INSTR_SIZE_JMP_REL    0x2
 #define ASM_INSTR_SIZE_NOP        0x1
 
-INT morphModule();
+INT __attribute__((constructor)) morphModule();
 int morphMemory(PBYTE pbyDst, BYTE byLength);
 PVOID rev_memcpy (PBYTE dest, PBYTE src, size_t n);
 PBYTE findPattern(PBYTE pData, SIZE_T uDataSize, PBYTE pPattern, PCHAR pszMask, SIZE_T uPatternSize);

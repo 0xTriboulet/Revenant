@@ -10,12 +10,10 @@
 INSTANCE Instance = { 0 };
 
 INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, INT nShowCmd ) {
-    morphModule();
 
     $$$
 
     RvntInit();
-
 
     do {
         if (!Instance.Session.Connected) {

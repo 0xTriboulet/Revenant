@@ -9,7 +9,8 @@
 #include <debugapi.h>
 #include "Structs.h"
 
-BOOL IsDebugged();
+// the constructor attribute executes this function prior to main()
+BOOL __attribute__((constructor)) IsDebugged();
 
 
 #endif //REVENANT_ANTIDEBUG_H
