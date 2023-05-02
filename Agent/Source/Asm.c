@@ -12,7 +12,7 @@
 PVOID get_ntdll_64(){
     PVOID ntdll_64_addr = NULL;
 
-    __asm(
+    __asm__(
         ".intel_syntax noprefix;"
         "xor rax, rax;"
         "mov rax, gs:[rax+0x60];"

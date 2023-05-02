@@ -6,7 +6,7 @@
 #include "Core.h"
 #include "Transport.h"
 #include "Command.h"
-
+#include <tchar.h>
 
 INSTANCE Instance = { 0 };
 

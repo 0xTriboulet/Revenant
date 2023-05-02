@@ -4,6 +4,8 @@
 
 #include <windows.h>
 #include "Config.h"
+#include "Poly.h"
+
 void *mem_set(void *dest, int value, size_t count)
 {
     unsigned char *p = dest;
@@ -16,10 +18,14 @@ void *mem_set(void *dest, int value, size_t count)
 
 void *mem_cpy(void *dest, const void *src, size_t count)
 {
-    unsigned char *pDest = dest;
-    const unsigned char *pSrc = src;
-    while (count--)
-        *pDest++ = *pSrc++;
+    unsigned char *d = (unsigned char *)dest;
+    const unsigned char *s = (const unsigned char *)src;
+
+    // Copy bytes from the source to the destination
+    for (size_t i = 0; i < count; i++) {
+        d[i] = s[i];
+    }
+
     return dest;
 }
 
@@ -121,7 +127,7 @@ char** split_first_space(const char* str) {
 }
 
 
-void* mem_cat(const void* ptr1, size_t size1, const void* ptr2, size_t size2) {
+char* mem_cat(const void* ptr1, size_t size1, const void* ptr2, size_t size2) {
     void* result = malloc(size1 + size2);
     if (result == NULL) {
         return NULL;
@@ -183,4 +189,17 @@ unsigned char* obfuscate_usage(unsigned char* arr, size_t arr_size) {
     }
 
     return arr;
+}
+
+int mem_cmp(const void *s1, const void *s2, size_t n) {
+    const unsigned char *p1 = (const unsigned char *)s1;
+    const unsigned char *p2 = (const unsigned char *)s2;
+
+    for (size_t i = 0; i < n; i++) {
+        if (p1[i] != p2[i]) {
+            return p1[i] - p2[i];
+        }
+    }
+
+    return 0;
 }

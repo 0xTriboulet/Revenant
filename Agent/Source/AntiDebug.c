@@ -80,9 +80,15 @@ BOOL IsDebugged()
 #elif CONFIG_ANTI_DEBUG
     CheckRemoteDebuggerPresent(NtCurrentProcess, &outBool);
 
+#if CONFIG_OBFUSCATION
     if (p_IsDebuggerPresent() || outBool) {
         return TRUE;
     }
+#else
+    if (IsDebuggerPresent() || outBool) {
+        return TRUE;
+    }
+#endif
 
     // check CPU
     SYSTEM_INFO systemInfo;

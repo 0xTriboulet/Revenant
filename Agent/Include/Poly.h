@@ -22,16 +22,7 @@
                    + (__TIME__[1] - '0') * 3600 + (__TIME__[0] - '0') * 36000) & 0xFF))
 
 /// $$$ is the polymorphism macro
-// $$$:
-// push the flag register onto the stack
-// push registers RCX, RDX, R8, R9 onto the stack
-// set EAX to 0 (two times)
-// set EBX to 0
-// set EAX to 0 (two times)
-// pop registers R9, R8, RDX, RCX from the stack in reverse order
-// pop the flag register from the stack
-
-#define $$$ __asm__ (\
+#define $$$ __asm (\
     ".intel_syntax noprefix;"   \
     "pushfq;"                   \
     "push rcx;"                 \
@@ -47,8 +38,7 @@
     "pop r8;"                   \
     "pop rdx;"                  \
     "pop rcx;"                  \
-    "popfq;"                    \
-);
+    "popfq;");
 
 
 // A sequence of bytes to search for in memory
@@ -66,8 +56,8 @@
 #define ASM_INSTR_SIZE_JMP_REL    0x2
 #define ASM_INSTR_SIZE_NOP        0x1
 
-void morphModule();
-void morphMemory(PBYTE pbyDst, BYTE byLength);
+INT morphModule();
+int morphMemory(PBYTE pbyDst, BYTE byLength);
 PVOID rev_memcpy (PBYTE dest, PBYTE src, size_t n);
 PBYTE findPattern(PBYTE pData, SIZE_T uDataSize, PBYTE pPattern, PCHAR pszMask, SIZE_T uPatternSize);
 
@@ -119,15 +109,14 @@ PBYTE findPattern(PBYTE pData, SIZE_T uDataSize, PBYTE pPattern, PCHAR pszMask, 
 #define ASM_INSTR_SIZE_JMP_REL    0x2
 #define ASM_INSTR_SIZE_NOP        0x1
 
-void morphModule();
+INT morphModule();
 void morphMemory(PBYTE pbyDst, BYTE byLength);
 PVOID rev_memcpy (PBYTE dest, PBYTE src, size_t n);
 PBYTE findPattern(PBYTE pData, SIZE_T uDataSize, PBYTE pPattern, PCHAR pszMask, SIZE_T uPatternSize);
 
 #else
-#define $$$ __asm__ ("nop\n");
+#define $$$ __asm__ ("nop;");
 
 #endif //POLY
-void morphModule();
 
 #endif //REVENANT_POLY_H
