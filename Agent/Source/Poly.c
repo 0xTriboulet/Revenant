@@ -36,7 +36,7 @@ INT morphModule() {
     HANDLE hProcess = NtCurrentProcess;
 
     // Get a handle to the base module of the current process.
-    HMODULE hModule = GetModuleHandleA(NULL);
+    HMODULE hModule = GetModuleHandle(NULL);
 
     // If the module information is obtained successfully, enter the loop.
     if (GetModuleInformation(hProcess, hModule, &modInfo, sizeof(MODULEINFO)))

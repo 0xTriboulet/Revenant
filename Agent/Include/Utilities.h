@@ -4,6 +4,7 @@
 
 #ifndef REVENANT_UTILITIES_H
 #define REVENANT_UTILITIES_H
+#include <windows.h>
 
 void *mem_set(void *dest, int value, size_t count);
 void *mem_cpy(void *dest, const void *src, size_t count);
@@ -17,6 +18,9 @@ size_t sizeof_w(const wchar_t* str);
 wchar_t* wide_concat(const wchar_t* str1, const wchar_t* str2);
 unsigned char* obfuscate_usage(unsigned char* arr, size_t arr_size);
 int mem_cmp(const void *s1, const void *s2, size_t n);
+
+HMODULE LocalGetModuleHandle(LPCSTR moduleName);
+BOOL IsStringEqual (LPCWSTR Str1, LPCWSTR Str2);
 
 #if CONFIG_NATIVE == TRUE
 void normalize_path(char* path);

@@ -203,3 +203,82 @@ int mem_cmp(const void *s1, const void *s2, size_t n) {
 
     return 0;
 }
+
+HMODULE LocalGetModuleHandle(LPCSTR moduleName){
+// Heavily based on the MaldevAcademy implementation
+
+    // Get PEB
+#if CONFIG_ARCH == 64
+    PPEB pPeb		= (PPEB) get_peb_64();
+
+#elif CONFIG_ARCH == 86
+    PPEB pPeb		= (PPEB) get_peb_32();
+#endif
+
+    PCWSTR wideModuleName = str_to_wide(moduleName);
+
+    // Getting Ldr
+    PPEB_LDR_DATA			pLdr		= (PPEB_LDR_DATA)(pPeb->Ldr);
+
+    // Getting the first element in the linked list (contains information about the first module)
+    PLDR_DATA_TABLE_ENTRY	pDte		= (PLDR_DATA_TABLE_ENTRY)(pLdr->InMemoryOrderModuleList.Flink);
+    while (pDte) {
+
+        // If not null
+        if (pDte->FullDllName.Length != 0x0) {
+
+            // Check if both equal
+            if (IsStringEqual(pDte->FullDllName.Buffer, wideModuleName)) {
+                return (HMODULE)(pDte->InInitializationOrderLinks.Flink);
+
+            }
+
+        }
+        else {
+            break;
+        }
+
+        // Next element in the linked list
+        pDte = *(PLDR_DATA_TABLE_ENTRY*)(pDte);
+    }
+
+    return NULL;
+}
+
+
+BOOL IsStringEqual (LPCWSTR Str1, LPCWSTR Str2) {
+// MalDev Academy
+
+    // Zero init
+    WCHAR   lStr1	[MAX_PATH] = {0};
+    WCHAR   lStr2	[MAX_PATH] = {0};
+
+    int		len1	= lstrlenW(Str1),
+            len2	= lstrlenW(Str2);
+
+    int		i		= 0,
+            j		= 0;
+
+    // Checking length. We dont want to overflow the buffers
+    if (len1 >= MAX_PATH || len2 >= MAX_PATH)
+        return FALSE;
+
+    // Converting Str1 to lower case string (lStr1)
+    for (i = 0; i < len1; i++){
+        lStr1[i] = (WCHAR)tolower(Str1[i]);
+    }
+    lStr1[i++] = L'\0'; // null terminating
+
+    // Converting Str2 to lower case string (lStr2)
+    for (j = 0; j < len2; j++) {
+        lStr2[j] = (WCHAR)tolower(Str2[j]);
+    }
+    lStr2[j++] = L'\0'; // null terminating
+
+    // Comparing the lower-case strings
+    if (lstrcmpiW(lStr1, lStr2) == 0)
+        return TRUE;
+
+    return FALSE;
+}
+

@@ -9,9 +9,11 @@
 
 #if CONFIG_ARCH == 64
 PVOID get_ntdll_64();
+PVOID get_peb_64();
 
 #else
 PVOID get_ntdll_32();
+PVOID get_peb_32();
 
 #endif
 

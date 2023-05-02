@@ -3,6 +3,7 @@
 //
 
 #include <windows.h>
+#include <tchar.h>
 
 #include "Asm.h"
 #include "Config.h"
@@ -25,6 +26,18 @@ PVOID get_ntdll_64(){
     return ntdll_64_addr;
 }
 
+PVOID get_peb_64(){
+    PVOID peb = NULL;
+    PVOID alt_peb = (PEB*)(__readgsqword(0x60));
+    __asm__ (
+          ".intel_syntax noprefix;"
+          "mov rax, gs:[0x60];" // Read the PEB address from TEB
+          :"=a"(peb)
+           );
+
+    return peb;
+}
+
 #else
 PVOID get_ntdll_32(){
     PVOID ntdll_32_addr = NULL;
@@ -37,5 +50,15 @@ PVOID get_ntdll_32(){
             "mov eax, [eax+0x8];"
             :"=r" (ntdll_32_addr));
     return ntdll_32_addr;
+}
+
+PVOID get_peb_32(){
+    PVOID peb = NULL;
+
+    __asm__( ".intel_syntax noprefix;"
+            "mov eax, fs:[0x30];" // Read the PEB address from TEB
+            :"=a"(peb)
+            );
+    return peb;
 }
 #endif

@@ -38,8 +38,9 @@ BOOL IsDebugged()
     xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk));
     mem_cpy(d_string,s_string,12);
 
-    HANDLE p_kernel32 = GetModuleHandle(d_string);
-    
+    HANDLE p_kernel32 = LocalGetModuleHandle(d_string);
+
+
     IsDebuggerPresent_t p_IsDebuggerPresent= (IsDebuggerPresent_t) GetProcAddressByHash(p_kernel32,
                                                                                         IsDebuggerPresent_CRC32B);
     CheckRemoteDebuggerPresent_t p_CheckRemoteDebuggerPresent= (CheckRemoteDebuggerPresent_t) GetProcAddressByHash(
