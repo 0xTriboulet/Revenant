@@ -1,4 +1,5 @@
 plain_function_strings = [
+    "#define LdrLoadDll_CRC32B                      \"LdrLoadDll\"",
     "#define GetUserNameA_CRC32B                    \"GetUserNameA\"",
     "#define GetModuleFileNameA_CRC32B              \"GetModuleFileNameA\"",
     "#define GetCurrentProcessId_CRC32B             \"GetCurrentProcessId\"",
@@ -16,8 +17,8 @@ plain_function_strings = [
     "#define RtlFreeHeap_CRC32B                     \"RtlFreeHeap\"",
     "#define RtlCreateProcessParametersEx_CBC32B    \"RtlCreateProcessParametersEx\"",
     "#define RtlDestroyProcessParameters_CRC32B     \"RtlDestroyProcessParameters\"",
-    "#define NtCreateFile_CRC32b                    \"NtCreateFile\"",
-    "#define NtOpenFile_CRC32b                      \"NtOpenFile\"",
+    "#define NtCreateFile_CRC32B                    \"NtCreateFile\"",
+    "#define NtOpenFile_CRC32B                      \"NtOpenFile\"",
     "#define NtProtectVirtualMemory_CRC32b          \"NtProtectVirtualMemory\"",
     "#define NtQueryInformationFile_CRC32B          \"NtQueryInformationFile\"",
     "#define NtAllocateVirtualMemory_CRC32B         \"NtAllocateVirtualMemory\"",

