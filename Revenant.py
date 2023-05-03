@@ -47,7 +47,7 @@ def generate_command_constants():
     return (COMMAND_REGISTER, COMMAND_GET_JOB, COMMAND_NO_JOB, COMMAND_SHELL, COMMAND_UPLOAD, COMMAND_DOWNLOAD, COMMAND_EXIT, COMMAND_OUTPUT)
 
 
-GENERATED_PASSWORD: str = ''.join(random.choices(string.ascii_letters, k=16))
+GENERATED_PASSWORD: str = ''.join(random.choices(string.ascii_letters, k=4))
 password_bytes = GENERATED_PASSWORD.encode('utf-8')
 password_hex = ", ".join(f"0x{b:02x}" for b in password_bytes)
 
@@ -72,14 +72,14 @@ def xor_encode(s: str) -> str:
     def rotate_right(data: bytes, bits: int) -> bytes:
         byte_shift = bits // 8
         bit_shift = bits % 8
+
         return bytes(
-            (data[(i - byte_shift) % len(data)] >> bit_shift |
-             data[(i - byte_shift - 1) % len(data)] << (8 - bit_shift))
+            ((data[(i - byte_shift) % len(data)] >> bit_shift) |
+             (data[(i - byte_shift - 1) % len(data)] << (8 - bit_shift))) & 0xFF
             for i in range(len(data))
         )
-
-    s_with_null_byte = s + "\x00"
     password_bytes: bytes = GENERATED_PASSWORD.encode()
+    s_with_null_byte = s + "\x00"
     password_cycle: bytes = (password_bytes * (len(s_with_null_byte) // len(password_bytes) + 1))[:len(s_with_null_byte)]
     xor_bytes: bytes = bytes(b1 ^ b2 for b1, b2 in zip(s_with_null_byte.encode(), password_cycle))
 
@@ -109,7 +109,7 @@ def generate_crc32b_defs(plain_function_strings):
 
 def encode_strings(strings):
     encoded_strings = []
-    output = f"#define S_XK {{{password_hex}}}"
+    output = f"#define S_XK {{{password_hex},0x0}}"
     encoded_strings.append(output)
     for s in strings:
         # Extract the string contents

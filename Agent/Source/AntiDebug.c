@@ -45,7 +45,7 @@ BOOL Checks()
     UCHAR s_string[] = S_KERNEL32;
     UCHAR d_string[13] = {0};
 
-    ROL_AND_DECRYPT((char *)s_string, sizeof(s_string), 1, d_string, (char *)s_xk, sizeof(s_xk));
+    ROL_AND_DECRYPT((char *)s_string, sizeof(s_string), 1, d_string, s_xk);
 
     // check debugger
     HANDLE p_kernel32 = LocalGetModuleHandle(d_string);

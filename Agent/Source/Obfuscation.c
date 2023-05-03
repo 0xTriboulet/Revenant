@@ -20,9 +20,17 @@ wchar_t *str_to_wide(const char* ascii) {
     return wide;
 }
 
-char *xor_dec(char *_s, size_t _s_len, const char *_k, size_t _k_len) {
-    for (size_t i = 0; i < _s_len; i++) _s[i] ^= _k[i % _k_len];
-    return _s;
+void xor_dec (const char *input, char *output, const char *key, size_t size) {
+    size_t length = size;
+    int key_len = strlen(key);
+
+    for (int i = 0; i < length; i++) {
+        output[i] = input[i] ^ key[i % key_len];
+    }
+    // _tprintf("input: %s\n", input);
+    // _tprintf("output: %s\n", output);
+    output[length] = '\0';
+
 }
 
 uint32_t crc32b(const uint8_t *str) {

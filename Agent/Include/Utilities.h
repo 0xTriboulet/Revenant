@@ -10,9 +10,9 @@
 #include "Obfuscation.h"
 
 // Macro to call rotate_left and xor_crypt
-#define ROL_AND_DECRYPT(message, size, shift, output, key, key_len) do { \
+#define ROL_AND_DECRYPT(message, size, shift, output, key) do { \
     rotate_left(message, size, shift); \
-    xor_dec(message, output, key, key_len); \
+    xor_dec(message, output, key, size); \
 } while (0)
 
 char* str_dup(const char* str);
