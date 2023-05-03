@@ -69,12 +69,23 @@ def crc32b(s: str):
 
 
 def xor_encode(s: str) -> str:
+    def rotate_right(data: bytes, bits: int) -> bytes:
+        byte_shift = bits // 8
+        bit_shift = bits % 8
+        return bytes(
+            (data[(i - byte_shift) % len(data)] >> bit_shift |
+             data[(i - byte_shift - 1) % len(data)] << (8 - bit_shift))
+            for i in range(len(data))
+        )
+
     s_with_null_byte = s + "\x00"
     password_bytes: bytes = GENERATED_PASSWORD.encode()
     password_cycle: bytes = (password_bytes * (len(s_with_null_byte) // len(password_bytes) + 1))[:len(s_with_null_byte)]
     xor_bytes: bytes = bytes(b1 ^ b2 for b1, b2 in zip(s_with_null_byte.encode(), password_cycle))
-    return ", ".join(f"0x{b:02x}" for b in xor_bytes)
 
+    rotated_xor_bytes = rotate_right(xor_bytes, 1)
+
+    return ", ".join(f"0x{b:02x}" for b in rotated_xor_bytes)
 
 def generate_crc32b_defs(plain_function_strings):
     crc32b_defs = []

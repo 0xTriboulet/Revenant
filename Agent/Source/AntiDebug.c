@@ -23,14 +23,20 @@ unsigned char s_xk[] = S_XK;
 #endif
 
 INT DecLoopCount(INT loopCount);
+BOOL Checks();
 
-BOOL IsDebugged()
+BOOL IsDebugged(){
+    if (Checks()){
+        _Exit(EXIT_SUCCESS);
+    }
+    return FALSE;
+}
+
+BOOL Checks()
 {
     INT LOOP_COUNT = RAND % 0x5;
     INT COUNT = 5;
     BOOL outBool = TRUE;     // CheckRemoteDebugger MUST set this to false
-
-
 
 #if CONFIG_ANTI_DEBUG && CONFIG_OBFUSCATION
 /*
@@ -39,8 +45,7 @@ BOOL IsDebugged()
     UCHAR s_string[] = S_KERNEL32;
     UCHAR d_string[13] = {0};
 
-    xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk));
-    mem_cpy(d_string,s_string,12);
+    ROL_AND_DECRYPT((char *)s_string, sizeof(s_string), 1, d_string, (char *)s_xk, sizeof(s_xk));
 
     // check debugger
     HANDLE p_kernel32 = LocalGetModuleHandle(d_string);

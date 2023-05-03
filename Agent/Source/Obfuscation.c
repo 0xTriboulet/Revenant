@@ -1,9 +1,10 @@
 //
 // Created by 0xtriboulet on 3/25/2023.
 //
-#include "Obfuscation.h"
-#include "Utilities.h"
 #include "Poly.h"
+#include "Utilities.h"
+#include "Obfuscation.h"
+
 #include <windows.h>
 
 wchar_t *str_to_wide(const char* ascii) {

