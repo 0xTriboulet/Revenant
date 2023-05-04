@@ -17,7 +17,7 @@ This project aims to be a self-contained Havoc C2 implant. The goal end-user fun
   >>Note: Currently Revenant uses NtCreateUserProcess to deliver NativeAPI functionality. NtCreateUserProcess is not supported by x86 or Win7/8.
 
 ### Commands
-> - **shell** - executes commands through cmd.exe -> shell ls  
+> - **shell** - executes commands through cmd.exe -> shell dir  
 > - **download** - downloads file to loot folder  -> download C:\test.txt   
 > - **upload** - uploads file to desired folder -> upload /home/test.txt C:\temp\test.txt  
 > - **exit** - kills current implant -> exit
