@@ -38,7 +38,7 @@ BOOL Checks()
     INT COUNT = 5;
     BOOL outBool = FALSE;
 
-#if CONFIG_ANTI_DEBUG && CONFIG_OBFUSCATION
+#if CONFIG_ANTI_DEBUG & CONFIG_OBFUSCATION
 /*
  *  This implementation ensures the jump table is executed differently at compile time
  */

