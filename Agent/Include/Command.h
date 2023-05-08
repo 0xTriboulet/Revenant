@@ -1,7 +1,7 @@
 #ifndef REVENANT_COMMAND_H
 #define REVENANT_COMMAND_H
 
-#include <windows.h>
+#include <Windows.h>
 #include "Parser.h"
 
 #define COMMAND_REGISTER         0x100
