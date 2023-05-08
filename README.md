@@ -34,10 +34,10 @@ This project aims to be a self-contained Havoc C2 implant. The goal end-user fun
 
 ### TODO:
 > - Add exec-assembly
+> - Add pwsh (powershell) command
+> - Add cd, ls, whoami commands
 > - Decrease entropy
-> - Package llvm-clang for Linux
-> - Create ThreadStart Callback to break debugging before entry
-> - SecureSelfDelete
+
 
 
 ![IMG_0314](https://user-images.githubusercontent.com/22229087/233796939-96a6100e-bcfc-4d4a-b1cb-c9eacdea6bf9.PNG)
