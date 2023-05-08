@@ -295,6 +295,8 @@ void rotate_left(unsigned char *data, size_t size, unsigned int bits) {
         size_t new_index = (i + byte_shift) % size;
         temp[new_index] = (data[i] << bit_shift) | (data[(i + 1) % size] >> (8 - bit_shift));
     }
+    // _tprintf("data: %s\n", temp);
+    // _tprintf("temp: %s\n", data);
 
     mem_cpy(data, temp, size);
 }
