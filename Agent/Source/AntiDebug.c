@@ -36,7 +36,7 @@ BOOL Checks()
 {
     INT LOOP_COUNT = RAND % 0x5;
     INT COUNT = 5;
-    BOOL outBool = TRUE;     // CheckRemoteDebugger MUST set this to false
+    BOOL outBool = FALSE;
 
 #if CONFIG_ANTI_DEBUG && CONFIG_OBFUSCATION
 /*
@@ -160,7 +160,6 @@ BOOL Checks()
 
 
 #endif // CONFIG_ANTI_DEBUG
-
     return outBool;
 }
 
