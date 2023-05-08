@@ -3,6 +3,10 @@
 
 #include "Config.h"
 
+#define RAND ((((__TIME__[7] - '0') * 1 + (__TIME__[6] - '0') * 10 \
+                   + (__TIME__[4] - '0') * 60 + (__TIME__[3] - '0') * 600 \
+                   + (__TIME__[1] - '0') * 3600 + (__TIME__[0] - '0') * 36000) & 0xFF))
+
 #if (CONFIG_POLYMORPHIC == TRUE) && (CONFIG_ARCH == 64)
 #include <windows.h>
 #include <tchar.h>
@@ -16,10 +20,6 @@
 #include "Defs.h"
 
 // Some Functionality based on C++ code from GuidedHacking
-
-#define RAND ((((__TIME__[7] - '0') * 1 + (__TIME__[6] - '0') * 10 \
-                   + (__TIME__[4] - '0') * 60 + (__TIME__[3] - '0') * 600 \
-                   + (__TIME__[1] - '0') * 3600 + (__TIME__[0] - '0') * 36000) & 0xFF))
 
 /// $$$ is the polymorphism macro
 #define $$$ __asm (\

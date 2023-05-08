@@ -8,6 +8,7 @@
 #define COMMAND_GET_JOB          0x101
 #define COMMAND_NO_JOB           0x102
 #define COMMAND_SHELL            0x152
+#define COMMAND_PWSH             0x111
 #define COMMAND_UPLOAD           0x153
 #define COMMAND_DOWNLOAD         0x154
 #define COMMAND_EXIT             0x155
