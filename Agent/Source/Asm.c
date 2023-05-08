@@ -2,7 +2,7 @@
 // Created by 0xtriboulet on 4/21/2023.
 //
 
-#include <windows.h>
+#include <Windows.h>
 #include <tchar.h>
 
 #include "Asm.h"
@@ -28,7 +28,7 @@ PVOID get_ntdll_64(){
 
 PVOID get_peb_64(){
     PVOID peb = NULL;
-    PVOID alt_peb = (PEB*)(__readgsqword(0x60));
+    // DEBUGGING ONLY: PVOID alt_peb = (PEB*)(__readgsqword(0x60));
     __asm__ (
           ".intel_syntax noprefix;"
           "mov rax, gs:[0x60];" // Read the PEB address from TEB

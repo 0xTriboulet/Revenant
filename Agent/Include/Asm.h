@@ -4,7 +4,7 @@
 
 #ifndef REVENANT_ASM_H
 #define REVENANT_ASM_H
-#include <windows.h>
+#include <Windows.h>
 #include "Config.h"
 
 #if CONFIG_ARCH == 64

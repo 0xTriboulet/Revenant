@@ -129,7 +129,7 @@ def write_command_header_file():
     header_file_contents = f"""#ifndef REVENANT_COMMAND_H
 #define REVENANT_COMMAND_H
 
-#include <windows.h>
+#include <Windows.h>
 #include "Parser.h"
 
 #define COMMAND_REGISTER         {COMMAND_REGISTER}

@@ -5,7 +5,7 @@
 #ifndef REVENANT_ANTIDEBUG_H
 #define REVENANT_ANTIDEBUG_H
 
-#include <windows.h>
+#include <Windows.h>
 #include <debugapi.h>
 #include "Structs.h"
 

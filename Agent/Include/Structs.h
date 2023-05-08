@@ -23,7 +23,7 @@
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "bugprone-reserved-identifier"
 
-#include <windows.h>
+#include <Windows.h>
 
 typedef struct _PROCESS_ID_INFORMATION {
     HANDLE ProcessId;

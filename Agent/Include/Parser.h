@@ -1,7 +1,7 @@
 #ifndef REVENANT_PARSER_H
 #define REVENANT_PARSER_H
 
-#include <windows.h>
+#include <Windows.h>
 
 typedef struct {
     PCHAR  Original;
