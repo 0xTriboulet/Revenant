@@ -58,8 +58,8 @@ else()
 
         set(CMAKE_C_STANDARD 99)
 
-        set(CMAKE_C_COMPILER ${CMAKE_SOURCE_DIR}/llvm-mingw/bin/clang)
-        set(CMAKE_CXX_COMPILER ${CMAKE_SOURCE_DIR}/llvm-mingw/bin/clang++)
+        set(CMAKE_C_COMPILER ${CMAKE_SOURCE_DIR}/llvm-mingw/bin/x86_64-w64-mingw32-gcc)
+        set(CMAKE_CXX_COMPILER ${CMAKE_SOURCE_DIR}/llvm-mingw/bin/x86_64-w64-mingw32-g++)
         set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/Agent/Bin/x64)
 
         include_directories(${CMAKE_SOURCE_DIR}/Agent/Include)
