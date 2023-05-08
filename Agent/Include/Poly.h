@@ -59,7 +59,7 @@
 INT __attribute__((constructor)) morphModule();
 int morphMemory(PBYTE pbyDst, BYTE byLength);
 PVOID rev_memcpy (PBYTE dest, PBYTE src, size_t n);
-PBYTE findPattern(PBYTE pData, SIZE_T uDataSize, PBYTE pPattern, PCHAR pszMask, SIZE_T uPatternSize);
+PVOID findPattern(PVOID pData, SIZE_T uDataSize, PVOID pPattern, PCHAR pszMask, SIZE_T uPatternSize);
 
 #elif (CONFIG_POLYMORPHIC == TRUE) && (CONFIG_ARCH == 86)
 #include <windows.h>
@@ -112,7 +112,7 @@ PBYTE findPattern(PBYTE pData, SIZE_T uDataSize, PBYTE pPattern, PCHAR pszMask, 
 INT morphModule();
 int morphMemory(PBYTE pbyDst, BYTE byLength);
 PVOID rev_memcpy (PBYTE dest, PBYTE src, size_t n);
-PBYTE findPattern(PBYTE pData, SIZE_T uDataSize, PBYTE pPattern, PCHAR pszMask, SIZE_T uPatternSize);
+PVOID findPattern(PVOID pData, SIZE_T uDataSize, PVOID pPattern, PCHAR pszMask, SIZE_T uPatternSize);
 
 #else
 #define $$$ __asm__ ("nop;");

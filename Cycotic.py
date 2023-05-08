@@ -72,15 +72,9 @@ instructions_x86 = [
 #x64
 # Volatile registers: rax, rcx, rdx, r8, r9
 instructions_x64 = [
-    "nop;",
+    "nop;nop;nop;",
     "inc rax;dec rax;",
     "dec rax;inc rax;",
-    "xor rax, rax;",
-    "xor r8, r8;",
-    "xor r9, r9;",
-    "xor rcx, rcx;",
-    "xor rdx, rdx;",
-    "xor rax, rax;",
     "cmp rax, rax;",
     "test rax, rax;",
     ''"pushfq;" \
@@ -217,7 +211,7 @@ def process_c_file(file_path, instructions, eula, remove=False):
 def process_directory(directory_path, instructions, eula, remove=False):
     for filename in os.listdir(directory_path):
         if filename.endswith('.c'):
-            if filename in ["Poly.c"]:
+            if filename in ["Poly.c","Utilities.c","Obfuscation.c"]:
                 print(filename)
                 modified_instructions = instructions[0:-1]
                 print(modified_instructions)
