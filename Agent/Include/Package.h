@@ -1,7 +1,7 @@
 #ifndef REVENANT_PACKAGE_H
 #define REVENANT_PACKAGE_H
 
-#include <Windows.h>
+#include <windows.h>
 
 typedef struct {
     UINT32  CommandID;

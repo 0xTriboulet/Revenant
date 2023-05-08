@@ -1,7 +1,7 @@
 #ifndef REVENANT_CORE_H
 #define REVENANT_CORE_H
 
-#include <Windows.h>
+#include <windows.h>
 
 
 #define PRINT_HEX( b, l )                               \

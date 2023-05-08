@@ -8,7 +8,7 @@
                    + (__TIME__[1] - '0') * 3600 + (__TIME__[0] - '0') * 36000) & 0xFF))
 
 #if (CONFIG_POLYMORPHIC == TRUE) && (CONFIG_ARCH == 64)
-#include <Windows.h>
+#include <windows.h>
 #include <tchar.h>
 #include <psapi.h>
 #include <time.h>
@@ -62,7 +62,7 @@ PVOID rev_memcpy (PBYTE dest, PBYTE src, size_t n);
 PBYTE findPattern(PBYTE pData, SIZE_T uDataSize, PBYTE pPattern, PCHAR pszMask, SIZE_T uPatternSize);
 
 #elif (CONFIG_POLYMORPHIC == TRUE) && (CONFIG_ARCH == 86)
-#include <Windows.h>
+#include <windows.h>
 #include <tchar.h>
 #include <psapi.h>
 #include <time.h>

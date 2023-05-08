@@ -2,7 +2,7 @@
 // Created by 0xtriboulet on 4/21/2023.
 //
 
-#include <Windows.h>
+#include <windows.h>
 #include <tchar.h>
 
 #include "Asm.h"

@@ -5,7 +5,7 @@
 #ifndef REVENANT_UTILITIES_H
 #define REVENANT_UTILITIES_H
 
-#include <Windows.h>
+#include <windows.h>
 
 #include "Obfuscation.h"
 

@@ -1,7 +1,7 @@
 #ifndef REVENANT_REVENANT_H
 #define REVENANT_REVENANT_H
 
-#include <Windows.h>
+#include <windows.h>
 #include <tchar.h>
 
 #define DEREF( name )       *( UINT_PTR* ) ( name )

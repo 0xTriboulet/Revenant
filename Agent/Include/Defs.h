@@ -6,7 +6,7 @@
 #define REVENANT_DEFS_H
 
 #include "Structs.h"
-#include <Windows.h>
+#include <windows.h>
 #include <winhttp.h>
 #include <iptypes.h>
 

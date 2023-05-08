@@ -6,7 +6,7 @@
 #include "Poly.h"
 
 
-#include <Windows.h>
+#include <windows.h>
 
 void *mem_set(void *dest, int value, size_t count)
 {
