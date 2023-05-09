@@ -1,4 +1,6 @@
-
+CHANGELOG 8MAY23 v0.59:
+> Added powershell command (pwsh)
+> Fixed polymorphic issue on Linux builds
 
 CHANGELOG 2MAY23 v0.55:
 > Revenant is now packaged with llvm-clang/llvm-mingw
