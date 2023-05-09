@@ -131,7 +131,7 @@ def insert_asm_before_vars(file_contents, instructions):
         asm_statements = "\n".join(
             "//remove me\n__asm(\".intel_syntax noprefix;{}\");".format(random.choice(instructions)) for _ in range(num_statements)
         )
-        print(asm_statements)
+        #print(asm_statements)
         return asm_statements + "\n" + match.group(0)
 
     modified_contents = return_pattern.sub(insert_asm, file_contents)
@@ -152,7 +152,7 @@ def insert_asm_statements(file_contents, instructions):
         asm_statements = "\n".join(
             "//remove me\n__asm(\".intel_syntax noprefix;{}\");".format(random.choice(instructions)) for _ in range(num_statements)
         )
-        print(asm_statements)
+        #print(asm_statements)
         return match.group(0) + "\n" + asm_statements
 
     modified_contents = function_pattern.sub(insert_asm, modified_contents)
@@ -212,9 +212,9 @@ def process_directory(directory_path, instructions, eula, remove=False):
     for filename in os.listdir(directory_path):
         if filename.endswith('.c'):
             if filename in ["Poly.c","Utilities.c","Obfuscation.c","Asm.c","AntiDebug.c"]:
-                print(filename)
+                #print(filename)
                 modified_instructions = instructions[0:-1]
-                print(modified_instructions)
+                #print(modified_instructions)
                 file_path = os.path.join(directory_path, filename)
                 process_c_file(file_path, modified_instructions, eula, remove)
             else:
