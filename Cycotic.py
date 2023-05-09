@@ -55,7 +55,6 @@ instructions_x86 = [
     "nop;",
     "inc eax;dec eax;",
     "dec eax;inc eax;",
-    "xor eax, eax;xor ecx, ecx;",
     "cmp eax, eax;",
     "test eax, eax;",
     ''"xor eax,eax;" \
