@@ -33,7 +33,7 @@ instructions_low_entropy_x64 = [
     "xor rax, rax;xor rcx, rcx;xor rax, rax;xor rcx, rcx;xor rax, rax;xor rcx, rcx;xor rax, rax;xor rcx, rcx;",
     "inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;",
     "cmp rax, rax;test rax, rax;cmp rax, rax;test rax, rax;cmp rax, rax;test rax, rax;cmp rax, rax;test rax, rax;",
-    ''"pushfq;" \
+    '"pushfq;" \
     "push rcx;" \
     "push rdx;" \
     "push r8;" \
@@ -47,24 +47,31 @@ instructions_low_entropy_x64 = [
     "pop r8;" \
     "pop rdx;" \
     "pop rcx;" \
-    "popfq;"''
+    "popfq;"'
 ]
 
 # x86
 instructions_x86 = [
-    "nop;",
+    "nop;nop;nop;",
     "inc eax;dec eax;",
     "dec eax;inc eax;",
     "cmp eax, eax;",
     "test eax, eax;",
-    ''"xor eax,eax;" \
-    "xor ecx,ecx;" \
-    "xor eax,eax;" \
-    "xor ecx,ecx;" \
-    "xor eax,eax;" \
-    "xor ecx,ecx;" \
-    "xor eax,eax;"''
-]
+    '"xchg eax, ecx;" \
+    "xchg ecx, eax;" \
+    "xchg eax, ebx;" \
+    "xchg ebx, eax;" \
+    "inc eax;" \
+    "dec eax;" \
+    "inc ebx;" \
+    "dec ebx;" \
+    "inc ecx;" \
+    "dec ecx;" \
+    "xchg eax, ecx;" \
+    "xchg ecx, eax;" \
+    "xchg eax, ebx;" \
+    "xchg ebx, eax;"'
+    ]
 
 
 
@@ -76,7 +83,7 @@ instructions_x64 = [
     "dec rax;inc rax;",
     "cmp rax, rax;",
     "test rax, rax;",
-    ''"pushfq;" \
+    '"pushfq;" \
     "push rcx;" \
     "push rdx;" \
     "push r8;" \
@@ -90,7 +97,7 @@ instructions_x64 = [
     "pop r8;" \
     "pop rdx;" \
     "pop rcx;" \
-    "popfq;"''
+    "popfq;"'
 ]
 
 eula = ["MICROSOFT SOFTWARE LICENSE TERMS", \

@@ -83,18 +83,25 @@ PVOID findPattern(PVOID pData, SIZE_T uDataSize, PVOID pPattern, PCHAR pszMask, 
 
 #define $$$ __asm__ (\
     ".intel_syntax noprefix;"     \
-    "xor eax,eax;"               \
-    "xor ecx,ecx;"               \
-    "xor eax,eax;"               \
-    "xor ecx,ecx;"               \
-    "xor eax,eax;"               \
-    "xor ecx,ecx;"               \
-    "xor eax,eax;"               \
+    "xchg eax, ecx;"              \
+    "xchg ecx, eax;"              \
+    "xchg eax, ebx;"              \
+    "xchg ebx, eax;"              \
+    "inc eax;"                    \
+    "dec eax;"                    \
+    "inc ebx;"                    \
+    "dec ebx;"                    \
+    "inc ecx;"                    \
+    "dec ecx;"                    \
+    "xchg eax, ecx;"              \
+    "xchg ecx, eax;"              \
+    "xchg eax, ebx;"              \
+    "xchg ebx, eax;"              \
 );
 
 
 // A sequence of bytes to search for in memory
-#define MARKER_BYTES "\x31\xC0\x31\xC9\x31\xC0\x31\xC9\x31\xC0\x31\xC9\x31\xC0"
+#define MARKER_BYTES "\x91\x91\x93\x93\x40\x48\x43\x4B\x41\x49\x91\x91\x93\x93"
 
 // The length of the marker in bytes
 #define MARKER_SIZE 14
