@@ -33,7 +33,7 @@ instructions_low_entropy_x64 = [
     "xor rax, rax;xor rcx, rcx;xor rax, rax;xor rcx, rcx;xor rax, rax;xor rcx, rcx;xor rax, rax;xor rcx, rcx;",
     "inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;inc rax;dec rax;",
     "cmp rax, rax;test rax, rax;cmp rax, rax;test rax, rax;cmp rax, rax;test rax, rax;cmp rax, rax;test rax, rax;",
-    '"pushfq;" \
+    ''"pushfq;" \
     "push rcx;" \
     "push rdx;" \
     "push r8;" \
@@ -47,7 +47,7 @@ instructions_low_entropy_x64 = [
     "pop r8;" \
     "pop rdx;" \
     "pop rcx;" \
-    "popfq;"'
+    "popfq;"''
 ]
 
 # x86
@@ -57,7 +57,7 @@ instructions_x86 = [
     "dec eax;inc eax;",
     "cmp eax, eax;",
     "test eax, eax;",
-    '"xchg eax, ecx;" \
+    ''"xchg eax, ecx;" \
     "xchg ecx, eax;" \
     "xchg eax, ebx;" \
     "xchg ebx, eax;" \
@@ -70,7 +70,7 @@ instructions_x86 = [
     "xchg eax, ecx;" \
     "xchg ecx, eax;" \
     "xchg eax, ebx;" \
-    "xchg ebx, eax;"'
+    "xchg ebx, eax;"''
     ]
 
 
