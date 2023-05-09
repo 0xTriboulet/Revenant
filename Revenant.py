@@ -80,7 +80,7 @@ def xor_encode(s: str) -> str:
              (data[(i - byte_shift - 1) % len(data)] << (8 - bit_shift))) & 0xFF
             for i in range(len(data))
         )
-    print(password_bytes)
+    #print(password_bytes)
     s_with_null_byte = s + "\x00"
     password_cycle: bytes = (password_bytes * (len(s_with_null_byte) // len(password_bytes) + 1))[:len(s_with_null_byte)]
     xor_bytes: bytes = bytes(b1 ^ b2 for b1, b2 in zip(s_with_null_byte.encode(), password_cycle))
