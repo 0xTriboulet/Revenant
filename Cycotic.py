@@ -83,21 +83,21 @@ instructions_x64 = [
     "dec rax;inc rax;",
     "cmp rax, rax;",
     "test rax, rax;",
-    '"pushfq;" \
+    ''"pushfq;" \
     "push rcx;" \
     "push rdx;" \
     "push r8;" \
     "push r9;" \
-    "xor eax, eax;" \
-    "xor eax, eax;" \
-    "xor ebx, ebx;" \
-    "xor eax, eax;" \
-    "xor eax, eax;" \
+    "xchg eax, eax;" \
+    "xchg eax, eax;" \
+    "xchg ebx, ebx;" \
+    "xchg eax, eax;" \
+    "xchg eax, eax;" \
     "pop r9;" \
     "pop r8;" \
     "pop rdx;" \
     "pop rcx;" \
-    "popfq;"'
+    "popfq;"''
 ]
 
 eula = ["MICROSOFT SOFTWARE LICENSE TERMS", \
