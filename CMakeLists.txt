@@ -22,7 +22,7 @@ if(WIN32)
         include_directories(${CMAKE_SOURCE_DIR}/Agent/Include)
 
         add_executable(Revenant Agent/Source/Main.c Agent/Source/Command.c Agent/Source/Core.c Agent/Source/Package.c Agent/Source/Parser.c Agent/Source/Transport.c Agent/Source/Obfuscation.c Agent/Source/Utilities.c Agent/Source/AntiDebug.c Agent/Source/Poly.c Agent/Source/Asm.c)
-        target_compile_options(Revenant PRIVATE -O3 -fdata-sections -Wno-implicit-function-declaration -Wno-multichar -Wno-inline-asm -Wno-incompatible-pointer-types -Wno-int-conversion -Wno-pointer-sign -Wno-return-local-addr)
+        target_compile_options(Revenant PRIVATE -O3 -fdata-sections -Wno-implicit-function-declaration -Wno-multichar -Wno-inline-asm -Wno-incompatible-pointer-types -Wno-int-conversion -Wno-pointer-sign)
         target_link_options(Revenant PRIVATE -O3 -s)
         target_link_libraries(Revenant ws2_32 kernel32 user32 gdi32 iphlpapi advapi32 winspool shell32 ole32 oleaut32 uuid comdlg32 winhttp)
 
