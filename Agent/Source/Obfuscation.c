@@ -14,7 +14,7 @@ wchar_t *str_to_wide(const char* ascii) {
     if (wide_len == (size_t)-1)
         return NULL;
 
-    wchar_t *wide = (wchar_t *)malloc((wide_len + 1) * sizeof(wchar_t));
+    wchar_t *wide = (wchar_t *)LocalAlloc(LPTR, (wide_len + 1) * sizeof(wchar_t));
     mbstowcs(wide, ascii, wide_len + 1);
     wide[wide_len] = L'\0';
     return wide;

