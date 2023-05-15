@@ -189,7 +189,7 @@ int morphMemory(PBYTE pbyDst, BYTE byLength)
 #endif //CONFIG NATIVE
 
     // Free the memory allocated for the morphed opcodes
-    free(morphedOpcodes);
+    LocalFree(*(PVOID*)morphedOpcodes);
     return 0;
 }
 
