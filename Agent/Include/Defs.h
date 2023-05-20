@@ -65,7 +65,7 @@ typedef enum _PS_ATTRIBUTE_NUM
 
 #define RTL_CONSTANT_STRING(s) { sizeof(s)-sizeof((s)[0]), sizeof(s), s }
 typedef VOID     (__stdcall *PIO_APC_ROUTINE)(PVOID ApcContext,PIO_STATUS_BLOCK IoStatusBlock,ULONG Reserved);
-
+typedef VOID     (__stdcall *GetNativeSystemInfo_t)(LPSYSTEM_INFO);
 typedef VOID     (__stdcall *RtlInitUnicodeString_t)(PUNICODE_STRING DestinationString, PWSTR SourceString);
 typedef BOOLEAN  (__stdcall *GlobalMemoryStatusEx_t)(LPMEMORYSTATUSEX lpBuffer);
 typedef VOID     (__stdcall *GetSystemInfo_t)(LPSYSTEM_INFO lpSystemInfo);

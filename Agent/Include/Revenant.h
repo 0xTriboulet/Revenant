@@ -15,8 +15,11 @@
 
 #ifdef _WIN64
 #define PROCESS_AGENT_ARCH PROCESS_ARCH_X64
-#else
+#elif _WIN32
 #define PROCESS_AGENT_ARCH PROCESS_ARCH_X86
+#else
+#define PROCESS_AGENT_ARCH PROCESS_ARCH_UNKNOWN
+
 #endif
 
 #define RVNT_MAGIC_VALUE (UINT32) 'rvnt'
@@ -24,7 +27,8 @@
 typedef struct _INSTANCE {
     struct {
         UINT32  AgentID;
-        DWORD   OSArch;
+        WORD    ProcArch;
+        WORD    OSArch;
         BOOL    Connected;
     } Session;
 
@@ -35,11 +39,14 @@ typedef struct _INSTANCE {
 
     struct {
         DWORD Sleeping;
+        DWORD Jitter;
 
         struct {
             LPWSTR UserAgent;
             LPWSTR Host;
             DWORD  Port;
+            UINT64 KillDate;
+            UINT32 WorkingHours;
 
             BOOL   Secure;
         } Transport ;

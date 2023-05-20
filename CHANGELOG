@@ -1,3 +1,7 @@
+CHANGELOG 20MAY23 v0.59.3:
+> (HAVOC) submit solution candidate for 3rd party agent health monitoring
+>> https://github.com/HavocFramework/Havoc/issues/311
+
 CHANGELOG 19MAY23 v0.59.2:
 > Replace debugging methods in AntiDebug.c
 

