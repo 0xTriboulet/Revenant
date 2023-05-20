@@ -17,9 +17,9 @@ VOID RvntInit() {
 
     // Init Connection info
     // UserAgent and Host IP always obfuscated
-    UCHAR s_xk[] = S_XK;
+    UCHAR s_xk[]        = S_XK;
     UCHAR e_UserAgent[] = CONFIG_USER_AGENT;
-    UCHAR e_Host[] = CONFIG_HOST;
+    UCHAR e_Host[]      = CONFIG_HOST;
 
     UCHAR d_UserAgent[sizeof(e_UserAgent)] = {0};
     UCHAR d_Host[sizeof(e_Host)] = {0};
@@ -31,7 +31,7 @@ VOID RvntInit() {
     PWCHAR w_Host = NULL;
 
     w_UserAgent = str_to_wide( (PCCH) d_UserAgent);
-    w_Host = str_to_wide(d_Host);
+    w_Host = str_to_wide((PCCH) d_Host);
 
     Instance.Config.Transport.UserAgent = w_UserAgent;
     Instance.Config.Transport.Host      = w_Host;

