@@ -77,7 +77,7 @@ VOID normalize_path(CHAR* path)
 
 CHAR* str_dup(CONST CHAR* str)
 {
-    SIZE_T len = strlen(str) + 1;
+    SIZE_T len = str_len(str) + 1;
     CHAR* result = (CHAR*)LocalAlloc(LPTR, len * sizeof(CHAR));
     if (result != NULL) {
         mem_cpy(result, str, len);

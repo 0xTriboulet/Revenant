@@ -22,7 +22,7 @@ wchar_t *str_to_wide(const char* ascii) {
 
 void xor_dec (const char *input, char *output, const char *key, size_t size) {
     size_t length = size;
-    int key_len = strlen(key);
+    int key_len = str_len(key);
 
     for (int i = 0; i < length; i++) {
         output[i] = input[i] ^ key[i % key_len];

