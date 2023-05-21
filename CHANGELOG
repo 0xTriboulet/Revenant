@@ -2,7 +2,7 @@ CHANGELOG 20MAY23 v0.59.3:
 > (HAVOC) submit solution candidate for 3rd party agent health monitoring
 >> https://github.com/HavocFramework/Havoc/issues/311
 > Fixed bugs where architecture of OS was not properly enumerated
-> Replace debugging methods in Command.c
+> Replace debugging methods in Command.c ; Poly.c
 
 CHANGELOG 19MAY23 v0.59.2:
 > Replace debugging methods in AntiDebug.c
