@@ -505,8 +505,7 @@ class Revenant(AgentType):
         else:
             print(f"[*] Something else: {command}")
             agentid = response["Agent"]["NameID"]
-            self.registerinfo["SleepDelay"] = self.BuildingConfig["Sleep"]
-            self.register()
+
             if command == COMMAND_GET_JOB:
                 print("[*] Get list of jobs and return it.")
                 tasks = self.get_task_queue(response["Agent"])

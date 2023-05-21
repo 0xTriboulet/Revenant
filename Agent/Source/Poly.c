@@ -60,12 +60,12 @@ INT morphModule() {
             // Declare a counter for the number of memory regions that have been morphed.
 
             DWORD dwRegionCount = 0;
-            unsigned char marker_bytes = MARKER_BYTES;
+            unsigned char * marker_bytes = MARKER_BYTES;
             unsigned char markerAddr[MARKER_SIZE] = {0};
             //_tprintf("MORPHMODULE 64\n");
             //_tprintf("markerADDR 66: %p\n", markerAddr);
             //__asm("int3");
-            mem_cpy(markerAddr,MARKER_BYTES,MARKER_SIZE);
+            mem_cpy(markerAddr,marker_bytes,MARKER_SIZE);
             //_tprintf("MORPHMODULE 69\n");
 
             // Iterate through memory regions of the current process's module to search for the marker pattern.
