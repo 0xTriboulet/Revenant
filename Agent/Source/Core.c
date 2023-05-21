@@ -75,8 +75,9 @@ VOID AnonPipeRead( HANDLE hSTD_OUT_Read ) {
 
     do {
         SuccessFul = ReadFile( hSTD_OUT_Read, buf, 1024, &dwRead, NULL );
-        if ( dwRead == 0)
+        if ( dwRead == 0) {
             break;
+        }
 
         pOutputBuffer = LocalReAlloc(
                 pOutputBuffer,

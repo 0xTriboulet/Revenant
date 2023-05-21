@@ -1,4 +1,5 @@
 plain_function_strings = [
+    "#define ReadFile_CRC32B                        \"ReadFile\"",
     "#define GetNativeSystemInfo_CRC32B             \"GetNativeSystemInfo\"",
     "#define LdrLoadDll_CRC32B                      \"LdrLoadDll\"",
     "#define GetUserNameA_CRC32B                    \"GetUserNameA\"",

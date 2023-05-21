@@ -243,6 +243,7 @@ HMODULE LocalGetModuleHandle(LPCSTR moduleName){
         pDte = *(PLDR_DATA_TABLE_ENTRY*)(pDte);
     }
 
+    LocalFree(wideModuleName);
     return NULL;
 }
 
