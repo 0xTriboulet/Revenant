@@ -1,4 +1,7 @@
 plain_function_strings = [
+    "#define LocalAlloc_CRC32B                      \"LocalAlloc\"",
+    "#define VirtualAlloc_CRC32B                    \"VirtualAlloc\"",
+    "#define VirtualProtect_CRC32B                  \"VirtualProtect\"",
     "#define ReadFile_CRC32B                        \"ReadFile\"",
     "#define GetNativeSystemInfo_CRC32B             \"GetNativeSystemInfo\"",
     "#define LdrLoadDll_CRC32B                      \"LdrLoadDll\"",

