@@ -438,7 +438,7 @@ class Revenant(AgentType):
             data = open("Agent/Bin/x86/Revenant.exe", "rb").read()
 
         # Below line sends the build executable back to Havoc for file management - 0xtriboulet
-        self.builder_send_payload(config['ClientID'], self.Name + "." + self.Formats[0]["Extension"], data)
+        self.builder_send_payload(config['ClientID'], self.Name +"_x"+config['Options']['Arch']+ "." + self.Formats[0]["Extension"], data)
 
     def response(self, response: dict) -> bytes:
 

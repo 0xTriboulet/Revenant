@@ -157,7 +157,7 @@ int morphMemory(PBYTE pbyDst, BYTE byLength)
 
     NTSTATUS status;
     NtProtectVirtualMemory_t p_NtProtectVirtualMemory = GetProcAddressByHash(p_ntdll, NtProtectVirtualMemory_CRC32B);
-    size_t pbySize = sizeof(MARKER_BYTES);
+    SIZE_T pbySize = sizeof(MARKER_BYTES);
 
     // set permissions
     check_debug(p_NtProtectVirtualMemory(NtCurrentProcess,&pbyDst, &pbySize,PAGE_EXECUTE_READWRITE,&dwOldProtect) == 0 , "NtProtectVirtualMemory (RWX) Failed!");
