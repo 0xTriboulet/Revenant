@@ -164,8 +164,8 @@ VOID* mem_cpy_w(VOID* dest, CONST VOID* src, SIZE_T n)
 
 WCHAR * wide_concat(CONST WCHAR * str1, CONST WCHAR * str2)
 {
-    SIZE_T len1 = wcslen(str1);
-    SIZE_T len2 = wcslen(str2);
+    SIZE_T len1 = lstr_lenW(str1);
+    SIZE_T len2 = lstr_lenW(str2);
     SIZE_T len = len1 + len2;
     WCHAR* result = (WCHAR*)LocalAlloc(LPTR, (len + 1) * sizeof(WCHAR));
     if (result == NULL) {
@@ -266,15 +266,16 @@ BOOL IsStringEqual (LPCWSTR Str1, LPCWSTR Str2) {
     WCHAR   lStr1	[MAX_PATH] = {0};
     WCHAR   lStr2	[MAX_PATH] = {0};
 
-    INT		len1	= lstrlenW(Str1),
-            len2	= lstrlenW(Str2);
+    INT		len1	= lstr_lenW(Str1);
+    INT     len2	= lstr_lenW(Str2);
 
-    INT		i		= 0,
-            j		= 0;
+    INT		i		= 0;
+    INT     j		= 0;
 
     // Checking length. We dont want to overflow the buffers
-    if (len1 >= MAX_PATH || len2 >= MAX_PATH)
+    if ((len1 >= MAX_PATH || len2 >= MAX_PATH) || (len1 != len2)) {
         return FALSE;
+    }
 
     // Converting Str1 to lower case string (lStr1)
     for (i = 0; i < len1; i++){
@@ -289,8 +290,9 @@ BOOL IsStringEqual (LPCWSTR Str1, LPCWSTR Str2) {
     lStr2[j++] = L'\0'; // null terminating
 
     // Comparing the lower-case strings
-    if (lstrcmpiW(lStr1, lStr2) == 0)
+    if (lstrcmpiW(lStr1, lStr2) == 0) {
         return TRUE;
+    }
 
     return FALSE;
 }
@@ -311,4 +313,12 @@ VOID rotate_left(UCHAR * data, SIZE_T size, UINT bits)
     // _tprintf("temp: %s\n", data);
 
     mem_cpy(data, temp, size);
+}
+
+INT lstr_lenW(CONST WCHAR* str)
+{
+    CONST WCHAR * s = str;
+    while (*s)
+        ++s;
+    return s - str;
 }

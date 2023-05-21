@@ -16,6 +16,7 @@
 } while (0)
 
 CHAR* str_dup(CONST CHAR* str);
+INT lstr_lenW(CONST WCHAR* str);
 SIZE_T str_len(CONST CHAR* str);
 SIZE_T sizeof_w(CONST WCHAR* str);
 CHAR** split_first_space(CONST CHAR* str);
