@@ -1,6 +1,7 @@
 CHANGELOG 21MAY23 v0.59.4:
 > Architecture part of default name (Revenant_x64/x86.exe)
 > Cleaned up types in Utilities.c
+> Cleaned up Poly.c
 
 CHANGELOG 20MAY23 v0.59.3:
 > (HAVOC) submit solution candidate for 3rd party agent health monitoring
