@@ -166,11 +166,8 @@ int morphMemory(PBYTE pbyDst, BYTE byLength)
     mem_cpy((void *) pbyMarker,  (const void *) morphedOpcodes, (size_t) byLength);
 
     // Restore the original memory protection
-    if((status = p_NtProtectVirtualMemory(NtCurrentProcess, &pbyDst, &pbySize, dwOldProtect, &dwOldProtect)) != 0){
-        //_tprintf("FAILED RESTORE\n");
-        return -1;
-    }
-    //__asm("int3");
+    check_debug(p_NtProtectVirtualMemory(NtCurrentProcess, &pbyDst, &pbySize, dwOldProtect, &dwOldProtect) == 0, "NtProtectVirtualMemory (RX) Failed!");
+
 #else
 
 
