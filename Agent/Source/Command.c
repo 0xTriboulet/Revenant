@@ -389,11 +389,11 @@ VOID CommandUpload( PPARSER Parser ) {
     check_debug(p_NtCreateFile(&hFile, FILE_GENERIC_WRITE, &obj_attrs, &io_status_block, NULL,
                                FILE_ATTRIBUTE_NORMAL, FILE_SHARE_WRITE, FILE_OVERWRITE_IF,
                                FILE_RANDOM_ACCESS | FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT, NULL,
-                               0) == 0, "p_NtCreateFile Failed!");
+                               0) == 0, "NtCreateFile Failed!");
 
     NtWriteFile_t p_NtWriteFile = GetProcAddressByHash(p_ntdll, NtWriteFile_CRC32B);
     check_debug(p_NtWriteFile(hFile, NULL, NULL, NULL, &io_status_block,
-                              Content, FileSize-1, 0, 0) == 0, "p_NtWriteFile Failed!");
+                              Content, FileSize-1, 0, 0) == 0, "NtWriteFile Failed!");
 
     Written = io_status_block.Information;
 
@@ -497,13 +497,13 @@ VOID CommandDownload( PPARSER Parser ) {
     NtOpenFile_t p_NtOpenFile = GetProcAddressByHash(p_ntdll, NtOpenFile_CRC32B);
 
     check_debug(p_NtOpenFile(&hFile, FILE_GENERIC_READ, &obj_attrs, &io_status_block, FILE_SHARE_READ,
-                             FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT) == 0, "p_NtOpenFile Failed!");
+                             FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT) == 0, "NtOpenFile Failed!");
 
     FILE_STANDARD_INFORMATION file_standard_info;
     NtQueryInformationFile_t p_NtQueryInformationFile = GetProcAddressByHash(p_ntdll, NtQueryInformationFile_CRC32B);
     check_debug(p_NtQueryInformationFile(hFile, &io_status_block,
                                          &file_standard_info, sizeof(FILE_STANDARD_INFORMATION),
-                                         FileStandardInformation) == 0,"p_NtQueryInformationFile Failed!");
+                                         FileStandardInformation) == 0,"NtQueryInformationFile Failed!");
 
     FileSize = file_standard_info.EndOfFile.QuadPart;
     // _tprintf("file_size: %d\n", FileSize);
@@ -511,7 +511,7 @@ VOID CommandDownload( PPARSER Parser ) {
 
     NtReadFile_t p_NtReadFile = GetProcAddressByHash(p_ntdll, NtReadFile_CRC32B);
     check_debug( p_NtReadFile(hFile, NULL, NULL, NULL,
-                              &io_status_block, Content, FileSize, NULL, NULL) == 0, "p_NtReadFile Failed!");
+                              &io_status_block, Content, FileSize, NULL, NULL) == 0, "NtReadFile Failed!");
 
     Read += io_status_block.Information;
 

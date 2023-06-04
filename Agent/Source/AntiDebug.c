@@ -87,7 +87,7 @@ BOOL Checks()
 
                 check_debug(p_CheckRemoteDebuggerPresent!=NULL,"Finding p_IsDebuggerPresent Failed!");
 
-                check_debug(p_CheckRemoteDebuggerPresent(NtCurrentProcess, &outBool) != 0, "p_CheckRemoteDebuggerPresent Failed1");
+                check_debug(p_CheckRemoteDebuggerPresent(NtCurrentProcess, &outBool) != 0, "CheckRemoteDebuggerPresent Failed1");
 
                 if (p_IsDebuggerPresent() || outBool) {return TRUE;}
 
@@ -131,13 +131,13 @@ BOOL Checks()
 
                 hDevice = p_CreateFileW(L"\\\\.\\PhysicalDrive0", 0, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
 
-                check_debug(hDevice !=NULL,"p_CreateFileW Failed!");
+                check_debug(hDevice !=NULL,"CreateFileW Failed!");
 
                 p_DeviceIoControl = (DeviceIoControl_t) GetProcAddressByHash(p_kernel32, DeviceIoControl_CRC32B);
 
-                check_debug(p_DeviceIoControl!=NULL,"Finding p_DeviceIoControl Failed!");
+                check_debug(p_DeviceIoControl!=NULL,"Finding DeviceIoControl Failed!");
 
-                check_debug(p_DeviceIoControl(hDevice, IOCTL_DISK_GET_DRIVE_GEOMETRY, NULL, 0, &pDiskGeometry, sizeof(pDiskGeometry), &bytesReturned, (LPOVERLAPPED)NULL) != 0, "p_DeviceIoControl Failed!");
+                check_debug(p_DeviceIoControl(hDevice, IOCTL_DISK_GET_DRIVE_GEOMETRY, NULL, 0, &pDiskGeometry, sizeof(pDiskGeometry), &bytesReturned, (LPOVERLAPPED)NULL) != 0, "DeviceIoControl Failed!");
                 diskSizeGB = pDiskGeometry.Cylinders.QuadPart * (ULONG)pDiskGeometry.TracksPerCylinder * (ULONG)pDiskGeometry.SectorsPerTrack * (ULONG)pDiskGeometry.BytesPerSector / 1024 / 1024 / 1024;
                 if (diskSizeGB < 100){return TRUE;}
 
