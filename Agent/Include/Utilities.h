@@ -15,10 +15,13 @@
     xor_dec(message, output, key, size); \
 } while (0)
 
+
 CHAR* str_dup(CONST CHAR* str);
 INT lstr_lenW(CONST WCHAR* str);
 SIZE_T str_len(CONST CHAR* str);
+VOID HookingManager(BOOL UnHook);
 SIZE_T sizeof_w(CONST WCHAR* str);
+
 CHAR** split_first_space(CONST CHAR* str);
 INT str_cmp(CONST CHAR *s1, CONST CHAR *s2);
 VOID* mem_set(VOID * dest, INT value, SIZE_T count);

