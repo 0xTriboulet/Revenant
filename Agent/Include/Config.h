@@ -9,4 +9,5 @@
 #define CONFIG_ARCH 64
 #define CONFIG_NATIVE TRUE
 #define CONFIG_ANTI_DEBUG TRUE
+#define CONFIG_UNHOOK  TRUE
     

@@ -186,6 +186,7 @@ def process_config_h(config: dict):
     config_arch:               str = config['Options']['Arch']
     config_native:             str = str(config['Config']['Native']).upper()
     config_anti_debug:         str = str(config['Config']['AntiDebug']).upper()
+    config_unhook:             str = str(config['Config']['Unhooking']).upper()
 
     header_file = f'''
 #define CONFIG_USER_AGENT {{{config_user_agent}}}
@@ -198,6 +199,7 @@ def process_config_h(config: dict):
 #define CONFIG_ARCH {config_arch}  
 #define CONFIG_NATIVE {str(config_native).upper()}
 #define CONFIG_ANTI_DEBUG {str(config_anti_debug).upper()}
+#define CONFIG_UNHOOK {str(config_unhook).upper()}
     '''
 
     for filepath in glob.iglob('**/Config.h', recursive=True):
@@ -339,7 +341,8 @@ class Revenant(AgentType):
             "Obfuscation": True,
             "Native"    : True,
             "AntiDebug" : True,
-            "RandCmdIds": False
+            "RandCmdIds": False,
+            "Unhooking": False
         }
         self.Commands: list = [
             CommandPwsh(),
