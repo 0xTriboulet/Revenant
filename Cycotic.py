@@ -59,7 +59,8 @@ instructions_x86 = [
     "cmp eax, eax;",
     "test eax, eax;",
     "push eax;.byte 0xe8, 0x0, 0x0, 0x0, 0x0;.intel_syntax noprefix; pop eax; add eax, 0x6; push eax; ret; pop eax;"
-    ''"xchg ecx, eax;" \
+    ''"pushfd;"
+    "xchg ecx, eax;" \
     "xchg ecx, eax;" \
     "xchg ebx, eax;" \
     "xchg ebx, eax;" \
@@ -72,7 +73,8 @@ instructions_x86 = [
     "xchg ecx, ecx;" \
     "xchg ecx, eax;" \
     "xchg ebx, ebx;" \
-    "xchg ebx, eax;"''
+    "xchg ebx, eax;"
+    "popfd"''
 ]
 
 

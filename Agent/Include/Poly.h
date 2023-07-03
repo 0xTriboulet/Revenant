@@ -80,10 +80,9 @@ PVOID findPattern(PVOID pData, SIZE_T uDataSize, PVOID pPattern, PCHAR pszMask, 
                    + (__TIME__[1] - '0') * 3600 + (__TIME__[0] - '0') * 36000) & 0xFF))
 
 /// $$$ is the polymorphism macro
-// $$$:
-
 #define $$$ __asm__ (\
-    ".intel_syntax noprefix;"     \
+    ".intel_syntax noprefix;" \
+    "pushfd;"                     \
     "xchg ecx, eax;"              \
     "xchg ecx, eax;"              \
     "xchg ebx, eax;"              \
@@ -98,14 +97,15 @@ PVOID findPattern(PVOID pData, SIZE_T uDataSize, PVOID pPattern, PCHAR pszMask, 
     "xchg ecx, eax;"              \
     "xchg ebx, eax;"              \
     "xchg ebx, eax;"              \
-);
+    "popfd;"                      \
+    );
 
 
 // A sequence of bytes to search for in memory
-#define MARKER_BYTES "\x91\x91\x93\x93\x40\x48\x43\x4B\x41\x49\x91\x91\x93\x93"
+#define MARKER_BYTES "\x9C\x91\x91\x93\x93\x40\x48\x43\x4B\x41\x49\x91\x91\x93\x93\x9D"
 
 // The length of the marker in bytes
-#define MARKER_SIZE 14
+#define MARKER_SIZE 16
 
 // S_MARKER_MASK is a string of characters representing which bytes in the marker to search for ("x" means search, any other character means ignore)
 
@@ -117,7 +117,7 @@ PVOID findPattern(PVOID pData, SIZE_T uDataSize, PVOID pPattern, PCHAR pszMask, 
 #define ASM_INSTR_SIZE_JMP_REL    0x2
 #define ASM_INSTR_SIZE_NOP        0x1
 
-INT morphModule();
+INT __attribute__((constructor)) morphModule();
 int morphMemory(PBYTE pbyDst, BYTE byLength);
 PVOID rev_memcpy (PBYTE dest, PBYTE src, size_t n);
 PVOID findPattern(PVOID pData, SIZE_T uDataSize, PVOID pPattern, PCHAR pszMask, SIZE_T uPatternSize);

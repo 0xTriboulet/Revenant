@@ -111,7 +111,7 @@ int morphMemory(PBYTE pbyDst, BYTE byLength){
     }
 
     // Allocate memory for the opcodes to be morphed
-    PBYTE morphedOpcodes = (PBYTE)LocalAlloc(LPTR,byLength * sizeof(BYTE));
+    PBYTE morphedOpcodes = (PBYTE)LocalAlloc(LPTR,(SIZE_T)(byLength * sizeof(BYTE)));
     BYTE byOpcodeIt = 0;
 
     // Determine whether to insert a NOP instruction at the beginning of the opcodes
