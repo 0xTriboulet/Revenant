@@ -4,6 +4,7 @@ CHANGELOG 3JULY23 v0.59.5:
 > Random inline assembly injections break up function blocks for resilience against analysis
 > Unhooking via Perun's Fart method during command execution
 >> Unhooks before command execution, rehooks after execution
+>> 64-bit and 32-bit support for unhooking
 
 CHANGELOG 21MAY23 v0.59.4:
 > Architecture part of default name (Revenant_x64/x86.exe)
