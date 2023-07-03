@@ -36,10 +36,11 @@ VOID CommandDispatcher() {
 
     do {
         if(!Instance.Session.Connected) {
-
+            // if there's no connection, return out of here
             return;
         }
 
+        // sleep
         Sleep( Instance.Config.Sleeping * 1000 );
 
         Package = PackageCreate( COMMAND_GET_JOB );

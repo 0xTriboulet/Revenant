@@ -20,7 +20,7 @@
 //   Ultimate Debugging Reference
 
 #if CONFIG_ANTI_DEBUG == TRUE
-unsigned char s_xk[] = S_XK;
+UCHAR s_xk[] = S_XK;
 #endif
 
 INT DecLoopCount(INT loopCount);

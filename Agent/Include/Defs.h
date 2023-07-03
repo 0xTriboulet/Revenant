@@ -102,6 +102,7 @@ typedef NTSTATUS (__stdcall *NtFlushInstructionCache_t)(HANDLE ProcessHandle, PV
 typedef NTSTATUS (__stdcall *NtSetInformationFile_t)(HANDLE FileHandle,PIO_STATUS_BLOCK IoStatusBlock,PVOID FileInformation,ULONG Length,FILE_INFORMATION_CLASS FileInformationClass);
 typedef NTSTATUS (__stdcall *NtCreateProcess_t)(PHANDLE ProcessHandle,ACCESS_MASK DesiredAccess,POBJECT_ATTRIBUTES ObjectAttributes,HANDLE ParentProcess,BOOLEAN InheritObjectTable,HANDLE SectionHandle,HANDLE DebugPort,HANDLE ExceptionPort);
 typedef NTSTATUS (__stdcall *NtCreateProcessEx_t)(PHANDLE ProcessHandle,ACCESS_MASK DesiredAccess,POBJECT_ATTRIBUTES ObjectAttributes,HANDLE ParentProcess,ULONG Flags,HANDLE SectionHandle,HANDLE DebugPort,HANDLE ExceptionPort,BOOLEAN InJob);
+typedef BOOLEAN  (__stdcall *VirtualProtect_t)(LPVOID lpAddress, SIZE_T dwSize, DWORD flNewProtect, PDWORD lpflOldProtect);
 
 typedef BOOL (__stdcall *DeviceIoControl_t)(
         HANDLE hDevice,
