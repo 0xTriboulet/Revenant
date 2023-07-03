@@ -1,5 +1,5 @@
 CHANGELOG 2JULY23 v0.59.5:
-> Improved polymorphism
+> Improved polymorphism, removed most exceptions to dynamic poly
 > Added more hash definitions in support of future functionality
 
 CHANGELOG 21MAY23 v0.59.4:
