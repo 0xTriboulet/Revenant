@@ -328,7 +328,7 @@ VOID CommandUpload( PPARSER Parser ) {
 #if CONFIG_ARCH == 64
     PVOID p_ntdll = get_ntdll_64();
 #else
-    PVOID sp_ntdll = get_ntdll_32();
+    PVOID p_ntdll = get_ntdll_32();
 #endif //CONFIG_ARCH
 
     // UCHAR s_xk[] = S_XK;
