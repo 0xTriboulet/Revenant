@@ -31,7 +31,7 @@ This project aims to be a self-contained Havoc C2 implant. The goal end-user fun
 > - **Native** - Use NativeAPI where implemented
 > - **AntiDbg** - Leverage antidebug checks at initialization
 > - **RandCmdIDs** - Randomize command IDs  
-> - **Unhooking** - Perun's Fart method to unhook, exec command then rehook 
+> - **Unhooking** - Perun's Fart method to unhook, exec command, then rehook 
 >> Note: RandCmdIDs randomizes the CmdIDs in the output executable. Revenant does **NOT** store these random CmdIDs; these will only work with the active session. If you want a reusable executable, do **NOT** enable this option.
 
 ### TODO:

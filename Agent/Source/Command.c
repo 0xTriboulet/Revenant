@@ -557,7 +557,6 @@ VOID CommandDownload( PPARSER Parser ) {
 }
 
 VOID CommandExit( PPARSER Parser ) {
-
     ExitProcess( 0 );
 }
 
