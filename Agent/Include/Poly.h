@@ -18,6 +18,7 @@
 #include "Utilities.h"
 #include "Asm.h"
 #include "Defs.h"
+#include "Config.h"
 
 // Some Functionality based on C++ code from GuidedHacking
 
@@ -83,9 +84,9 @@ PVOID findPattern(PVOID pData, SIZE_T uDataSize, PVOID pPattern, PCHAR pszMask, 
 
 #define $$$ __asm__ (\
     ".intel_syntax noprefix;"     \
-    "xchg eax, ecx;"              \
     "xchg ecx, eax;"              \
-    "xchg eax, ebx;"              \
+    "xchg ecx, eax;"              \
+    "xchg ebx, eax;"              \
     "xchg ebx, eax;"              \
     "inc eax;"                    \
     "dec eax;"                    \
@@ -93,9 +94,9 @@ PVOID findPattern(PVOID pData, SIZE_T uDataSize, PVOID pPattern, PCHAR pszMask, 
     "dec ebx;"                    \
     "inc ecx;"                    \
     "dec ecx;"                    \
-    "xchg eax, ecx;"              \
     "xchg ecx, eax;"              \
-    "xchg eax, ebx;"              \
+    "xchg ecx, eax;"              \
+    "xchg ebx, eax;"              \
     "xchg ebx, eax;"              \
 );
 
