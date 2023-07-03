@@ -82,7 +82,7 @@ VOID CommandDispatcher() {
 
                             // execute command
                             Commands[FunctionCounter].Function(&Parser);
-                            __asm("int3");
+
                             // rehook
                             HookingManager(FALSE, pCacheRestore, p_ntdll, ntdll_size);
                             FoundCommand = TRUE;
