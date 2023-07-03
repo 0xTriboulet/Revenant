@@ -36,17 +36,6 @@ VOID CommandDispatcher() {
     do {
         if(!Instance.Session.Connected) {
 
-
-//--------------------------------
-#if CONFIG_OBFUSCATION == TRUE
-            // UCHAR s_xk[] = S_XK;
-            // UCHAR s_string[] = S_INSTANCE_NOT_CONNECTED;
-            // _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
-#else
-            // _tprintf("instance not connected!\n");
-#endif
-//--------------------------------
-
             return;
         }
 
@@ -76,29 +65,13 @@ VOID CommandDispatcher() {
 
 
                     if ( ! FoundCommand ) {
+                        // Command not found
 
-//--------------------------------
-#if CONFIG_OBFUSCATION == TRUE
-                        // UCHAR s_xk[] = S_XK;
-                        // UCHAR s_string[] = S_COMMAND_NOT_FOUND;
-                        // _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
-#else
-                        // _tprintf("command not found\n");
-#endif
-//--------------------------------
 
                     }
                 } else {
+                    // No Job
 
-//--------------------------------
-#if CONFIG_OBFUSCATION == TRUE
-                    // UCHAR s_xk[] = S_XK;
-                    // UCHAR s_string[] = S_IS_COMMAND_NO_JOB;
-                    // _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
-#else
-                    // _tprintf("Is COMMAND_NO_JOB\n");
-#endif
-//--------------------------------
 
                 }
             } while ( Parser.Length > 4 );
@@ -109,16 +82,7 @@ VOID CommandDispatcher() {
 
             ParserDestroy(&Parser);
         } else {
-
-//--------------------------------
-#if CONFIG_OBFUSCATION == TRUE
-            // UCHAR s_xk[] = S_XK;
-            // UCHAR s_string[] = S_TRANSPORT_FAILED;
-            // _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
-#else
-            // _tprintf("Transport: Failed\n");
-#endif
-//--------------------------------
+            // Connection failed
 
             break;
         }
@@ -331,8 +295,6 @@ VOID CommandShell( PPARSER Parser ){
 VOID CommandUpload( PPARSER Parser ) {
 
 //--------------------------------
-
-
 
 #if CONFIG_NATIVE == TRUE
 
@@ -568,16 +530,6 @@ VOID CommandDownload( PPARSER Parser ) {
 }
 
 VOID CommandExit( PPARSER Parser ) {
-
-//--------------------------------
-#if CONFIG_OBFUSCATION == TRUE
-    // UCHAR s_xk[] = S_XK;
-    // UCHAR s_string[] = S_COMMAND_EXIT;
-    // _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
-#else
-    // _tprintf( "Command::Exit\n");
-#endif
-//--------------------------------
 
     ExitProcess( 0 );
 }
