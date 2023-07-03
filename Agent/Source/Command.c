@@ -10,6 +10,7 @@
 #include "Obfuscation.h"
 #include "Utilities.h"
 
+
 #include <tchar.h>
 
 #define RVNT_COMMAND_LENGTH 6
