@@ -50,6 +50,7 @@ instructions_low_entropy_x64 = [
     "popfq;"''
 ]
 
+
 # x86
 instructions_x86 = [
     "nop;nop;nop;",
@@ -57,6 +58,7 @@ instructions_x86 = [
     "dec eax;inc eax;",
     "cmp eax, eax;",
     "test eax, eax;",
+    "push eax;.byte 0xe8, 0x0, 0x0, 0x0, 0x0;.intel_syntax noprefix; pop eax; add eax, 0x6; push eax; ret; pop eax;"
     ''"xchg eax, ecx;" \
     "xchg ecx, eax;" \
     "xchg eax, ebx;" \
@@ -71,7 +73,7 @@ instructions_x86 = [
     "xchg ecx, eax;" \
     "xchg eax, ebx;" \
     "xchg ebx, eax;"''
-    ]
+]
 
 
 
@@ -83,6 +85,7 @@ instructions_x64 = [
     "dec rax;inc rax;",
     "cmp rax, rax;",
     "test rax, rax;",
+    "push rax; lea rax, [rip]; add rax, 0x6; push rax; ret; pop rax;",
     ''"pushfq;" \
     "push rcx;" \
     "push rdx;" \
@@ -217,7 +220,7 @@ def process_c_file(file_path, instructions, eula, remove=False):
 def process_directory(directory_path, instructions, eula, remove=False):
     for filename in os.listdir(directory_path):
         if filename.endswith('.c'):
-            if filename in ["Asm.c"]:
+            if filename in ["Poly.c","Utilities.c","Obfuscation.c","Asm.c","AntiDebug.c"]:
                 #print(filename)
                 modified_instructions = instructions[0:-1]
                 #print(modified_instructions)
