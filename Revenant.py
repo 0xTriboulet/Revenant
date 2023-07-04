@@ -334,7 +334,7 @@ class Revenant(AgentType):
         self.Arch: list = ["64", "86"]
         self.Formats: list = [
             {"Name": "Windows Exe", "Extension": "exe"},
-            {"Name": "Windows DLL", "Extension": "dll"}
+            {"Name": "Windows Dll", "Extension": "dll"}
         ]
         self.BuildingConfig: dict = {
             "Sleep": "10",
