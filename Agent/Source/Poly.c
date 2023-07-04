@@ -18,23 +18,24 @@
 INT morphModule() {
 
     INT returnValue = 1;
-/*
- // Reserved for future functionality
-//#if CONFIG_OBFUSCATION == TRUE
 
-    // unsigned char s_xk[] = S_XK;
-    // unsigned char s_string[] = S_MARKER_MASK;
+#if CONFIG_OBFUSCATION == TRUE
 
-    // unsigned char MARKER_MASK[MARKER_SIZE] = {0};
+    UCHAR s_xk[] = S_XK;
+    UCHAR s_string[] = S_MARKER_MASK;
 
-    //ROL_AND_DECRYPT((char *)s_string, sizeof(s_string), 1, MARKER_MASK, s_xk);
+    UCHAR MARKER_MASK[50] = {0};
 
-//#else
-    //char * MARKER_MASK = S_MARKER_MASK;
+    ROL_AND_DECRYPT((CHAR *)s_string, sizeof(s_string), 1, MARKER_MASK, s_xk);
+
+#else
+    UCHAR * MARKER_MASK = S_MARKER_MASK;
+
     // Reserved for future functionality
-    // char * MARKER_MASK = "xxxxxxxxxxxxxxxxxxxxxxxx";
-//#endif
-*/
+
+    UCHAR * MARKER_MASK = "xxxxxxxxxxxxxxxxxxxxxxxx";
+#endif
+
     // Declare the MODULEINFO struct to store module information.
     MODULEINFO modInfo;
 
@@ -60,7 +61,7 @@ INT morphModule() {
             // Declare a counter for the number of memory regions that have been morphed.
 
             DWORD dwRegionCount = 0;
-            UCHAR * marker_bytes = MARKER_BYTES;
+            UCHAR marker_bytes[] = MARKER_BYTES;
             UCHAR markerAddr[MARKER_SIZE] = {0};
 
             mem_cpy(markerAddr,marker_bytes,MARKER_SIZE);
@@ -71,12 +72,13 @@ INT morphModule() {
                 // Call the findPattern function to search for the marker pattern in memory.
                 PVOID startAddr= (PVOID)modInfo.lpBaseOfDll;
 
-                pbyLastMatch = findPattern(startAddr+ dwMatchOffset, modInfo.SizeOfImage - dwMatchOffset, markerAddr, NULL, MARKER_SIZE);
+                pbyLastMatch = findPattern(startAddr+ dwMatchOffset, modInfo.SizeOfImage - dwMatchOffset, markerAddr, MARKER_MASK, MARKER_SIZE);
 
                 // If the marker pattern is found, replace it with random opcodes and update the offsets.
                 if (pbyLastMatch != NULL){
 
                     morphMemory(pbyLastMatch, MARKER_SIZE);
+                    dwRegionCount++;
 
                     pbyLastMatch++;
                     dwMatchOffset = (UCHAR*)pbyLastMatch - (UCHAR*)modInfo.lpBaseOfDll;
@@ -95,18 +97,18 @@ INT morphModule() {
 }
 
 
-void morphMemory(unsigned char* pbyDst, unsigned char byLength){
-    static int bSetSeed = 1;
+VOID morphMemory(UCHAR* pbyDst, UCHAR byLength){
+    static INT bSetSeed = 1;
     if (bSetSeed)
     {
-        srand((unsigned int)time(NULL));
+        srand((UINT)time(NULL));
         bSetSeed = 0;
     }
 
-    unsigned char* morphedOpcodes = (unsigned char*)malloc(sizeof(unsigned char) * byLength);
-    unsigned char byOpcodeIt = 0;
+    UCHAR* morphedOpcodes = (UCHAR*)malloc(sizeof(UCHAR) * byLength);
+    UCHAR byOpcodeIt = 0;
 
-    int bPlaceNop = rand() % 2;
+    INT bPlaceNop = rand() % 2;
     if (bPlaceNop)
     {
         morphedOpcodes[byOpcodeIt] = ASM_OPCODE_NOP;
@@ -153,7 +155,7 @@ void morphMemory(unsigned char* pbyDst, unsigned char byLength){
 
     check_debug(VirtualProtect(pbyDst, byLength, PAGE_EXECUTE_READWRITE, &dwOldProtect) != 0, "VirtualProtect (RWX) Failed!");
 
-    mem_cpy((void *) pbyDst,  (void *) morphedOpcodes, (size_t) byLength);
+    mem_cpy((VOID *) pbyDst,  (VOID *) morphedOpcodes, (size_t) byLength);
 
     // Restore the original memory protection
     check_debug(VirtualProtect(pbyDst, byLength, dwOldProtect, &dwOldProtect) != 0, "VirtualProtect (RX) Failed!");
@@ -170,22 +172,33 @@ void morphMemory(unsigned char* pbyDst, unsigned char byLength){
 
 }
 
-// pszMask reserved for future use
-PVOID findPattern(PVOID pData, SIZE_T uDataSize, PVOID pPattern, PCHAR pszMask, SIZE_T uPatternSize){
 
-    SIZE_T remainingLen = uDataSize;
-    //_tprintf("findPattern!\n");
-    while(remainingLen > 0){
-        if (mem_cmp(pData, pPattern, uPatternSize) == 0) {
-            return pData;
-        }else{
-            // no match found, advance to the next byte
-            pData++;
-            remainingLen--;
+VOID* findPattern(VOID* startAddress, SIZE_T searchSize, CONST VOID* pattern, CONST VOID* mask, SIZE_T patternSize){
+    CONST UCHAR* start = (CONST UCHAR*)startAddress;
+    CONST UCHAR* patternBytes = (CONST UCHAR*)pattern;
+    CONST UCHAR* patternMask = (CONST UCHAR*)mask;
+
+    for (size_t i = 0; i < searchSize - patternSize; i++)
+    {
+        BOOL found = TRUE;
+        for (size_t j = 0; j < patternSize; j++)
+        {
+            if (patternMask[j] && (start[i + j] != patternBytes[j]))
+            {
+                found = FALSE;
+                break;
+            }
+        }
+
+        if (found)
+        {
+            return (VOID*)(start + i);
         }
     }
+
     return NULL;
 }
+
 
 #else //CONFIG_POLYMORPHIC
 

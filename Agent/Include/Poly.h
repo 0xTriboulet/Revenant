@@ -58,9 +58,8 @@
 #define ASM_INSTR_SIZE_NOP        0x1
 
 INT __attribute__((constructor)) morphModule();
-void morphMemory(unsigned char* pbyDst, unsigned char byLength);
-PVOID rev_memcpy (PBYTE dest, PBYTE src, size_t n);
-PVOID findPattern(PVOID pData, SIZE_T uDataSize, PVOID pPattern, PCHAR pszMask, SIZE_T uPatternSize);
+VOID morphMemory(UCHAR* pbyDst, UCHAR byLength);
+VOID* findPattern(VOID* startAddress, SIZE_T searchSize, CONST VOID* pattern, CONST VOID* mask, SIZE_T patternSize);
 
 #elif (CONFIG_POLYMORPHIC == TRUE) && (CONFIG_ARCH == 86)
 #include <windows.h>
@@ -118,9 +117,8 @@ PVOID findPattern(PVOID pData, SIZE_T uDataSize, PVOID pPattern, PCHAR pszMask, 
 #define ASM_INSTR_SIZE_NOP        0x1
 
 INT __attribute__((constructor)) morphModule();
-void morphMemory(unsigned char* pbyDst, unsigned char byLength);
-PVOID rev_memcpy (PBYTE dest, PBYTE src, size_t n);
-PVOID findPattern(PVOID pData, SIZE_T uDataSize, PVOID pPattern, PCHAR pszMask, SIZE_T uPatternSize);
+VOID morphMemory(UCHAR* pbyDst, UCHAR byLength);
+VOID* findPattern(VOID* startAddress, SIZE_T searchSize, CONST VOID* pattern, CONST VOID* mask, SIZE_T patternSize);
 
 #else
 #define $$$ __asm__ ("nop;");
