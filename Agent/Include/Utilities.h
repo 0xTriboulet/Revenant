@@ -33,7 +33,7 @@ VOID* mem_move(VOID* dest, CONST VOID* src, SIZE_T count);
 VOID* mem_cpy(VOID * dest, CONST VOID * src, SIZE_T count);
 WCHAR * wide_concat(CONST WCHAR * str1, CONST WCHAR * str2);
 CHAR* mem_cat(CONST VOID* ptr1, SIZE_T size1, CONST VOID* ptr2, SIZE_T size2);
-VOID HookingManager(BOOL UnHook, LPVOID pCache, HMODULE p_ntdll, SIZE_T ntdll_size);
+VOID HookingManager(INT UnHook, LPVOID pCache, HMODULE p_ntdll, SIZE_T ntdll_size);
 
 HMODULE LocalGetModuleHandle(LPCSTR moduleName);
 BOOL IsStringEqual (LPCWSTR Str1, LPCWSTR Str2);

