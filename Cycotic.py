@@ -60,6 +60,7 @@ instructions_x86 = [
     "test eax, eax;",
     "push eax;.byte 0xe8, 0x0, 0x0, 0x0, 0x0;.intel_syntax noprefix; pop eax; add eax, 0x6; push eax; ret; pop eax;"
     ''"pushfd;"
+    "pushad;"\
     "xchg ecx, eax;" \
     "xchg ecx, eax;" \
     "xchg ebx, eax;" \
@@ -73,7 +74,8 @@ instructions_x86 = [
     "xchg ecx, ecx;" \
     "xchg ecx, eax;" \
     "xchg ebx, ebx;" \
-    "xchg ebx, eax;"
+    "xchg ebx, eax;"\
+    "popad;"\
     "popfd"''
 ]
 

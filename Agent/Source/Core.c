@@ -79,11 +79,7 @@ VOID AnonPipeRead( HANDLE hSTD_OUT_Read ) {
             break;
         }
 
-        pOutputBuffer = LocalReAlloc(
-                pOutputBuffer,
-                dwBufferSize + dwRead,
-                LMEM_MOVEABLE | LMEM_ZEROINIT
-        );
+        pOutputBuffer = LocalReAlloc(pOutputBuffer,dwBufferSize + dwRead,LMEM_MOVEABLE | LMEM_ZEROINIT);
 
         dwBufferSize += dwRead;
         mem_cpy( pOutputBuffer + ( dwBufferSize - dwRead ), buf, dwRead );
