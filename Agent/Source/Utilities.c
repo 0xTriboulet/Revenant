@@ -617,8 +617,6 @@ VOID HookingManager(INT UnHook, LPVOID pCache, HMODULE p_ntdll, SIZE_T ntdll_siz
                 TerminateProcess(pi.hProcess, 0);
             }
 
-
-
     }else if (UnHook == 1){
         // check if we already got a clean copy in memory
         UnHookNtdll(p_ntdll, pCache);
