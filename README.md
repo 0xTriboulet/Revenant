@@ -7,10 +7,12 @@ This project aims to be a self-contained Havoc C2 implant. The goal end-user fun
 ### Setup
 > 1) Download repo
 > 2) Unzip Revenant.zip
-> 3) Go to root folder
-> 4) Execute python Revenant.py
-> 5) ???
-> 6) PROFIT
+> 3) pip install black
+> 4) startup Havoc (./havoc server --profile ./profiles/havoc.yaotl -v --debug & ./havoc client )
+> 5) Go to root folder
+> 6) python Revenant.py
+> 7) ???
+> 8) PROFIT
 
   > **x86 and Win7/8 Compatability:**  
   > - Disable NativeAPI
