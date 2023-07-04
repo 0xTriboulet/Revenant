@@ -12,7 +12,7 @@
 #include "Obfuscation.h"
 
 #include <tchar.h>
-
+#include <stdio.h>
 #if CONFIG_POLYMORPHIC == TRUE
 
 INT morphModule() {
@@ -71,12 +71,15 @@ INT morphModule() {
                 // Call the findPattern function to search for the marker pattern in memory.
                 PVOID startAddr= (PVOID)modInfo.lpBaseOfDll;
 
-                pbyLastMatch = findPattern(startAddr, modInfo.SizeOfImage, markerAddr, NULL, MARKER_SIZE);
+                pbyLastMatch = findPattern(startAddr+ dwMatchOffset, modInfo.SizeOfImage - dwMatchOffset, markerAddr, NULL, MARKER_SIZE);
 
                 // If the marker pattern is found, replace it with random opcodes and update the offsets.
                 if (pbyLastMatch != NULL){
 
-                    morphMemory(pbyLastMatch, (BYTE) MARKER_SIZE);
+                    morphMemory(pbyLastMatch, MARKER_SIZE);
+
+                    pbyLastMatch++;
+                    dwMatchOffset = (UCHAR*)pbyLastMatch - (UCHAR*)modInfo.lpBaseOfDll;
 
                 }else{
                     // If the marker pattern is not found, set the morphing status to finished.
@@ -88,51 +91,36 @@ INT morphModule() {
     }
 
     // Clean up the process handle.
-    CloseHandle(hProcess);
     return returnValue;
 }
 
 
-int morphMemory(PBYTE pbyDst, BYTE byLength){
-
-    /*                  *
-    *** JUNK CODE ALGO ***
-    jmp        or      0x90
-    rdm                jmp
-    rdm                rdm
-    rdm                rdm
-    */
-
-    // Initialize a flag to seed the random number generator
-    static BOOL bSetSeed = TRUE;
-    if (bSetSeed){
-        srand((UINT)time(NULL));
-        bSetSeed = FALSE;
+void morphMemory(unsigned char* pbyDst, unsigned char byLength){
+    static int bSetSeed = 1;
+    if (bSetSeed)
+    {
+        srand((unsigned int)time(NULL));
+        bSetSeed = 0;
     }
 
-    // Allocate memory for the opcodes to be morphed
-    PBYTE morphedOpcodes = (PBYTE)LocalAlloc(LPTR,(SIZE_T)(byLength * sizeof(BYTE)));
-    BYTE byOpcodeIt = 0;
+    unsigned char* morphedOpcodes = (unsigned char*)malloc(sizeof(unsigned char) * byLength);
+    unsigned char byOpcodeIt = 0;
 
-    // Determine whether to insert a NOP instruction at the beginning of the opcodes
-
-    BOOL bPlaceNop = (rand() % 2) ? TRUE : FALSE;
-    if (bPlaceNop){
+    int bPlaceNop = rand() % 2;
+    if (bPlaceNop)
+    {
         morphedOpcodes[byOpcodeIt] = ASM_OPCODE_NOP;
         byOpcodeIt++;
     }
 
-    // Insert a relative JMP instruction at the beginning of the opcodes
     morphedOpcodes[byOpcodeIt] = ASM_OPCODE_JMP_REL;
     byOpcodeIt++;
 
-    // Calculate the length of the JMP instruction and insert it after the JMP instruction
-    morphedOpcodes[byOpcodeIt] = byLength - ASM_INSTR_SIZE_JMP_REL - ((bPlaceNop) ? ASM_INSTR_SIZE_NOP : 0);
+    morphedOpcodes[byOpcodeIt] = byLength - ASM_INSTR_SIZE_JMP_REL - (bPlaceNop ? ASM_INSTR_SIZE_NOP : 0);
     byOpcodeIt++;
 
-    // Insert random opcodes after the JMP instruction
-    for (; byOpcodeIt < byLength; byOpcodeIt++){
-        morphedOpcodes[byOpcodeIt] = rand() % MAXBYTE; // 0xFF
+    for (; byOpcodeIt < byLength; byOpcodeIt++) {
+        morphedOpcodes[byOpcodeIt] = rand() % MAXBYTE;
     }
 
     // Change the protection of the memory to allow execution and write the morphed opcodes to memory
@@ -175,10 +163,11 @@ int morphMemory(PBYTE pbyDst, BYTE byLength){
 
     // Free the memory allocated for the morphed opcodes
     if(morphedOpcodes != NULL){
-        LocalFree(*(PVOID*)morphedOpcodes);
+
+        free(morphedOpcodes);
     }
 
-    return 0;
+
 }
 
 // pszMask reserved for future use

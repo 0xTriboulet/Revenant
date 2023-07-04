@@ -58,7 +58,7 @@
 #define ASM_INSTR_SIZE_NOP        0x1
 
 INT __attribute__((constructor)) morphModule();
-int morphMemory(PBYTE pbyDst, BYTE byLength);
+void morphMemory(unsigned char* pbyDst, unsigned char byLength);
 PVOID rev_memcpy (PBYTE dest, PBYTE src, size_t n);
 PVOID findPattern(PVOID pData, SIZE_T uDataSize, PVOID pPattern, PCHAR pszMask, SIZE_T uPatternSize);
 
@@ -118,7 +118,7 @@ PVOID findPattern(PVOID pData, SIZE_T uDataSize, PVOID pPattern, PCHAR pszMask, 
 #define ASM_INSTR_SIZE_NOP        0x1
 
 INT __attribute__((constructor)) morphModule();
-int morphMemory(PBYTE pbyDst, BYTE byLength);
+void morphMemory(unsigned char* pbyDst, unsigned char byLength);
 PVOID rev_memcpy (PBYTE dest, PBYTE src, size_t n);
 PVOID findPattern(PVOID pData, SIZE_T uDataSize, PVOID pPattern, PCHAR pszMask, SIZE_T uPatternSize);
 
