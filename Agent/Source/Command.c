@@ -564,6 +564,10 @@ VOID CommandDownload( PPARSER Parser ) {
 }
 
 VOID CommandExit( PPARSER Parser ) {
-    ExitProcess( 0 );
+#if CONFIG_MAKE == 0
+    ExitProcess( 0 ); // Exit current process
+#elif CONFIG_MAKE == 1
+    ExitThread(0); // Exit the current thread
+#endif
 }
 
