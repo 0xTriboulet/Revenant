@@ -56,8 +56,7 @@ instructions_x86 = [
     "nop;nop;nop;",
     "inc eax;dec eax;",
     "dec eax;inc eax;",
-    "xchg eax, eax;",
-    "xchg ecx, ecx;",
+    "xchg eax, eax;xchg ecx, ecx;",
     "push eax;.byte 0xe8, 0x0, 0x0, 0x0, 0x0;.intel_syntax noprefix; pop eax; add eax, 0x6; push eax; ret; pop eax;"
     ''"pushfd;"
     "pushad;"\
@@ -87,8 +86,7 @@ instructions_x64 = [
     "nop;nop;nop;",
     "inc rax;dec rax;",
     "dec rax;inc rax;",
-    "xchg rax, rax;",
-    "xchg rcx, rcx;",
+    "xchg rax, rax;xchg rcx, rcx;",
     "push rax; lea rax, [rip]; add rax, 0x6; push rax; ret; pop rax;",
     ''"pushfq;" \
     "push rcx;" \
