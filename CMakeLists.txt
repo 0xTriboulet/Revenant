@@ -77,19 +77,19 @@ else()
 
         include_directories(${CMAKE_SOURCE_DIR}/Agent/Include)
 
-
         if(MAKE_VARIABLE STREQUAL "DLL")
             add_library(Revenant SHARED Agent/Source/Main.c Agent/Source/Command.c Agent/Source/Core.c Agent/Source/Package.c Agent/Source/Parser.c Agent/Source/Transport.c Agent/Source/Obfuscation.c Agent/Source/Utilities.c Agent/Source/AntiDebug.c Agent/Source/Poly.c Agent/Source/Asm.c)
+            target_compile_options(Revenant PRIVATE -O3 -DNDEBUG -fdata-sections -Wno-implicit-function-declaration -Wno-multichar -Wno-inline-asm -Wno-incompatible-pointer-types -Wno-int-conversion -Wno-pointer-sign -Wreturn-local-addr)
+            target_link_options(Revenant PRIVATE -s -O3)
         else()
             add_executable(Revenant Agent/Source/Main.c Agent/Source/Command.c Agent/Source/Core.c Agent/Source/Package.c Agent/Source/Parser.c Agent/Source/Transport.c Agent/Source/Obfuscation.c Agent/Source/Utilities.c Agent/Source/AntiDebug.c Agent/Source/Poly.c Agent/Source/Asm.c)
+            target_compile_options(Revenant PRIVATE -O3 -mwindows -DNDEBUG -fdata-sections -Wno-implicit-function-declaration -Wno-multichar -Wno-inline-asm -Wno-incompatible-pointer-types -Wno-int-conversion -Wno-pointer-sign -Wreturn-local-addr)
+            target_link_options(Revenant PRIVATE -s -O3)
         endif()
 
-
-        target_compile_options(Revenant PRIVATE -O3 -mwindows -DNDEBUG -fdata-sections -Wno-implicit-function-declaration -Wno-multichar -Wno-inline-asm -Wno-incompatible-pointer-types -Wno-int-conversion -Wno-pointer-sign -Wreturn-local-addr)
-        target_link_options(Revenant PRIVATE -mwindows -s -O3)
         target_link_libraries(Revenant ws2_32 kernel32 user32 gdi32 iphlpapi advapi32 winspool shell32 ole32 oleaut32 uuid comdlg32 winhttp)
 
-    # IF LINUX x64
+    # IF LINUX x32
     else()
         cmake_minimum_required(VERSION 3.24)
         project(Revenant C)
@@ -106,13 +106,13 @@ else()
 
         if(MAKE_VARIABLE STREQUAL "DLL")
             add_library(Revenant SHARED Agent/Source/Main.c Agent/Source/Command.c Agent/Source/Core.c Agent/Source/Package.c Agent/Source/Parser.c Agent/Source/Transport.c Agent/Source/Obfuscation.c Agent/Source/Utilities.c Agent/Source/AntiDebug.c Agent/Source/Poly.c Agent/Source/Asm.c)
+            target_compile_options(Revenant PRIVATE -O3 -DNDEBUG -fdata-sections -Wno-implicit-function-declaration -Wno-multichar -Wno-inline-asm -Wno-incompatible-pointer-types -Wno-int-conversion -Wno-pointer-sign -Wreturn-local-addr)
+            target_link_options(Revenant PRIVATE -s -O3)
         else()
             add_executable(Revenant Agent/Source/Main.c Agent/Source/Command.c Agent/Source/Core.c Agent/Source/Package.c Agent/Source/Parser.c Agent/Source/Transport.c Agent/Source/Obfuscation.c Agent/Source/Utilities.c Agent/Source/AntiDebug.c Agent/Source/Poly.c Agent/Source/Asm.c)
+            target_compile_options(Revenant PRIVATE -O3 -mwindows -DNDEBUG -fdata-sections -Wno-implicit-function-declaration -Wno-multichar -Wno-inline-asm -Wno-incompatible-pointer-types -Wno-int-conversion -Wno-pointer-sign -Wreturn-local-addr)
+            target_link_options(Revenant PRIVATE -s -O3)
         endif()
-
-
-        target_compile_options(Revenant PRIVATE -O3 -mwindows -DNDEBUG -fdata-sections -Wno-implicit-function-declaration -Wno-multichar -Wno-inline-asm -Wno-incompatible-pointer-types -Wno-int-conversion -Wno-pointer-sign -Wreturn-local-addr)
-        target_link_options(Revenant PRIVATE -mwindows -s -O3)
         target_link_libraries(Revenant ws2_32 kernel32 user32 gdi32 iphlpapi advapi32 winspool shell32 ole32 oleaut32 uuid comdlg32 winhttp)
 
     endif()

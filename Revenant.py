@@ -33,6 +33,7 @@ COMMAND_DOWNLOAD = 0x154
 COMMAND_EXIT = 0x155
 COMMAND_OUTPUT = 0x200
 
+formatDict = {"Windows Dll":"dll","Windows Exe":"exe"}
 
 def generate_command_constants():
     rand_int = random.randint(0xF, 0xFFF0)
@@ -353,9 +354,12 @@ class Revenant(AgentType):
             CommandExit()
         ]
 
+
+
     def generate(self, config: dict) -> None:
         print(f"[*] Building Revenant Agent {self.Version}")
-        # print(f"config: {config}")
+
+        #print(f"config: {formatDict[config['Options']['Format']]}")
 
         self.builder_send_message(config['ClientID'], "Info", f"Hello - From Service Builder")
         self.builder_send_message(config['ClientID'], "Info", f"Options Config: {config['Options']}")
@@ -376,9 +380,10 @@ class Revenant(AgentType):
             print("[*] Configuring String.h header...")
 
         if config['Options']['Arch'] == "64":
-            if(self.Formats[0]["Extension"] == "exe"):
+            if(formatDict[config['Options']['Format']] == "exe"):
                 compile_command: str = "cmake -DARCH=\"x64\" . && cmake --build . -j 1"
-            elif(self.Formats[0]["Extension"] == "dll"):
+
+            elif(formatDict[config['Options']['Format']] == "dll"):
                 compile_command: str = "cmake -DARCH=\"x64\" -DMAKE=\"DLL\" . && cmake --build . -j 1"
 
             for attempt in range(10): # there's a likelihood that the polymorphic will break the code, retry 10 times
@@ -409,16 +414,18 @@ class Revenant(AgentType):
                 if attempt >= 9:
                     print("[*] !! ERROR - MAX ATTEMPTS!!")
                     return
-            if(self.Formats[0]["Extension"] == "exe"):
+            if(formatDict[config['Options']['Format']] == "exe"):
                 data = open("Agent/Bin/x64/Revenant.exe", "rb").read()
-            elif(self.Formats[0]["Extension"] == "dll"):
+
+            elif(formatDict[config['Options']['Format']] == "dll"):
                 data = open("Agent/Bin/x64/libRevenant.dll", "rb").read()
 
         elif config['Options']['Arch'] == "86":
 
-            if(self.Formats[0]["Extension"] == "exe"):
+            if(formatDict[config['Options']['Format']] == "exe"):
                 compile_command: str = "cmake -DARCH=\"x86\" . && cmake --build . -j 1"
-            elif(self.Formats[0]["Extension"] == "dll"):
+
+            elif(formatDict[config['Options']['Format']] == "dll"):
                 compile_command: str = "cmake -DARCH=\"x86\" -DMAKE=\"DLL\" . && cmake --build . -j 1"
 
             for attempt in range(10): # there's a likelihood that the polymorphic will break the code, retry 10 times
@@ -450,13 +457,14 @@ class Revenant(AgentType):
                 if attempt >= 9:
                     print("[*] !! ERROR - MAX ATTEMPTS!!")
                     return
-            if(self.Formats[0]["Extension"] == "exe"):
+            if(formatDict[config['Options']['Format']] == "exe"):
                 data = open("Agent/Bin/x86/Revenant.exe", "rb").read()
-            elif(self.Formats[0]["Extension"] == "dll"):
+
+            elif(formatDict[config['Options']['Format']] == "dll"):
                 data = open("Agent/Bin/x86/libRevenant.dll", "rb").read()
 
         # Below line sends the build executable back to Havoc for file management - 0xtriboulet
-        self.builder_send_payload(config['ClientID'], self.Name +"_x"+config['Options']['Arch']+ "." + self.Formats[0]["Extension"], data)
+        self.builder_send_payload(config['ClientID'], self.Name +"_x"+config['Options']['Arch']+ "." + formatDict[config['Options']['Format']], data)
 
     def response(self, response: dict) -> bytes:
 
