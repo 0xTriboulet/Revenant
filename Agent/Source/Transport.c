@@ -15,7 +15,7 @@
 #include <winhttp.h>
 
 
-
+//  poly compatible
 BOOL TransportInit( ) {
     PPACKAGE         Package    = NULL;
     BOOL             Success    = FALSE;
@@ -292,6 +292,7 @@ BOOL TransportInit( ) {
 #endif
     return Success;
 }
+
 
 BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize ) {
     HANDLE  hConnect        = NULL;

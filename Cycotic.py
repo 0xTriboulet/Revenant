@@ -95,11 +95,12 @@ instructions_x64 = [
     "push rdx;" \
     "push r8;" \
     "push r9;" \
-    "xchg eax, eax;" \
-    "xchg eax, eax;" \
-    "xchg ebx, ebx;" \
-    "xchg eax, eax;" \
-    "xchg eax, eax;" \
+    "xchg rax, rax;" \
+    "xchg rax, rax;" \
+    "xchg rbx, rbx;" \
+    "xchg rbx, rbx;" \
+    "xchg rax, rax;" \
+    "xchg rax, rax;" \
     "pop r9;" \
     "pop r8;" \
     "pop rdx;" \

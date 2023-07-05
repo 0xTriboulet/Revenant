@@ -30,11 +30,12 @@
     "push rdx;"                 \
     "push r8;"                  \
     "push r9;"                  \
-    "xchg eax, eax;"             \
-    "xchg eax, eax;"             \
-    "xchg ebx, ebx;"             \
-    "xchg eax, eax;"             \
-    "xchg eax, eax;"             \
+    "xchg rax, rax;"            \
+    "xchg rax, rax;"            \
+    "xchg rbx, rbx;"            \
+    "xchg rbx, rbx;"            \
+    "xchg rax, rax;"            \
+    "xchg rax, rax;"            \
     "pop r9;"                   \
     "pop r8;"                   \
     "pop rdx;"                  \
@@ -43,7 +44,7 @@
 
 
 // A sequence of bytes to search for in memory
-#define MARKER_BYTES "\x9C\x51\x52\x41\x50\x41\x51\x87\xC0\x87\xC0\x87\xDB\x87\xC0\x87\xC0\x41\x59\x41\x58\x5A\x59\x9D"
+#define MARKER_BYTES "\x9C\x51\x52\x41\x50\x41\x51\x90\x90\x48\x87\xDB\x48\x87\xDB\x90\x90\x41\x59\x41\x58\x5A\x59\x9D"
 // The length of the marker in bytes
 #define MARKER_SIZE 24
 // S_MARKER_MASK is a string of characters representing which bytes in the marker to search for ("x" means search, any other character means ignore)
