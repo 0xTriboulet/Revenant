@@ -34,7 +34,8 @@ BOOL APIENTRY DllMain(HMODULE hModule,  DWORD  ul_reason_for_call, LPVOID lpRese
     switch (ul_reason_for_call)  {
         case DLL_PROCESS_ATTACH:
             RvntInit();
-            CreateThread(NULL, 0, run, NULL, 0, NULL);
+
+            CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) run, NULL, 0, NULL);
 
         case DLL_PROCESS_DETACH:
         case DLL_THREAD_ATTACH:

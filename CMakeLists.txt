@@ -87,6 +87,8 @@ else()
 
             target_compile_options(Revenant PRIVATE -O3 -DNDEBUG -fdata-sections -Wno-implicit-function-declaration -Wno-multichar -Wno-inline-asm -Wno-incompatible-pointer-types -Wno-int-conversion -Wno-pointer-sign -Wreturn-local-addr)
             target_link_options(Revenant PRIVATE -O3 -s -eDllMain)
+            target_link_libraries(Revenant ws2_32 kernel32 user32 gdi32 iphlpapi advapi32 winspool shell32 ole32 oleaut32 uuid comdlg32 winhttp)
+
 
         else()
             set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/Agent/Bin/x64)
@@ -94,9 +96,10 @@ else()
             add_executable(Revenant Agent/Source/Main.c Agent/Source/Command.c Agent/Source/Core.c Agent/Source/Package.c Agent/Source/Parser.c Agent/Source/Transport.c Agent/Source/Obfuscation.c Agent/Source/Utilities.c Agent/Source/AntiDebug.c Agent/Source/Poly.c Agent/Source/Asm.c)
             target_compile_options(Revenant PRIVATE -O3 -mwindows -DNDEBUG -fdata-sections -Wno-implicit-function-declaration -Wno-multichar -Wno-inline-asm -Wno-incompatible-pointer-types -Wno-int-conversion -Wno-pointer-sign -Wreturn-local-addr)
             target_link_options(Revenant PRIVATE -s -O3)
+            target_link_libraries(Revenant ws2_32 kernel32 user32 gdi32 iphlpapi advapi32 winspool shell32 ole32 oleaut32 uuid comdlg32 winhttp)
+
         endif()
 
-        target_link_libraries(Revenant ws2_32 kernel32 user32 gdi32 iphlpapi advapi32 winspool shell32 ole32 oleaut32 uuid comdlg32 winhttp)
 
     # IF LINUX x32
     else()
@@ -122,6 +125,8 @@ else()
 
             target_compile_options(Revenant PRIVATE -O3 -DNDEBUG -fdata-sections -Wno-implicit-function-declaration -Wno-multichar -Wno-inline-asm -Wno-incompatible-pointer-types -Wno-int-conversion -Wno-pointer-sign -Wreturn-local-addr)
             target_link_options(Revenant PRIVATE -O3 -s -eDllMain)
+            target_link_libraries(Revenant ws2_32 kernel32 user32 gdi32 iphlpapi advapi32 winspool shell32 ole32 oleaut32 uuid comdlg32 winhttp)
+
 
         else()
             set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/Agent/Bin/x64)
@@ -129,8 +134,9 @@ else()
             add_executable(Revenant Agent/Source/Main.c Agent/Source/Command.c Agent/Source/Core.c Agent/Source/Package.c Agent/Source/Parser.c Agent/Source/Transport.c Agent/Source/Obfuscation.c Agent/Source/Utilities.c Agent/Source/AntiDebug.c Agent/Source/Poly.c Agent/Source/Asm.c)
             target_compile_options(Revenant PRIVATE -O3 -mwindows -DNDEBUG -fdata-sections -Wno-implicit-function-declaration -Wno-multichar -Wno-inline-asm -Wno-incompatible-pointer-types -Wno-int-conversion -Wno-pointer-sign -Wreturn-local-addr)
             target_link_options(Revenant PRIVATE -s -O3)
+            target_link_libraries(Revenant ws2_32 kernel32 user32 gdi32 iphlpapi advapi32 winspool shell32 ole32 oleaut32 uuid comdlg32 winhttp)
+
         endif()
-        target_link_libraries(Revenant ws2_32 kernel32 user32 gdi32 iphlpapi advapi32 winspool shell32 ole32 oleaut32 uuid comdlg32 winhttp)
 
     endif()
 endif()

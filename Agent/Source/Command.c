@@ -35,6 +35,7 @@ VOID CommandDispatcher() {
     DWORD    TaskCommand;
 #if CONFIG_UNHOOK == TRUE
 #if defined(CONFIG_ARCH) && (CONFIG_ARCH == 64)
+
     PVOID p_ntdll = get_ntdll_64();
 #else
     PVOID p_ntdll = get_ntdll_32();

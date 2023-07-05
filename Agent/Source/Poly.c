@@ -29,7 +29,6 @@ INT morphModule() {
     ROL_AND_DECRYPT((CHAR *)s_string, sizeof(s_string), 1, MARKER_MASK, s_xk);
 
 #else
-    UCHAR * MARKER_MASK = S_MARKER_MASK;
 
     // Reserved for future functionality
 
