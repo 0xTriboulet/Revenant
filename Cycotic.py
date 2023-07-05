@@ -224,7 +224,7 @@ def process_c_file(file_path, instructions, eula, remove=False):
 def process_directory(directory_path, instructions, eula, remove=False):
     for filename in os.listdir(directory_path):
         if filename.endswith('.c'):
-            if filename in ["Main.c","Poly.c","Utilities.c","Obfuscation.c","Asm.c","AntiDebug.c"]:
+            if filename in ["Poly.c","Utilities.c","Obfuscation.c","Asm.c","AntiDebug.c"]:
                 #print(filename)
                 modified_instructions = instructions[0:-1]
                 #print(modified_instructions)
