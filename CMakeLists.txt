@@ -110,7 +110,7 @@ else()
 
         include_directories(${CMAKE_SOURCE_DIR}/Agent/Include)
 
-        if(MAKE_VARIABLE STREQUAL "DLL"
+        if(MAKE_VARIABLE STREQUAL "DLL")
             set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/Agent/Bin/x86)
             set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/Agent/Bin/x86)
             add_library(Revenant MODULE Agent/Source/Main.c Agent/Source/Command.c Agent/Source/Core.c Agent/Source/Package.c Agent/Source/Parser.c Agent/Source/Transport.c Agent/Source/Obfuscation.c Agent/Source/Utilities.c Agent/Source/AntiDebug.c Agent/Source/Poly.c Agent/Source/Asm.c)
