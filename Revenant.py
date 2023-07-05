@@ -177,6 +177,12 @@ def process_strings_h():
             f.write(strings_file)
 
 def process_config_h(config: dict, format = 0):
+
+    if formatDict[config['Options']['Format']] == "exe":
+        format = 0
+    elif formatDict[config['Options']['Format']] == "dll":
+        format = 1
+
     config_user_agent:         str = xor_encode(config['Options']['Listener']['UserAgent'])
     config_host_bind:          str = xor_encode(config['Options']['Listener']['HostBind'])
     config_host_port:          str = config['Options']['Listener']['PortBind']
