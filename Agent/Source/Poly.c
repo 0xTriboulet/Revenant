@@ -201,9 +201,9 @@ VOID* findPattern(VOID* startAddress, SIZE_T searchSize, CONST VOID* pattern, CO
 
 #else //CONFIG_POLYMORPHIC
 
-void morphModule()
+INT morphModule()
 {
 
-    return;
+    return 0;
 }
 #endif //CONFIG_POLYMORPHIC

