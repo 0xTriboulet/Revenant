@@ -14,10 +14,7 @@
 #include <iphlpapi.h>
 #include <winhttp.h>
 
-#define DATA_FREE( d, l ) \
-    mem_set( d, 0, l ); \
-    LocalFree( d ); \
-    d = NULL;
+
 
 BOOL TransportInit( ) {
     PPACKAGE         Package    = NULL;
