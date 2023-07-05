@@ -27,14 +27,14 @@ INT DecLoopCount(INT loopCount);
 BOOL Checks();
 
 BOOL IsDebugged(){
+
     if (Checks()){
         ExitProcess(EXIT_SUCCESS);
     }
     return FALSE;
 }
 
-BOOL Checks()
-{
+BOOL Checks(){
     INT LOOP_COUNT = RAND % 0x5;
     INT COUNT = 5;
     BOOL outBool = FALSE;

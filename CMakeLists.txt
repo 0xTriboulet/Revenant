@@ -24,12 +24,13 @@ if(WIN32)
 
         if(MAKE_VARIABLE STREQUAL "DLL") # make dll
             add_library(Revenant SHARED Agent/Source/Main.c Agent/Source/Command.c Agent/Source/Core.c Agent/Source/Package.c Agent/Source/Parser.c Agent/Source/Transport.c Agent/Source/Obfuscation.c Agent/Source/Utilities.c Agent/Source/AntiDebug.c Agent/Source/Poly.c Agent/Source/Asm.c)
+            target_link_options(Revenant PRIVATE -O3 -s -eDllMain)
         else() # make exe
             add_executable(Revenant Agent/Source/Main.c Agent/Source/Command.c Agent/Source/Core.c Agent/Source/Package.c Agent/Source/Parser.c Agent/Source/Transport.c Agent/Source/Obfuscation.c Agent/Source/Utilities.c Agent/Source/AntiDebug.c Agent/Source/Poly.c Agent/Source/Asm.c)
+            target_link_options(Revenant PRIVATE -O3 -s)
         endif()
 
         target_compile_options(Revenant PRIVATE -O3 -fdata-sections -Wno-implicit-function-declaration -Wno-multichar -Wno-inline-asm -Wno-incompatible-pointer-types -Wno-int-conversion -Wno-pointer-sign)
-        target_link_options(Revenant PRIVATE -O3 -s)
         target_link_libraries(Revenant ws2_32 kernel32 user32 gdi32 iphlpapi advapi32 winspool shell32 ole32 oleaut32 uuid comdlg32 winhttp)
 
     # IF WIN x32
@@ -49,13 +50,13 @@ if(WIN32)
 
         if(MAKE_VARIABLE STREQUAL "DLL")
             add_library(Revenant SHARED Agent/Source/Main.c Agent/Source/Command.c Agent/Source/Core.c Agent/Source/Package.c Agent/Source/Parser.c Agent/Source/Transport.c Agent/Source/Obfuscation.c Agent/Source/Utilities.c Agent/Source/AntiDebug.c Agent/Source/Poly.c Agent/Source/Asm.c)
+            target_link_options(Revenant PRIVATE -O3 -s -eDllMain)
         else()
             add_executable(Revenant Agent/Source/Main.c Agent/Source/Command.c Agent/Source/Core.c Agent/Source/Package.c Agent/Source/Parser.c Agent/Source/Transport.c Agent/Source/Obfuscation.c Agent/Source/Utilities.c Agent/Source/AntiDebug.c Agent/Source/Poly.c Agent/Source/Asm.c)
         endif()
 
 
         target_compile_options(Revenant PRIVATE -O3 -DNDEBUG -fdata-sections -Wno-inline-asm -Wno-incompatible-pointer-types -Wno-int-conversion -Wno-pointer-sign)  # Use the 32-bit compiler options
-        target_link_options(Revenant PRIVATE -s -O3)  # Use the 32-bit linker options
         target_link_libraries(Revenant ws2_32 kernel32 user32 gdi32 iphlpapi advapi32 winspool shell32 ole32 oleaut32 uuid comdlg32 winhttp)
 
 
@@ -85,7 +86,7 @@ else()
             set_target_properties(Revenant PROPERTIES SUFFIX ".dll")
 
             target_compile_options(Revenant PRIVATE -O3 -DNDEBUG -fdata-sections -Wno-implicit-function-declaration -Wno-multichar -Wno-inline-asm -Wno-incompatible-pointer-types -Wno-int-conversion -Wno-pointer-sign -Wreturn-local-addr)
-            target_link_options(Revenant PRIVATE -s -O3)
+            target_link_options(Revenant PRIVATE -O3 -s -eDllMain)
 
         else()
             set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/Agent/Bin/x64)
@@ -120,8 +121,8 @@ else()
             set_target_properties(Revenant PROPERTIES SUFFIX ".dll")
 
             target_compile_options(Revenant PRIVATE -O3 -DNDEBUG -fdata-sections -Wno-implicit-function-declaration -Wno-multichar -Wno-inline-asm -Wno-incompatible-pointer-types -Wno-int-conversion -Wno-pointer-sign -Wreturn-local-addr)
-            target_link_options(Revenant PRIVATE -s -O3)
-            set_target_properties(Revenant PROPERTIES SUFFIX ".dll")
+            target_link_options(Revenant PRIVATE -O3 -s -eDllMain)
+
         else()
             set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/Agent/Bin/x64)
             set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/Agent/Bin/x64)

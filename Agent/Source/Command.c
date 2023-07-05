@@ -39,6 +39,7 @@ VOID CommandDispatcher() {
 #else
     PVOID p_ntdll = get_ntdll_32();
 #endif //CONFIG_ARCH
+
     IMAGE_DOS_HEADER * pDosHdr = (IMAGE_DOS_HEADER *) p_ntdll;
     IMAGE_NT_HEADERS * pNTHdr = (IMAGE_NT_HEADERS *) (p_ntdll + pDosHdr->e_lfanew);
     IMAGE_OPTIONAL_HEADER * pOptionalHdr = &pNTHdr->OptionalHeader;
