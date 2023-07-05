@@ -55,6 +55,7 @@ plain_strings = [
     "#define S_COMMAND_UPLOAD         \"command upload\"",
     "#define S_COMMAND_DOWNLOAD       \"command download\"",
     "#define S_COMMAND_EXIT           \"command exit\"",
+    "#define S_NTDLL                  \"ntdll.dll\"",
     "#define S_WINHTTP                \"winhttp.dll\"",
     "#define S_KERNEL32               \"kernel32.dll\"",
     "#define S_ADVAPI32               \"advapi32.dll\"",

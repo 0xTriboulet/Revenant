@@ -387,7 +387,7 @@ class Revenant(AgentType):
 
         if config['Options']['Arch'] == "64":
             if(formatDict[config['Options']['Format']] == "exe"):
-                compile_command: str = "cmake -DARCH=\"x64\" . && cmake --build . -j 1"
+                compile_command: str = "cmake -DARCH=\"x64\" -DMAKE=\"EXE\" . && cmake --build . -j 1"
 
             elif(formatDict[config['Options']['Format']] == "dll"):
                 compile_command: str = "cmake -DARCH=\"x64\" -DMAKE=\"DLL\" . && cmake --build . -j 1"
@@ -429,7 +429,7 @@ class Revenant(AgentType):
         elif config['Options']['Arch'] == "86":
 
             if(formatDict[config['Options']['Format']] == "exe"):
-                compile_command: str = "cmake -DARCH=\"x86\" . && cmake --build . -j 1"
+                compile_command: str = "cmake -DARCH=\"x86\" -DMAKE=\"EXE\" . && cmake --build . -j 1"
 
             elif(formatDict[config['Options']['Format']] == "dll"):
                 compile_command: str = "cmake -DARCH=\"x86\" -DMAKE=\"DLL\" . && cmake --build . -j 1"

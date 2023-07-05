@@ -12,6 +12,10 @@
 #if CONFIG_ARCH == 64
 PVOID get_ntdll_64(){
     PVOID ntdll_64_addr = NULL;
+#if CONFIG_MAKE != 0
+    ntdll_64_addr = GetModuleHandleA("ntdll.dll\0");
+#else
+
 
     __asm__(
         ".intel_syntax noprefix;"
@@ -22,7 +26,7 @@ PVOID get_ntdll_64(){
         "mov rax, [rax];"
         "mov rax, [rax+0x20];"
         :"=r" (ntdll_64_addr));
-
+#endif
     return ntdll_64_addr;
 }
 
@@ -40,8 +44,11 @@ PVOID get_peb_64(){
 
 #else
 PVOID get_ntdll_32(){
-    PVOID ntdll_32_addr = NULL;
 
+    PVOID ntdll_32_addr = NULL;
+#if CONFIG_MAKE != 0
+    ntdll_32_addr = GetModuleHandleA("ntdll.dll\0");
+#else
     __asm(".intel_syntax noprefix;"
             "xor eax, eax;"
             "mov eax, fs:[eax+0x30];"
@@ -49,6 +56,7 @@ PVOID get_ntdll_32(){
             "mov eax, [eax+0x1c];"
             "mov eax, [eax+0x8];"
             :"=r" (ntdll_32_addr));
+#endif
     return ntdll_32_addr;
 }
 
