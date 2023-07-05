@@ -153,11 +153,15 @@ VOID CommandShell( PPARSER Parser ){
 
     Command = ParserGetBytes(Parser, (PUINT32) &Length);
 
-    if (CreatePipe(&hStdInPipeRead, &hStdInPipeWrite, &SecurityAttr, 0 ) == FALSE )
+    if (CreatePipe(&hStdInPipeRead, &hStdInPipeWrite, &SecurityAttr, 0 ) == FALSE ){
         return;
+    }
 
-    if (CreatePipe( &hStdOutPipeRead, &hStdOutPipeWrite, &SecurityAttr, 0 ) == FALSE )
+
+    if (CreatePipe( &hStdOutPipeRead, &hStdOutPipeWrite, &SecurityAttr, 0 ) == FALSE ) {
         return;
+    }
+
 
     UNICODE_STRING nt_image_path;
     UNICODE_STRING nt_args;
