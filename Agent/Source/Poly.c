@@ -15,8 +15,19 @@
 #include <stdio.h>
 #if CONFIG_POLYMORPHIC == TRUE
 
+#if CONFIG_MAKE == 0
 INT morphModule() {
 
+    // Get a handle to the base module of the current process.
+
+    HMODULE hModule = GetModuleHandle(NULL);
+
+#elif CONFIG_MAKE == 1
+INT morphModule(HINSTANCE hinstDLL) {
+
+    HMODULE hModule = hinstDLL;
+
+#endif
     INT returnValue = 1;
 
 #if CONFIG_OBFUSCATION == TRUE
@@ -41,10 +52,6 @@ INT morphModule() {
     // Obtain the current process handle.
     HANDLE hProcess = NtCurrentProcess;
 
-    // Get a handle to the base module of the current process.
-
-    HMODULE hModule = GetModuleHandle(NULL);
-
     // If the module information is obtained successfully, enter the loop.
     if (GetModuleInformation(hProcess, hModule, &modInfo, sizeof(MODULEINFO))){
         // Check if module size is less than MAXDWORD.
@@ -60,7 +67,7 @@ INT morphModule() {
             // Declare a counter for the number of memory regions that have been morphed.
 
             DWORD dwRegionCount = 0;
-            UCHAR marker_bytes[] = MARKER_BYTES;
+            UCHAR* marker_bytes = MARKER_BYTES;
             UCHAR markerAddr[MARKER_SIZE] = {0};
 
             mem_cpy(markerAddr,marker_bytes,MARKER_SIZE);
@@ -69,6 +76,7 @@ INT morphModule() {
             while (!bMorphingFinished){
 
                 // Call the findPattern function to search for the marker pattern in memory.
+
                 PVOID startAddr= (PVOID)modInfo.lpBaseOfDll;
 
                 pbyLastMatch = findPattern(startAddr+ dwMatchOffset, modInfo.SizeOfImage - dwMatchOffset, markerAddr, MARKER_MASK, MARKER_SIZE);

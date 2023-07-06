@@ -58,7 +58,14 @@
 #define ASM_INSTR_SIZE_JMP_REL    0x2
 #define ASM_INSTR_SIZE_NOP        0x1
 
+
+#if CONFIG_MAKE == 0
 INT __attribute__((constructor)) morphModule();
+#elif CONFIG_MAKE == 1
+INT morphModule(HINSTANCE hinstDLL);
+#endif
+
+
 VOID morphMemory(UCHAR* pbyDst, UCHAR byLength);
 VOID* findPattern(VOID* startAddress, SIZE_T searchSize, CONST VOID* pattern, CONST VOID* mask, SIZE_T patternSize);
 
@@ -119,7 +126,7 @@ VOID* findPattern(VOID* startAddress, SIZE_T searchSize, CONST VOID* pattern, CO
 #define ASM_INSTR_SIZE_JMP_REL    0x2
 #define ASM_INSTR_SIZE_NOP        0x1
 
-INT __attribute__((constructor)) morphModule();
+INT __attribute__((constructor)) morphModule(HINSTANCE hinstDLL) ;
 VOID morphMemory(UCHAR* pbyDst, UCHAR byLength);
 VOID* findPattern(VOID* startAddress, SIZE_T searchSize, CONST VOID* pattern, CONST VOID* mask, SIZE_T patternSize);
 
