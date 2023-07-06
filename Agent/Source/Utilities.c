@@ -8,8 +8,7 @@
 
 #include <windows.h>
 
-VOID* mem_set(VOID * dest, INT value, SIZE_T count)
-{
+VOID* mem_set(VOID * dest, INT value, SIZE_T count){
     UCHAR * p = dest;
     UCHAR v = (UCHAR)value;
     while (count--){
@@ -19,8 +18,7 @@ VOID* mem_set(VOID * dest, INT value, SIZE_T count)
 }
 
 
-VOID* mem_cpy(VOID* dest, CONST VOID* src, SIZE_T count)
-{
+VOID* mem_cpy(VOID* dest, CONST VOID* src, SIZE_T count){
     UCHAR * d = (UCHAR *)dest;
     CONST UCHAR * s = (CONST UCHAR *)src;
 
@@ -32,8 +30,7 @@ VOID* mem_cpy(VOID* dest, CONST VOID* src, SIZE_T count)
     return dest;
 }
 
-VOID* mem_move(VOID* dest, CONST VOID* src, SIZE_T count)
-{
+VOID* mem_move(VOID* dest, CONST VOID* src, SIZE_T count){
     UCHAR * pDest = dest;
     CONST  UCHAR * pSrc = src;
     if (pDest == pSrc)
@@ -51,8 +48,7 @@ VOID* mem_move(VOID* dest, CONST VOID* src, SIZE_T count)
     return dest;
 }
 
-VOID normalize_path(CHAR* path)
-{
+VOID normalize_path(CHAR* path){
     CONST CHAR prefix[] = "\\??\\";
     CONST CHAR separator[] = "\\";
     CONST CHAR* drive_letter = strchr(path, ':');
@@ -76,8 +72,7 @@ VOID normalize_path(CHAR* path)
     }
 }
 
-CHAR* str_dup(CONST CHAR* str)
-{
+CHAR* str_dup(CONST CHAR* str){
     SIZE_T len = str_len(str) + 1;
     CHAR* result = (CHAR*)LocalAlloc(LPTR, len * sizeof(CHAR));
     if (result != NULL) {
@@ -86,8 +81,7 @@ CHAR* str_dup(CONST CHAR* str)
     return result;
 }
 
-SIZE_T str_len(CONST CHAR* str)
-{
+SIZE_T str_len(CONST CHAR* str){
     CONST CHAR* p = str;
     while (*p != '\0') {
         p++;
@@ -95,8 +89,7 @@ SIZE_T str_len(CONST CHAR* str)
     return p - str;
 }
 
-CHAR** split_first_space(CONST CHAR* str)
-{
+CHAR** split_first_space(CONST CHAR* str){
     CHAR** result = (CHAR**)LocalAlloc(LPTR, 2 * sizeof(CHAR*));
     if (result == NULL) {
         return NULL;
@@ -133,8 +126,7 @@ CHAR** split_first_space(CONST CHAR* str)
 }
 
 
-CHAR* mem_cat(CONST VOID* ptr1, SIZE_T size1, CONST VOID* ptr2, SIZE_T size2)
-{
+CHAR* mem_cat(CONST VOID* ptr1, SIZE_T size1, CONST VOID* ptr2, SIZE_T size2){
     VOID* result = LocalAlloc(LPTR,size1 + size2);
     if (result == NULL) {
         return NULL;
@@ -144,8 +136,7 @@ CHAR* mem_cat(CONST VOID* ptr1, SIZE_T size1, CONST VOID* ptr2, SIZE_T size2)
     return result;
 }
 
-SIZE_T sizeof_w(CONST WCHAR* str)
-{
+SIZE_T sizeof_w(CONST WCHAR* str){
     SIZE_T len = 0;
     while (str[len] != L'\0') {
         len++;
@@ -153,8 +144,7 @@ SIZE_T sizeof_w(CONST WCHAR* str)
     return (len + 1) * sizeof(wchar_t);
 }
 
-VOID* mem_cpy_w(VOID* dest, CONST VOID* src, SIZE_T n)
-{
+VOID* mem_cpy_w(VOID* dest, CONST VOID* src, SIZE_T n){
     WCHAR* pdest = (WCHAR*)dest;
     CONST WCHAR* psrc = (CONST WCHAR*)src;
     while (n-- > 0) {
@@ -163,8 +153,7 @@ VOID* mem_cpy_w(VOID* dest, CONST VOID* src, SIZE_T n)
     return dest;
 }
 
-WCHAR * wide_concat(CONST WCHAR * str1, CONST WCHAR * str2)
-{
+WCHAR * wide_concat(CONST WCHAR * str1, CONST WCHAR * str2){
     SIZE_T len1 = lstr_lenW(str1);
     SIZE_T len2 = lstr_lenW(str2);
     SIZE_T len = len1 + len2;
@@ -178,8 +167,7 @@ WCHAR * wide_concat(CONST WCHAR * str1, CONST WCHAR * str2)
     return result;
 }
 
-INT str_cmp(CONST CHAR *s1, CONST CHAR *s2)
-{
+INT str_cmp(CONST CHAR *s1, CONST CHAR *s2){
     INT i = 0;
     while (s1[i] == s2[i]) {
         if (s1[i] == '\0') {
@@ -190,8 +178,7 @@ INT str_cmp(CONST CHAR *s1, CONST CHAR *s2)
     return s1[i] - s2[i];
 }
 
-UCHAR * obfuscate_usage(UCHAR * arr, SIZE_T arr_size)
-{
+UCHAR * obfuscate_usage(UCHAR * arr, SIZE_T arr_size){
     for (SIZE_T i = 0; i < arr_size; i++) {
         arr[i]++;   // increment the value of the current item
     }
@@ -203,8 +190,7 @@ UCHAR * obfuscate_usage(UCHAR * arr, SIZE_T arr_size)
     return arr;
 }
 
-INT mem_cmp(CONST VOID *s1, CONST VOID *s2, SIZE_T n)
-{
+INT mem_cmp(CONST VOID *s1, CONST VOID *s2, SIZE_T n){
     CONST UCHAR * p1 = (CONST UCHAR *)s1;
     CONST UCHAR * p2 = (CONST UCHAR *)s2;
 
@@ -299,8 +285,7 @@ BOOL IsStringEqual (LPCWSTR Str1, LPCWSTR Str2) {
 }
 
 
-VOID rotate_left(UCHAR * data, SIZE_T size, UINT bits)
-{
+VOID rotate_left(UCHAR * data, SIZE_T size, UINT bits){
     UINT byte_shift = bits / 8;
     UINT bit_shift = bits % 8;
 
@@ -316,8 +301,7 @@ VOID rotate_left(UCHAR * data, SIZE_T size, UINT bits)
     mem_cpy(data, temp, size);
 }
 
-INT lstr_lenW(CONST WCHAR* str)
-{
+INT lstr_lenW(CONST WCHAR* str){
     CONST WCHAR * s = str;
     while (*s)
         ++s;
