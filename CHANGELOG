@@ -1,6 +1,9 @@
-CHANGELOG 4JULY23 v0.59.6:
+CHANGELOG 5JULY23 v0.59.6:
 > Improved unhooking. Keep clean ntdll in memory instead of starting clean process every command.
 > Support DLLs with all options
+> Revamped polymorphic egg search mechanics
+> Improved inline assembly injections to reduce impacts on performance
+
 
 CHANGELOG 3JULY23 v0.59.5:
 > Improved polymorphism, removed most exceptions to dynamic poly
