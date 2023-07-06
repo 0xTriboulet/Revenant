@@ -4,6 +4,10 @@ Revenant is a 3rd party agent for Havoc written in C, and based on Talon. This i
 
 This project aims to be a self-contained Havoc C2 implant. The goal end-user functionality is as follows:
 
+
+![IMG_0314](https://user-images.githubusercontent.com/22229087/233796939-96a6100e-bcfc-4d4a-b1cb-c9eacdea6bf9.PNG)
+
+
 ### Setup
 > 1) Download repo
 > 2) Unzip Revenant.zip
@@ -43,5 +47,3 @@ This project aims to be a self-contained Havoc C2 implant. The goal end-user fun
 > - Decrease entropy
 
 
-
-![IMG_0314](https://user-images.githubusercontent.com/22229087/233796939-96a6100e-bcfc-4d4a-b1cb-c9eacdea6bf9.PNG)
