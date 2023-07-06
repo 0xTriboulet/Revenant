@@ -71,9 +71,9 @@ instructions_x86 = [
     "inc ecx;" \
     "dec ecx;" \
     "xchg ecx, ecx;" \
-    "xchg ecx, eax;" \
+    "xchg eax, eax;" \
     "xchg ebx, ebx;" \
-    "xchg ebx, eax;"\
+    "xchg eax, eax;"\
     "popad;"\
     "popfd"''
 ]
