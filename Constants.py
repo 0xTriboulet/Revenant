@@ -14,6 +14,7 @@ plain_function_strings = [
     "#define K32GetModuleInformation_CRC32B         \"K32GetModuleInformation\"",
     "#define LocalAlloc_CRC32B                      \"LocalAlloc\"",
     "#define LdrLoadDll_CRC32B                      \"LdrLoadDll\"",
+    "#define LdrUnloadDll_CRC32B                    \"LdrUnloadDll\"",
     "#define NtAllocateVirtualMemory_CRC32B         \"NtAllocateVirtualMemory\"",
     "#define NtCreateFile_CRC32B                    \"NtCreateFile\"",
     "#define NtCreateUserProcess_CRC32B             \"NtCreateUserProcess\"",

@@ -33,9 +33,16 @@ typedef struct _INSTANCE {
     } Session;
 
     struct {
-        ULONG ( WINAPI *RtlRandomEx   ) ( PULONG );
+        ULONG ( WINAPI* RtlRandomEx   ) ( PULONG );
         VOID  ( WINAPI* RtlGetVersion ) ( POSVERSIONINFOEXW );
+        BOOL  ( WINAPI* VirtualProtect ) (LPVOID lpAddress, SIZE_T dwSize, DWORD flNewProtect, PDWORD lpflOldProtect);
+
     } Win32;
+
+    struct {
+        VOID * NtdllHandle;
+        VOID * Kernel32Handle;
+    }Handles;
 
     struct {
         DWORD Sleeping;

