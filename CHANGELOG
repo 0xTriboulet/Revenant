@@ -1,3 +1,6 @@
+CHANGELOG 6JULY23 v0.59.7:
+> Updated LLLVM-MingW version
+
 CHANGELOG 6JULY23 v0.59.6:
 > DLL support
 > Revamped polymorphic egg search mechanics
