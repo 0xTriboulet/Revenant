@@ -573,7 +573,7 @@ def main():
     file_path = "./llvm-mingw/bin/i686-w64-mingw32-gcc"
     if not os.path.exists(file_path):
         print("[*] Setting up llvm directory")
-        os.system("tar -xf llvm-mingw.tar.xz;mv llvm-mingw-20230504-ucrt-ubuntu-20.04-x86_64 llvm-mingw") # TODO: make this safer
+        os.system("tar -xf llvm-mingw.tar.xz;mv llvm-mingw-20230614-ucrt-ubuntu-20.04-x86_64 llvm-mingw") # TODO: make this safer
 
     print("[*] Connect to Havoc service api")
     havoc_service = HavocService(
