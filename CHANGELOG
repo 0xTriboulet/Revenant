@@ -1,5 +1,6 @@
-CHANGELOG 6JULY23 v0.59.7:
-> Updated LLLVM-MingW version
+CHANGELOG 8JULY23 v0.59.7:
+> Updated LLVM-MingW compiler
+> Bug fixes for new compiler errors
 
 CHANGELOG 6JULY23 v0.59.6:
 > DLL support
