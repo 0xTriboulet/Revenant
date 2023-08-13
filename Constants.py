@@ -16,6 +16,7 @@ plain_function_strings = [
     "#define LdrLoadDll_CRC32B                      \"LdrLoadDll\"",
     "#define LdrUnloadDll_CRC32B                    \"LdrUnloadDll\"",
     "#define NtAllocateVirtualMemory_CRC32B         \"NtAllocateVirtualMemory\"",
+    "#define NtClose_CRC32B                         \"NtClose\"",
     "#define NtCreateFile_CRC32B                    \"NtCreateFile\"",
     "#define NtCreateProcessEx_CRC32B               \"NtCreateProcessEx\"",
     "#define NtCreateSection_CRC32B                 \"NtCreateSection\"",
