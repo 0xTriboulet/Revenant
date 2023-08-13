@@ -34,6 +34,7 @@ COMMAND_EXIT = 0x155
 COMMAND_OUTPUT = 0x200
 
 formatDict = {"Windows Dll":"dll","Windows Exe":"exe"}
+unhookingList = ["None", "PeRuns Fart", "GhostFart"]
 
 def generate_command_constants():
     rand_int = random.randint(0xF, 0xFFF0)
@@ -193,7 +194,7 @@ def process_config_h(config: dict, format = 0):
     config_arch:               str = config['Options']['Arch']
     config_native:             str = str(config['Config']['Native']).upper()
     config_anti_debug:         str = str(config['Config']['AntiDebug']).upper()
-    config_unhook:             str = str(config['Config']['Unhooking']).upper()
+    config_unhook:             str = str(unhookingList.index(config['Config']['Unhooking'])).upper()
     config_format:             str = str(format).upper()
     header_file = f'''
 #define CONFIG_USER_AGENT {{{config_user_agent}}}
@@ -334,7 +335,7 @@ class Revenant(AgentType):
     def __init__(self):
         self.Name: str = "Revenant"
         self.Author: str = "0xTriboulet for Malicious Group"
-        self.Version: str = "0.59"
+        self.Version: str = "0.60"
         self.Description: str = "Revenant"
         self.MagicValue = 0x72766e74
         self.registerinfo = {}
@@ -350,7 +351,7 @@ class Revenant(AgentType):
             "Native"    : True,
             "AntiDebug" : True,
             "RandCmdIds": False,
-            "Unhooking": False
+            "Unhooking": ["None", "PeRuns Fart", "GhostFart"]
         }
         self.Commands: list = [
             CommandPwsh(),
