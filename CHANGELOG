@@ -1,3 +1,6 @@
+CHANGELOG 13AUG23 v0.60.0:
+> Implemented GhostFart Unhooking
+
 CHANGELOG 8JULY23 v0.59.7:
 > Updated LLVM-MingW compiler
 > Bug fixes for new compiler errors
