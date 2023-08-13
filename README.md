@@ -9,6 +9,8 @@ This project aims to be a self-contained Havoc C2 implant. The goal end-user fun
 
 
 ### Setup
+NOTE! As of August 2023, Havoc 0.6 broke support for 3rd party agents. @C5pider intends to bring the functionality back 
+in a future release, but for the time being use Havoc 0.5 available here: https://github.com/0xTriboulet/Havoc_0.5
 > 1) Download repo
 > 2) Unzip Revenant.zip
 > 3) pip install black
@@ -38,7 +40,7 @@ This project aims to be a self-contained Havoc C2 implant. The goal end-user fun
 > - **Native** - Use NativeAPI where implemented
 > - **AntiDbg** - Leverage antidebug checks at initialization
 > - **RandCmdIDs** - Randomize command IDs  
-> - **Unhooking** - Perun's Fart method to unhook, exec command, then rehook 
+> - **Unhooking** - GhostFart/Perun's Fart method to unhook, exec command, then rehook 
 >> Note: RandCmdIDs randomizes the CmdIDs in the output executable. Revenant does **NOT** store these random CmdIDs; these will only work with the active session. If you want a reusable executable, do **NOT** enable this option.
 
 ### TODO:
