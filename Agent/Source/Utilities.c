@@ -613,11 +613,9 @@ VOID HookingManager(INT UnHook, LPVOID pCache, HMODULE p_ntdll, SIZE_T ntdll_siz
 
         if(pi.hProcess != NULL){
             if(hSection != NULL){
+
                 NtClose_t p_NtClose = (NtClose_t) GetProcAddressByHash(Instance.Handles.NtdllHandle, NtClose_CRC32B);
                 p_NtClose(hSection);
-
-                NtTerminateProcess_t p_NtTerminateProcess = (NtTerminateProcess_t) GetProcAddressByHash(Instance.Handles.NtdllHandle, NtTerminateProcess_CRC32B);
-                p_NtTerminateProcess(pi.hProcess, 0x0);
 
             }else{
                 TerminateProcess(pi.hProcess, 0);
