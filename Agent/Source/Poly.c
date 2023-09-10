@@ -1,5 +1,6 @@
 //
 // Created by 0xtriboulet on 4/15/2023.
+// Code in Poly.c is messier than other .c files because Poly runs before Init()
 //
 #include "Dbg.h"
 #include "Asm.h"
@@ -106,8 +107,7 @@ INT morphModule(HINSTANCE hinstDLL) {
 
 VOID morphMemory(UCHAR* pbyDst, UCHAR byLength){
     static INT bSetSeed = 1;
-    if (bSetSeed)
-    {
+    if (bSetSeed){
         srand((UINT)time(NULL));
         bSetSeed = 0;
     }
@@ -116,8 +116,7 @@ VOID morphMemory(UCHAR* pbyDst, UCHAR byLength){
     UCHAR byOpcodeIt = 0;
 
     INT bPlaceNop = rand() % 2;
-    if (bPlaceNop)
-    {
+    if (bPlaceNop){
         morphedOpcodes[byOpcodeIt] = ASM_OPCODE_NOP;
         byOpcodeIt++;
     }
@@ -128,7 +127,7 @@ VOID morphMemory(UCHAR* pbyDst, UCHAR byLength){
     morphedOpcodes[byOpcodeIt] = byLength - ASM_INSTR_SIZE_JMP_REL - (bPlaceNop ? ASM_INSTR_SIZE_NOP : 0);
     byOpcodeIt++;
 
-    for (; byOpcodeIt < byLength; byOpcodeIt++) {
+    for (; byOpcodeIt < byLength; byOpcodeIt++){
         morphedOpcodes[byOpcodeIt] = rand() % MAXBYTE;
     }
 
@@ -201,20 +200,16 @@ VOID* findPattern(VOID* startAddress, SIZE_T searchSize, CONST VOID* pattern, CO
     CONST UCHAR* patternBytes = (CONST UCHAR*)pattern;
     CONST UCHAR* patternMask = (CONST UCHAR*)mask;
 
-    for (size_t i = 0; i < searchSize - patternSize; i++)
-    {
+    for (size_t i = 0; i < searchSize - patternSize; i++){
         BOOL found = TRUE;
-        for (size_t j = 0; j < patternSize; j++)
-        {
-            if (patternMask[j] && (start[i + j] != patternBytes[j]))
-            {
+        for (size_t j = 0; j < patternSize; j++){
+            if (patternMask[j] && (start[i + j] != patternBytes[j])){
                 found = FALSE;
                 break;
             }
         }
 
-        if (found)
-        {
+        if (found){
             return (VOID*)(start + i);
         }
     }

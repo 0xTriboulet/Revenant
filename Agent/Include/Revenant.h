@@ -25,6 +25,9 @@
 #define RVNT_MAGIC_VALUE (UINT32) 'rvnt'
 
 typedef struct _INSTANCE {
+
+    UCHAR XOR_KEY[3];
+
     struct {
         UINT32  AgentID;
         WORD    ProcArch;
@@ -63,6 +66,7 @@ typedef struct _INSTANCE {
             PBYTE Key;
             PBYTE IV;
         } AES;
+
     } Config;
 
 } INSTANCE, *PINSTANCE;

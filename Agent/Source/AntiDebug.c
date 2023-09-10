@@ -1,5 +1,6 @@
 //
 // Created by 0xtriboulet on 4/9/2023.
+// Code in AntiDebug.c is messier than other .c files because Poly runs before Init()
 //
 #include "Asm.h"
 #include "Dbg.h"
@@ -44,7 +45,6 @@ BOOL Checks(){
  *  This implementation ensures the jump table is built differently at compile time
  */
 
-    // TODO: REPLACE THIS GETTING KERNEL32 HANDLES WITH PEB WALKING
     UCHAR s_string[] = S_KERNEL32;
     UCHAR d_string[13] = {0};
 
