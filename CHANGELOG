@@ -2,7 +2,7 @@ CHANGELOG 10SEP23 v0.60.1:
 > Updated Readme
 > Fixed polymorphic support in x86 executables
 > Fixed CMAKE causing errors when building x86 executables
-
+> Hid strings associated with PeRun's Fart, GhostFart, and Havoc comms
 
 CHANGELOG 13AUG23 v0.60.0:
 > Implemented GhostFart Unhooking
