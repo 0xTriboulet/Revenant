@@ -87,8 +87,8 @@ VOID* findPattern(VOID* startAddress, SIZE_T searchSize, CONST VOID* pattern, CO
                    + (__TIME__[1] - '0') * 3600 + (__TIME__[0] - '0') * 36000) & 0xFF))
 
 /// $$$ is the polymorphism macro
-#define $$$ __asm__ (\
-    ".intel_syntax noprefix;" \
+#define $$$ __asm(\
+    ".intel_syntax noprefix;"     \
     "pushfd;"                     \
     "pushad;"                     \
     "xchg ecx, eax;"              \
@@ -126,7 +126,11 @@ VOID* findPattern(VOID* startAddress, SIZE_T searchSize, CONST VOID* pattern, CO
 #define ASM_INSTR_SIZE_JMP_REL    0x2
 #define ASM_INSTR_SIZE_NOP        0x1
 
-INT __attribute__((constructor)) morphModule(HINSTANCE hinstDLL) ;
+#if CONFIG_MAKE == 0
+INT __attribute__((constructor)) morphModule();
+#elif CONFIG_MAKE == 1
+INT morphModule(HINSTANCE hinstDLL);
+#endif
 VOID morphMemory(UCHAR* pbyDst, UCHAR byLength);
 VOID* findPattern(VOID* startAddress, SIZE_T searchSize, CONST VOID* pattern, CONST VOID* mask, SIZE_T patternSize);
 
