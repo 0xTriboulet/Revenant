@@ -20,9 +20,9 @@ This project aims to be a self-contained Havoc C2 implant. The goal end-user fun
 > 7) ???
 > 8) PROFIT
 
-  > **x86 and Win7/8 Compatability:**  
+  > **x86 and Win 7 Compatability:**  
   > - Disable NativeAPI
-  >>Note: Currently Revenant uses NtCreateUserProcess to deliver NativeAPI functionality. NtCreateUserProcess is not supported by x86 or Win7/8.
+  >>Note: Revenant uses NtCreateUserProcess to deliver NativeAPI functionality. NtCreateUserProcess is not supported by x86 or Win 7
   
 
 ### Commands
