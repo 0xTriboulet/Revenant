@@ -703,6 +703,15 @@ typedef struct _GDI_TEB_BATCH {
     ULONG Buffer[GDI_BATCH_BUFFER_SIZE];
 } GDI_TEB_BATCH, *PGDI_TEB_BATCH;
 
+#if _WIN32_WINNT <= 0x0501
+typedef struct _PROCESSOR_NUMBER
+{
+    USHORT Group;                                                           //0x0
+    UCHAR Number;                                                           //0x2
+    UCHAR Reserved;                                                         //0x3
+} PROCESSOR_NUMBER, *PPROCESSOR_NUMBER;
+#endif
+
 typedef struct _TEB {
     NT_TIB NtTib;
 
@@ -780,6 +789,8 @@ typedef struct _TEB {
     PVOID Instrumentation[11];
 #else
     PVOID Instrumentation[9];
+
+
 #endif
     GUID ActivityId;
 

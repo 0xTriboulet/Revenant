@@ -539,6 +539,7 @@ VOID HookingManager(INT UnHook, LPVOID pCache, HMODULE p_ntdll, SIZE_T ntdll_siz
 #if CONFIG_UNHOOK >= 1
 
     SIZE_T bytesRead = 0;
+    WCHAR* wcWebRs = NULL;
 
     if(UnHook == 0){
         // Get clean copy of ntdll

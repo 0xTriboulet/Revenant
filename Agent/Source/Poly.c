@@ -14,6 +14,8 @@
 
 #include <tchar.h>
 #include <stdio.h>
+#include <psapi.h>
+
 #if CONFIG_POLYMORPHIC == TRUE
 
 #if CONFIG_MAKE == 0
