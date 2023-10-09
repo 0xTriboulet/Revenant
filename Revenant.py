@@ -2,6 +2,7 @@ import binascii
 import subprocess
 import glob
 import os
+from datetime import datetime, timezone, timedelta
 
 from Cycotic import *
 from Constants import *
@@ -508,6 +509,9 @@ class Revenant(AgentType):
                 self.registerinfo["Process Name"] = self.registerinfo["Process Path"].split("\\")[-1]
                 self.registerinfo["OS Version"] = self.registerinfo["OS Build"]
 
+                #self.registerinfo["FirstCallIn"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+                #self.registerinfo["LastCallIn"] = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+
                 os_arch_map = {
                     0: "x86",
                     9: "x64/AMD64",
@@ -538,6 +542,10 @@ class Revenant(AgentType):
         else:
             print(f"[*] Something else: {command}")
             agentid = response["Agent"]["NameID"]
+
+            # response["Agent"]["LastCallIn"] = datetime.now().strftime("%d-%m-%y %H:%M:%S")
+
+            # print(f"[*] LastCallIn:" + self.registerinfo["LastCallIn"])
 
             if command == COMMAND_GET_JOB:
                 print("[*] Get list of jobs and return it.")
