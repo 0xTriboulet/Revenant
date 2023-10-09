@@ -8,6 +8,7 @@
 #include "Poly.h"
 #include "Dbg.h"
 #include "Asm.h"
+#include "Defs.h"
 
 #include <windows.h>
 

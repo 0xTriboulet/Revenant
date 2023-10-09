@@ -10,7 +10,7 @@
 
 INSTANCE Instance = { 0 };
 
-#if CONFIG_MAKE == 0
+#if CONFIG_MAKE == 0 // EXE
 INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, INT nShowCmd ) {
     $$$
     RvntInit();
@@ -34,7 +34,7 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
     return 0;
 }
 
-#elif CONFIG_MAKE == 1
+#elif CONFIG_MAKE == 1 // DLL
 __declspec(dllexport) VOID run();
 
 BOOL APIENTRY DllMain(HINSTANCE hinstDLL,  DWORD  ul_reason_for_call, LPVOID lpReserved){
