@@ -55,6 +55,10 @@ if(WIN32)
             add_executable(Revenant Agent/Source/Main.c Agent/Source/Command.c Agent/Source/Core.c Agent/Source/Package.c Agent/Source/Parser.c Agent/Source/Transport.c Agent/Source/Obfuscation.c Agent/Source/Utilities.c Agent/Source/AntiDebug.c Agent/Source/Poly.c Agent/Source/Asm.c)
         endif()
 
+        # TESTING Windows XP Support
+        # set(CMAKE_C_COMPILER C:\\Mingw32\\bin\\i686-w64-mingw32-gcc)
+        #        target_link_options(Revenant PRIVATE -s -O3 -mwindows)
+        #        target_compile_options(Revenant PRIVATE -O3 -static -D_WIN32_WINNT=0x0501 -DNDEBUG -fdata-sections -Wno-inline-asm -Wno-incompatible-pointer-types -Wno-int-conversion -Wno-pointer-sign)  # Use the 32-bit compiler options
 
         target_compile_options(Revenant PRIVATE -O3 -DNDEBUG -fdata-sections -Wno-inline-asm -Wno-incompatible-pointer-types -Wno-int-conversion -Wno-pointer-sign)  # Use the 32-bit compiler options
         target_link_libraries(Revenant ws2_32 kernel32 user32 gdi32 iphlpapi advapi32 winspool shell32 ole32 oleaut32 uuid comdlg32 winhttp)
