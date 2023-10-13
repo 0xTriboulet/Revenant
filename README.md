@@ -9,8 +9,7 @@ Revenant is a 3rd party agent for Havoc written in C, and based on Talon. This i
 This project aims to be a self-contained Havoc C2 implant. The goal end-user functionality is as follows:
 
 #### \*\*\*NOTE\*\*\* As of August 2023, Havoc 0.6 broke support for 3rd party agents. @C5pider intends to bring the functionality back in a future release, but for the time being use Havoc 0.5 available here: https://github.com/0xTriboulet/Havoc_0.5 ####
-#### SEE HAVOC (DEV) PR #379 FOR MORE INFORMATION https://github.com/HavocFramework/Havoc/pull/379 ####
-
+#### HAVOC (DEV) HAS BEEN PATCHED TO SUPPORT 3RD PARTY AGENTS: https://github.com/HavocFramework/Havoc/tree/dev
 > 1) Download repo
 > 2) Unzip Revenant.zip
 > 3) pip install black
